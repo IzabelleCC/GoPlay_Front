@@ -19,6 +19,7 @@ export default function Inicial({ navigation }: { navigation: NavigationType }) 
             <Button
                 mt="6" w="80%" variant="solid"
                 style={{backgroundColor: '#0896B0', borderRadius: 20, paddingBottom: 12, paddingTop: 12,}}
+                onPress={() => navigation.navigate('Login')}
             >
                 <Text style={{ fontSize: 16, color: '#fff' }}>Criar uma conta</Text>
             </Button>
