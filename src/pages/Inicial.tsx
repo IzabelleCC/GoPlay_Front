@@ -1,5 +1,5 @@
 import { VStack, Image, Button, Text } from "native-base";
-import Logo from "./assets/logo.png";
+import Logo from "../assets/logo.png";
 
 interface NavigationType {
     navigate: (route: string) => void;
@@ -19,7 +19,7 @@ export default function Inicial({ navigation }: { navigation: NavigationType }) 
             <Button
                 mt="6" w="80%" variant="solid"
                 style={{backgroundColor: '#0896B0', borderRadius: 20, paddingBottom: 12, paddingTop: 12,}}
-                onPress={() => navigation.navigate('Login')}
+                onPress={() => navigation.navigate('Home')}
             >
                 <Text style={{ fontSize: 16, color: '#fff' }}>Criar uma conta</Text>
             </Button>

@@ -1,10 +1,10 @@
 import { VStack, Box, Image, FormControl, Input, Button, Text, Link } from "native-base";
-import Logo from "./assets/logo.png";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "./firebase-config";
+import Logo from "../assets/logo.png";
 import React from "react";
 import { Alert } from "react-native";
+import { ConsumerWS } from "../services/ConsumerWS";
+
+const { signIn } = ConsumerWS;
 
 interface NavigationType {
     navigate: (route: string) => void;
@@ -12,34 +12,23 @@ interface NavigationType {
 
 export default function Login({ navigation }: { navigation: NavigationType }) {
 
-    const [email, setEmail] = React.useState('');
+    const [userName, setUserName] = React.useState('');
     const [password, setPassword] = React.useState('');
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
 
     const handleCreateAccount = () => {
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                console.log('Conta criada com sucesso', user);
-            })
-            .catch((error) => {
-                console.log('Erro ao criar conta', error);
-                Alert.alert('Erro ao criar conta', error.message);
-            });
+
     };
 
     const handleSignIn = () => {
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                console.log('Usuário logado com sucesso', user);
-                navigation.navigate('Home');
-            })
-            .catch((error) => {
-                console.log('Erro ao logar', error);
-                Alert.alert('Erro ao logar', error.message);
-            });
+        signIn(userName, password)
+        .then((token) => {
+            console.log('Login realizado com sucesso. Token:', token);
+            navigation.navigate('Home');
+        })
+        .catch((error) => {
+            console.log('Erro ao logar', error);
+            Alert.alert('Erro ao logar', error.message);
+        });
     }
 
     return (
@@ -49,12 +38,12 @@ export default function Login({ navigation }: { navigation: NavigationType }) {
                 <FormControl mt="4" mb="4">
                     <Input
                         mx="3"
-                        placeholder="Digite seu e-mail"
+                        placeholder="Digite seu User Name"
                         w="80%"
                         variant="rounded"
                         textAlign="center"
                         fontSize="18"
-                        onChangeText={(text) => setEmail(text)}
+                        onChangeText={(text) => setUserName(text)}
                     />
                 </FormControl>
                 <FormControl>

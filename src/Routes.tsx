@@ -1,9 +1,9 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Login from "./Login";
-import Inicial from "./Inicial";
-import Home from "./Home";
+import Login from "./pages/Login";
+import Inicial from "./pages/Inicial";
+import Home from "./pages/Home";
 
 const Tab = createNativeStackNavigator();
 
