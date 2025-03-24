@@ -2,9 +2,9 @@ import { VStack, Box, Image, FormControl, Input, Button, Text, Link } from "nati
 import Logo from "../assets/logo.png";
 import React from "react";
 import { Alert } from "react-native";
-import { ConsumerWS } from "../services/ConsumerWS";
+import { ConsumerAPI } from "../api/ConsumerWS";
 
-const { signIn } = ConsumerWS;
+const { signIn } = ConsumerAPI;
 
 interface NavigationType {
     navigate: (route: string) => void;
@@ -21,14 +21,14 @@ export default function Login({ navigation }: { navigation: NavigationType }) {
 
     const handleSignIn = () => {
         signIn(userName, password)
-        .then((token) => {
-            console.log('Login realizado com sucesso. Token:', token);
-            navigation.navigate('Home');
-        })
-        .catch((error) => {
-            console.log('Erro ao logar', error);
-            Alert.alert('Erro ao logar', error.message);
-        });
+            .then((token) => {
+                console.log('Login realizado com sucesso. Token:', token);
+                navigation.navigate('Home');
+            })
+            .catch((error) => {
+                console.log('Erro ao logar', error);
+                Alert.alert('Erro ao logar', error.message);
+            });
     }
 
     return (
@@ -73,7 +73,7 @@ export default function Login({ navigation }: { navigation: NavigationType }) {
             </Button>
             <Button
                 mt="6" w="80%" variant="solid"
-                style={{backgroundColor: '#0896B0', borderRadius: 20, paddingBottom: 12, paddingTop: 12,}}
+                style={{ backgroundColor: '#0896B0', borderRadius: 20, paddingBottom: 12, paddingTop: 12, }}
                 onPress={handleCreateAccount}
             >
                 <Text style={{ fontSize: 16, color: '#fff' }}>Criar uma conta</Text>
