@@ -40,7 +40,7 @@ export default function Initial() {
                 fontSize={fontSizes.md}
                 fontFamily={fonts.body}
                 height={12}
-                onPress={() => navigation.navigate("Home" as never)}
+                onPress={() => navigation.navigate("Register" as never)}
             />
         </VStack>
     );

@@ -1,83 +1,84 @@
-import { VStack, Box, Image, FormControl, Input, Button, Text, Link } from "native-base";
+import { VStack, Box, Image, FormControl, Input, Button, Text, Link, useTheme } from "native-base";
 import Logo from "../assets/logo.png";
-import React from "react";
+import React, { useState } from "react";
 import { Alert } from "react-native";
-import { ConsumerAPI } from "../api/ConsumerWS";
+import { AccessService } from "../api/access/accessService";
+import PasswordInput from "../components/form/PasswordInput";
+import { useNavigation } from "@react-navigation/native";
 
-const { signIn } = ConsumerAPI;
+export default function Login() {
+    const [userName, setUserName] = useState('');
+    const [password, setPassword] = useState('');
+    const { colors, fontSizes } = useTheme();
+    const navigation = useNavigation();
 
-interface NavigationType {
-    navigate: (route: string) => void;
-}
-
-export default function Login({ navigation }: { navigation: NavigationType }) {
-
-    const [userName, setUserName] = React.useState('');
-    const [password, setPassword] = React.useState('');
-
-    const handleCreateAccount = () => {
-
+    const handleSignIn = async () => {
+        try {
+            const token = await AccessService.login({ data: { userName, password } });
+            console.log("Login realizado com sucesso. Token:", token);
+            navigation.navigate("Home" as never);
+        } catch (error: any) {
+            console.log("Erro ao logar", error);
+            Alert.alert("Erro ao logar", error.message);
+        }
     };
 
-    const handleSignIn = () => {
-        signIn(userName, password)
-            .then((token) => {
-                console.log('Login realizado com sucesso. Token:', token);
-                navigation.navigate('Home');
-            })
-            .catch((error) => {
-                console.log('Erro ao logar', error);
-                Alert.alert('Erro ao logar', error.message);
-            });
-    }
+    const handleBack = () => navigation.navigate("Inicial" as never);
 
     return (
-        <VStack flex={1} alignItems="center" justifyContent="center" p={5}>
-            <Image source={Logo} alt="Logo" width={198} height={210} />
-            <Box>
-                <FormControl mt="4" mb="4">
+        <VStack flex={1} alignItems="center" justifyContent="center" p={5} bg="white">
+            <Image source={Logo} alt="Logo" width={150} height={150} resizeMode="contain" />
+            <Text mt={2} fontSize={fontSizes.lg} fontFamily="Montserrat">GoPlay</Text>
+
+            <Box w="100%" alignItems="center" mt={8}>
+                <FormControl w="100%" mb={4}>
                     <Input
-                        mx="3"
-                        placeholder="Digite seu User Name"
-                        w="80%"
+                        placeholder="Nome de Usuário"
                         variant="rounded"
-                        textAlign="center"
-                        fontSize="18"
-                        onChangeText={(text) => setUserName(text)}
+                        fontSize={fontSizes.md}
+                        bg={colors.gray[300]}
+                        onChangeText={setUserName}
                     />
                 </FormControl>
-                <FormControl>
-                    <Input
-                        type="password"
-                        mx="3"
-                        placeholder="Digite sua senha"
-                        w="80%"
+
+                <FormControl w="100%">
+                    <PasswordInput
+                        placeholder="Senha *"
+                        value={password}
+                        onChangeText={setPassword}
+                        fontSize={fontSizes.md}
                         variant="rounded"
-                        textAlign="center"
-                        fontSize="18"
-                        onChangeText={(text) => setPassword(text)}
+                        bg={colors.gray[300]}
                     />
                 </FormControl>
+
+                <Link mt={4} _text={{ color: colors.black, textDecoration: 'underline', fontFamily: 'Montserrat' }}>
+                    Esqueci minha senha
+                </Link>
+
+                <Button
+                    mt={6}
+                    w="100%"
+                    borderRadius={20}
+                    py={3}
+                    bg={colors.blue[500]}
+                    _pressed={{ opacity: 0.8 }}
+                    onPress={handleSignIn}
+                >
+                    <Text fontSize={fontSizes.md} color={colors.white} fontFamily="Montserrat">
+                        Entrar no GoPlay
+                    </Text>
+                </Button>
+
+                <Button
+                    mt={4}
+                    variant="ghost"
+                    _text={{ color: colors.black, fontFamily: "Montserrat", textDecorationLine: "underline" }}
+                    onPress={handleBack}
+                >
+                    Voltar
+                </Button>
             </Box>
-            <Link href='https://docs.nativebase.io/link' mt={4}>
-                Esqueci minha senha
-            </Link>
-            <Button
-                mt="6"
-                w="80%"
-                variant="solid"
-                style={{ backgroundColor: '#053C72', borderRadius: 20, paddingBottom: 12, paddingTop: 12 }}
-                onPress={handleSignIn}
-            >
-                <Text style={{ fontSize: 16, color: '#fff' }}>Acessar minha conta</Text>
-            </Button>
-            <Button
-                mt="6" w="80%" variant="solid"
-                style={{ backgroundColor: '#0896B0', borderRadius: 20, paddingBottom: 12, paddingTop: 12, }}
-                onPress={handleCreateAccount}
-            >
-                <Text style={{ fontSize: 16, color: '#fff' }}>Criar uma conta</Text>
-            </Button>
         </VStack>
     );
 }
