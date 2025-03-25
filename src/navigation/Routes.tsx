@@ -1,24 +1,28 @@
+// src/navigation/Routes.tsx
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+import Initial from "../pages/Initial";
 import Login from "../pages/Login";
-import Inicial from "../pages/Inicial";
 import Home from "../pages/Home";
 
-const Tab = createNativeStackNavigator();
+export type RootStackParamList = {
+    Inicial: undefined;
+    Login: undefined;
+    Home: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Routes() {
     return (
         <NavigationContainer>
-            <Tab.Navigator>
-                <Tab.Screen name="Inicial" component={Inicial}
-                    options={{ headerShown: false }} />
-                <Tab.Screen name="Login" component={Login}
-                    options={{ headerShown: false }} />
-                <Tab.Screen name="Home" component={Home}
-                    options={{ headerShown: false }} />
-            </Tab.Navigator>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="Inicial" component={Initial} />
+                <Stack.Screen name="Login" component={Login} />
+                <Stack.Screen name="Home" component={Home} />
+            </Stack.Navigator>
         </NavigationContainer>
-    )
+    );
 }
-
