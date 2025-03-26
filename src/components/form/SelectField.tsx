@@ -1,4 +1,3 @@
-// components/form/SelectField.tsx
 import React from "react";
 import { FormControl, Select, CheckIcon, ISelectProps } from "native-base";
 
@@ -7,7 +6,6 @@ interface SelectFieldProps extends ISelectProps {
     options: { label: string; value: string }[];
     value: string;
     onChange: (value: string) => void;
-    isDisabled?: boolean;
 }
 
 export default function SelectField({
@@ -15,7 +13,6 @@ export default function SelectField({
     options,
     value,
     onChange,
-    isDisabled,
     ...rest
 }: SelectFieldProps) {
     return (
@@ -24,9 +21,12 @@ export default function SelectField({
             <Select
                 selectedValue={value}
                 onValueChange={onChange}
+                placeholder="Selecione uma opção"
                 minWidth="100%"
-                isDisabled={isDisabled}
-                _selectedItem={{ bg: "gray.100", endIcon: <CheckIcon size="5" /> }}
+                _selectedItem={{
+                    bg: "gray.100",
+                    endIcon: <CheckIcon size="5" />,
+                }}
                 {...rest}
             >
                 {options.map((opt) => (

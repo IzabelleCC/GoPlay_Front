@@ -34,11 +34,11 @@ export default function Register() {
         confirmPassword: "",
         instagramPage: "",
         tShirtSize: "",
-        userType: 0, // nenhum selecionado inicialmente
+        userType: 0,
     });
 
     const handleInput = (key: string, value: any) => {
-        setForm({ ...form, [key]: value });
+        setForm((prev) => ({ ...prev, [key]: value }));
     };
 
     const handleSubmit = async () => {
@@ -56,7 +56,6 @@ export default function Register() {
 
         try {
             const response = await UserService.createUser(payload);
-
             if (response.success) {
                 navigation.navigate("Home");
             }
@@ -151,8 +150,13 @@ export default function Register() {
                         accessibilityLabel="Tipo de usuário"
                         value={form.userType !== 0 ? [form.userType.toString()] : []}
                         onChange={(values) => {
-                            const selected = values[0];
-                            handleInput("userType", selected === "1" ? 1 : selected === "2" ? 2 : 0);
+                            if (values.length > 0) {
+                                const selected = values[0];
+                                setForm((prev) => ({
+                                    ...prev,
+                                    userType: selected === "1" ? 1 : 2,
+                                }));
+                            }
                         }}
                     >
                         <Checkbox value="1" my={1}>Jogador</Checkbox>
