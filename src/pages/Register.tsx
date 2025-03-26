@@ -56,6 +56,7 @@ export default function Register() {
 
         try {
             const response = await UserService.createUser(payload);
+            console.log("response", response);
             if (response.success) {
                 navigation.navigate("Home");
             }

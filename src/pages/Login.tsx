@@ -159,15 +159,25 @@ export default function Login() {
                     onClose={() => setShowModal(false)}
                     title="Redefinição de senha"
                     body={
-                        <FormControl>
-                            <FormControl.Label>Informe seu e-mail</FormControl.Label>
-                            <Input
-                                value={email}
-                                onChangeText={setEmail}
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                            />
-                        </FormControl>
+                        <VStack space={3} px={2} py={2}>
+                            <Text textAlign="center" fontSize="md" color={colors.gray[600]}>
+                                Informe o e-mail associado à sua conta para enviarmos um link de redefinição.
+                            </Text>
+
+                            <FormControl isRequired>
+                                <FormControl.Label>E-mail</FormControl.Label>
+                                <Input
+                                    placeholder="exemplo@email.com"
+                                    value={email}
+                                    onChangeText={setEmail}
+                                    keyboardType="email-address"
+                                    autoCapitalize="none"
+                                    bg={colors.gray[200]}
+                                    borderRadius={10}
+                                    fontSize="md"
+                                />
+                            </FormControl>
+                        </VStack>
                     }
                     onConfirm={handleResetPassword}
                     confirmText={loading ? "Enviando..." : "Enviar"}
