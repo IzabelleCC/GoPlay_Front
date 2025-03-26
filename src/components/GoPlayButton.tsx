@@ -1,29 +1,41 @@
-import { Button, Text, IButtonProps } from "native-base";
+import { Button, Text } from "native-base";
 
-interface GoPlayButtonProps extends IButtonProps {
+interface GoPlayButtonProps {
     text: string;
     bgColor: string;
-    textColor?: string;
-    fontSize?: number;
+    textColor: string;
+    fontSize: number;
+    fontFamily: string;
+    height?: number;
+    onPress: () => void;
 }
 
 export function GoPlayButton({
     text,
     bgColor,
-    textColor = "#fff",
-    fontSize = 16,
-    ...rest
+    textColor,
+    fontSize,
+    fontFamily,
+    height = 12,
+    onPress,
 }: GoPlayButtonProps) {
     return (
         <Button
-            w="80%"
-            borderRadius={20}
-            py={3}
+            w="100%"
+            h={height}
             bg={bgColor}
+            justifyContent="center"
+            alignItems="center"
+            borderRadius={20}
             _pressed={{ opacity: 0.8 }}
-            {...rest}
+            onPress={onPress}
         >
-            <Text fontSize={fontSize} color={textColor} fontWeight="bold">
+            <Text
+                color={textColor}
+                fontSize={fontSize}
+                fontFamily={fontFamily}
+                textAlign="center"
+            >
                 {text}
             </Text>
         </Button>

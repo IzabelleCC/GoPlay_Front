@@ -1,4 +1,4 @@
-import { VStack, Image, Button, Text, Box, Input } from "native-base";
+import { VStack, Image, Button, Text, Box, Input, useTheme } from "native-base";
 import Logo from "../assets/logo.png";
 
 interface NavigationType {
@@ -6,30 +6,66 @@ interface NavigationType {
 }
 
 export default function Home({ navigation }: { navigation: NavigationType }) {
+    const { colors, fontSizes } = useTheme();
+
     return (
-        <VStack flex={1} alignItems="center" justifyContent="center" p={5}>
-            <Image source={Logo} alt="Logo" width={99} height={105} />
-            <Input
-                mt="4"
-                placeholder="Busca"
-                w="80%"
-                variant="rounded"
-                textAlign="center"
-                fontSize="18"
+        <VStack
+            flex={1}
+            bg={colors.white}
+            p={5}
+            alignItems="center"
+            justifyContent="flex-start"
+            space={6}
+        >
+            <Image
+                source={Logo}
+                alt="Logo"
+                width={150}
+                height={150}
+                resizeMode="contain"
+                mt={8}
             />
-            <Box alignItems="center"
-                mt="10" mb="4" width='90%' height='60%'
-                style={{ backgroundColor: '#D9D9D9', borderRadius: 8 }}>
-                <Text style={{ fontSize: 20, color: '#000000', alignItems: "center", paddingTop: 12 }}>Meus torneios</Text>
-            </Box>
-            <Button
-                mt="10" w="80%" variant="solid"
-                style={{ backgroundColor: '#053C72', borderRadius: 20, paddingBottom: 12, paddingTop: 12 }}
-                onPress={() => navigation.navigate('Inicial')}
+
+            <Input
+                placeholder="Buscar torneios"
+                variant="rounded"
+                fontSize={fontSizes.md}
+                textAlign="center"
+                bg={colors.gray[300]}
+                w="90%"
+                borderRadius={20}
+            />
+
+            <Box
+                w="100%"
+                bg="gray.200"
+                p={4}
+                borderRadius={12}
+                mt={4}
+                shadow={1}
+                alignItems="center"
             >
-                <Text style={{ fontSize: 18, color: '#fff' }}>SAIR</Text>
+                <Text fontSize={fontSizes.lg} fontWeight="bold" mb={2}>
+                    Meus Torneios
+                </Text>
+                <Text fontSize={fontSizes.sm} color="gray.600">
+                    Nenhum torneio disponível no momento.
+                </Text>
+            </Box>
+
+            <Button
+                mt="auto"
+                w="90%"
+                borderRadius={20}
+                py={3}
+                bg={colors.blue[500]}
+                _pressed={{ opacity: 0.8 }}
+                onPress={() => navigation.navigate("Inicial")}
+            >
+                <Text fontSize={fontSizes.md} color={colors.white} fontFamily="Montserrat">
+                    Sair
+                </Text>
             </Button>
         </VStack>
     );
 }
-

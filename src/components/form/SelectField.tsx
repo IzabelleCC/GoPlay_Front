@@ -8,7 +8,13 @@ interface SelectFieldProps extends ISelectProps {
     onChange: (value: string) => void;
 }
 
-export default function SelectField({ label, options, value, onChange, ...rest }: SelectFieldProps) {
+export default function SelectField({
+    label,
+    options,
+    value,
+    onChange,
+    ...rest
+}: SelectFieldProps) {
     return (
         <FormControl w="100%">
             <FormControl.Label>{label}</FormControl.Label>

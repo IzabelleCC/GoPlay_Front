@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, Alert } from "react-native";
 import {
     VStack,
     Text,
@@ -34,7 +34,7 @@ export default function Register() {
         confirmPassword: "",
         instagramPage: "",
         tShirtSize: "",
-        userType: 1,
+        userType: 0, // nenhum selecionado inicialmente
     });
 
     const handleInput = (key: string, value: any) => {
@@ -42,16 +42,21 @@ export default function Register() {
     };
 
     const handleSubmit = async () => {
+        if (form.userType === 0) {
+            Alert.alert("Erro", "Por favor, selecione um tipo de perfil.");
+            return;
+        }
+
         const payload = {
             data: {
                 ...form,
                 birthDate: form.birthDate.toISOString().split("T")[0],
             },
         };
-    
+
         try {
             const response = await UserService.createUser(payload);
-    
+
             if (response.success) {
                 navigation.navigate("Home");
             }
@@ -144,10 +149,10 @@ export default function Register() {
                     <Text mt={2}>Selecione seu perfil</Text>
                     <Checkbox.Group
                         accessibilityLabel="Tipo de usuário"
-                        value={[form.userType.toString()]}
+                        value={form.userType !== 0 ? [form.userType.toString()] : []}
                         onChange={(values) => {
                             const selected = values[0];
-                            handleInput("userType", selected === "1" ? 1 : 2);
+                            handleInput("userType", selected === "1" ? 1 : selected === "2" ? 2 : 0);
                         }}
                     >
                         <Checkbox value="1" my={1}>Jogador</Checkbox>
