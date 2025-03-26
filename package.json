@@ -18,7 +18,7 @@
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",
     "eas-cli": "^16.0.1",
-    "expo": "~52.0.38",
+    "expo": "~52.0.41",
     "expo-font": "~13.0.4",
     "goplay": "file:",
     "lucide-react-native": "^0.483.0",

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "goPlay",
+    "name": "goPlay-app",
     "slug": "goPlay",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -30,15 +30,10 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "experimental": {
-      "newArchEnabled": true
-    },
     "extra": {
       "eas": {
         "projectId": "3f1cf3f0-f159-484e-b0e7-4ea6cbc2e7a0"
       }
-    },
-    "scheme": "goplay",
-    "deepLinks": ["goplay://"]
+    }
   }
 }
