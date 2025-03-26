@@ -3,25 +3,27 @@ import {
     CreateUserPayload,
     UpdateUserPayload,
     ResetPasswordPayload,
+    PasswordResetLinkPayload,
 } from './userTypes';
 
 const headers = { 'Content-Type': 'application/json' };
 
 export const UserService = {
+
     async createUser(payload: CreateUserPayload) {
         const response = await fetch(Endpoints.UserManager.Base, {
             method: 'POST',
             headers,
             body: JSON.stringify(payload),
         });
-
+    
         if (!response.ok) {
             const error = await response.text();
             console.error('Erro ao criar usuário:', error);
             throw new Error('Erro ao criar usuário');
         }
 
-        return response.json();
+        return { success: true };
     },
 
     async updateUser(payload: UpdateUserPayload) {
@@ -81,6 +83,22 @@ export const UserService = {
             const error = await response.text();
             console.error('Erro ao confirmar e-mail:', error);
             throw new Error('Erro ao confirmar e-mail');
+        }
+
+        return response.text();
+    },
+
+    async passwordResetLink(payload: PasswordResetLinkPayload) {
+        const response = await fetch(Endpoints.UserManager.PasswordResetLink, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(payload), // payload já deve estar no formato { data: { email } }
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            console.error('Erro ao enviar link de redefinição de senha:', error);
+            throw new Error('Erro ao enviar link de redefinição de senha');
         }
 
         return response.text();

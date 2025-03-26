@@ -1,3 +1,4 @@
+// App.tsx
 import { NativeBaseProvider, StatusBar } from 'native-base';
 import { THEMES } from './src/styles/theme';
 import Routes from './src/navigation/Routes';
@@ -7,7 +8,8 @@ import {
   Montserrat_400Regular,
   Montserrat_700Bold
 } from '@expo-google-fonts/montserrat';
-import { Text, View } from 'react-native';
+
+import { Text, View, Platform, SafeAreaView } from 'react-native';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -25,8 +27,13 @@ export default function App() {
 
   return (
     <NativeBaseProvider theme={THEMES}>
-      <StatusBar backgroundColor={THEMES.colors.blue[800]} />
-      <Routes />
+      <SafeAreaView style={{ flex: 1 }}>
+        <StatusBar
+          backgroundColor={THEMES.colors.blue[800]}
+          barStyle={Platform.OS === 'ios' ? 'light-content' : 'default'}
+        />
+        <Routes />
+      </SafeAreaView>
     </NativeBaseProvider>
   );
 }

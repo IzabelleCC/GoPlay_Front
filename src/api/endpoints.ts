@@ -10,6 +10,7 @@ export const Endpoints = {
         GetByUserName: `${API_BASE}/UserManager/GetByUserName`,
         Delete: `${API_BASE}/UserManager`,
         EmailConfirmation: `${API_BASE}/UserManager/emailConfirmation`,
+        PasswordResetLink: `${API_BASE}/UserManager/SendPasswordResetLink`,
         ResetPassword: `${API_BASE}/UserManager/ResetPassword`,
     }
 };

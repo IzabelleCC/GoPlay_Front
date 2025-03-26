@@ -12,48 +12,51 @@ interface Props {
 
 export default function DatePicker({ date, onChange }: Props) {
     const [showModal, setShowModal] = useState(false);
-    const [showCalendar, setShowCalendar] = useState(false); // Android
+    const [showPicker, setShowPicker] = useState(false); // Android
     const [tempDate, setTempDate] = useState(date);
 
     const formattedDate = tempDate.toLocaleDateString('pt-BR');
 
-    const handleConfirm = () => {
-        onChange(tempDate);
-        setShowModal(false);
-    };
-
-    const handleOpen = () => {
+    const openDatePicker = () => {
         if (Platform.OS === 'android') {
-            setShowCalendar(true);
+            setShowPicker(true);
         } else {
             setShowModal(true);
         }
+    };
+
+    const confirmIOSDate = () => {
+        onChange(tempDate);
+        setShowModal(false);
     };
 
     return (
         <>
             <FormControl w="100%">
                 <FormControl.Label>Data de Nascimento</FormControl.Label>
-                <TouchableOpacity onPress={handleOpen}>
+                <TouchableOpacity onPress={openDatePicker}>
                     <Input
                         isReadOnly
                         value={formattedDate}
                         placeholder="Selecionar data"
+                        bg="gray.200"
                         InputRightElement={
-                            <Icon as={CalendarIcon} size={5} mr="2" color="gray.400" />
+                            <TouchableOpacity onPress={openDatePicker}>
+                                <Icon as={CalendarIcon} size={5} mr="2" color="gray.400" />
+                            </TouchableOpacity>
                         }
                     />
                 </TouchableOpacity>
             </FormControl>
 
-            {/* Android Date Picker */}
-            {Platform.OS === 'android' && showCalendar && (
+            {/* Android Picker */}
+            {Platform.OS === 'android' && showPicker && (
                 <DateTimePicker
                     value={tempDate}
                     mode="date"
-                    display="calendar"
+                    display="default"
                     onChange={(event, selectedDate) => {
-                        setShowCalendar(false);
+                        setShowPicker(false);
                         if (selectedDate) {
                             setTempDate(selectedDate);
                             onChange(selectedDate);
@@ -62,26 +65,30 @@ export default function DatePicker({ date, onChange }: Props) {
                 />
             )}
 
-            {/* iOS Modal Date Picker */}
-            <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
-                <Modal.Content>
-                    <Modal.CloseButton />
-                    <Modal.Header>Selecione a data</Modal.Header>
-                    <Modal.Body>
-                        <DateTimePicker
-                            value={tempDate}
-                            mode="date"
-                            display="spinner"
-                            onChange={(event, selectedDate) => {
-                                if (selectedDate) setTempDate(selectedDate);
-                            }}
-                        />
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button onPress={handleConfirm}>Confirmar</Button>
-                    </Modal.Footer>
-                </Modal.Content>
-            </Modal>
+            {/* iOS Modal Picker */}
+            {Platform.OS === 'ios' && (
+                <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+                    <Modal.Content>
+                        <Modal.CloseButton />
+                        <Modal.Header>Selecione a data</Modal.Header>
+                        <Modal.Body>
+                            <DateTimePicker
+                                value={tempDate}
+                                mode="date"
+                                display="spinner"
+                                onChange={(event, selectedDate) => {
+                                    if (selectedDate) {
+                                        setTempDate(selectedDate);
+                                    }
+                                }}
+                            />
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button onPress={confirmIOSDate}>Confirmar</Button>
+                        </Modal.Footer>
+                    </Modal.Content>
+                </Modal>
+            )}
         </>
     );
 }

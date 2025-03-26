@@ -35,3 +35,9 @@ export interface ResetPasswordPayload {
 export interface EmailConfirmationPayload {
     email: string;
 }
+
+export interface PasswordResetLinkPayload {
+    data: {
+        email: string
+    };
+}
