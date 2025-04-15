@@ -1,22 +1,12 @@
 import React, { useState } from "react";
 import {
-    Box,
-    Image,
-    FormControl,
-    Input,
-    Button,
-    Text,
-    Link,
-    useTheme,
-    VStack,
+    Box, Image, FormControl, Input, Button, Text, Link, useTheme, VStack
 } from "native-base";
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
+    Alert, KeyboardAvoidingView, Platform, ScrollView
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AccessService } from "../api/access/accessService";
 import { UserService } from "../api/user/userService";
 import PasswordInput from "../components/form/PasswordInput";
@@ -36,6 +26,7 @@ export default function Login() {
     const handleSignIn = async () => {
         try {
             const token = await AccessService.login({ data: { userName, password } });
+            await AsyncStorage.setItem("userName", userName);
             console.log("Login realizado com sucesso. Token:", token);
             navigation.navigate("Home" as never);
         } catch (error: any) {
@@ -65,35 +56,41 @@ export default function Login() {
 
     const handleBack = () => navigation.navigate("Inicial" as never);
 
+    const modalContent = (
+        <VStack space={3} px={2} py={2}>
+            <Text textAlign="center" fontSize="md" color={colors.gray[600]}>
+                Informe o e-mail associado à sua conta para enviarmos um link de redefinição.
+            </Text>
+            <FormControl isRequired>
+                <FormControl.Label>E-mail</FormControl.Label>
+                <Input
+                    placeholder="exemplo@email.com"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    bg={colors.gray[200]}
+                    borderRadius={10}
+                    fontSize="md"
+                />
+            </FormControl>
+        </VStack>
+    );
+
     return (
         <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={{ flex: 1 }}
         >
             <ScrollView
                 contentContainerStyle={{ flexGrow: 1, justifyContent: "center", padding: 20 }}
                 keyboardShouldPersistTaps="handled"
             >
-                <Image
-                    source={Logo}
-                    alt="Logo"
-                    width={150}
-                    height={150}
-                    resizeMode="contain"
-                    alignSelf="center"
-                />
-
-                <Text
-                    fontSize={fontSizes.lg}
-                    fontFamily="heading"
-                    mt={2}
-                    textAlign="center"
-                >
-                    GoPlay
-                </Text>
+                <Image source={Logo} alt="Logo" width={150} height={150} resizeMode="contain" alignSelf="center" />
+                <Text fontSize={fontSizes.lg} fontFamily="heading" mt={2} textAlign="center">GoPlay</Text>
 
                 <VStack space={4} mt={6}>
-                    <FormControl w="100%">
+                    <FormControl>
                         <FormControl.Label>Nome de Usuário</FormControl.Label>
                         <Input
                             value={userName}
@@ -103,7 +100,7 @@ export default function Login() {
                         />
                     </FormControl>
 
-                    <FormControl w="100%">
+                    <FormControl>
                         <FormControl.Label>Senha</FormControl.Label>
                         <PasswordInput
                             value={password}
@@ -116,11 +113,7 @@ export default function Login() {
                     <Link
                         mt={1}
                         alignSelf="flex-end"
-                        _text={{
-                            color: colors.black,
-                            textDecoration: "underline",
-                            fontFamily: "Montserrat",
-                        }}
+                        _text={{ color: colors.black, textDecoration: "underline", fontFamily: "Montserrat" }}
                         onPress={() => setShowModal(true)}
                     >
                         Esqueci minha senha
@@ -132,7 +125,6 @@ export default function Login() {
                         borderRadius={20}
                         py={3}
                         bg={colors.blue[500]}
-                        _pressed={{ opacity: 0.8 }}
                         onPress={handleSignIn}
                     >
                         <Text fontSize={fontSizes.md} color={colors.white} fontFamily="Montserrat">
@@ -143,11 +135,7 @@ export default function Login() {
                     <Button
                         mt={2}
                         variant="ghost"
-                        _text={{
-                            color: colors.black,
-                            fontFamily: "Montserrat",
-                            textDecorationLine: "underline",
-                        }}
+                        _text={{ color: colors.black, fontFamily: "Montserrat", textDecorationLine: "underline" }}
                         onPress={handleBack}
                     >
                         Voltar
@@ -158,29 +146,10 @@ export default function Login() {
                     isOpen={showModal}
                     onClose={() => setShowModal(false)}
                     title="Redefinição de senha"
-                    body={
-                        <VStack space={3} px={2} py={2}>
-                            <Text textAlign="center" fontSize="md" color={colors.gray[600]}>
-                                Informe o e-mail associado à sua conta para enviarmos um link de redefinição.
-                            </Text>
-
-                            <FormControl isRequired>
-                                <FormControl.Label>E-mail</FormControl.Label>
-                                <Input
-                                    placeholder="exemplo@email.com"
-                                    value={email}
-                                    onChangeText={setEmail}
-                                    keyboardType="email-address"
-                                    autoCapitalize="none"
-                                    bg={colors.gray[200]}
-                                    borderRadius={10}
-                                    fontSize="md"
-                                />
-                            </FormControl>
-                        </VStack>
-                    }
+                    body={modalContent}
                     onConfirm={handleResetPassword}
                     confirmText={loading ? "Enviando..." : "Enviar"}
+                    isLoading={loading}
                 />
             </ScrollView>
         </KeyboardAvoidingView>

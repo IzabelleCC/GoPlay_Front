@@ -7,12 +7,16 @@ import Initial from "../pages/Initial";
 import Login from "../pages/Login";
 import Home from "../pages/Home";
 import Register from "../pages/Register";
+import MyProfile from "../pages/MyProfile";
+import EditProfile from "../pages/EditProfile";
 
 export type RootStackParamList = {
     Inicial: undefined;
     Login: undefined;
     Home: undefined;
     Register: undefined;
+    MyProfile: undefined;
+    EditProfile: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -25,6 +29,8 @@ const linking = {
             Login: "login",
             Home: "home",
             Register: "register",
+            MyProfile: "myprofile",
+            EditProfile: "editprofile",
         },
     },
 };
@@ -37,6 +43,8 @@ export default function Routes() {
                 <Stack.Screen name="Login" component={Login} />
                 <Stack.Screen name="Home" component={Home} />
                 <Stack.Screen name="Register" component={Register} />
+                <Stack.Screen name="MyProfile" component={MyProfile} />
+                <Stack.Screen name="EditProfile" component={EditProfile} />
             </Stack.Navigator>
         </NavigationContainer>
     );
