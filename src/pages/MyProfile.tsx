@@ -1,8 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
-    VStack, Text, Box, Button, useTheme, AlertDialog
+    VStack,
+    Text,
+    Box,
+    Button,
+    useTheme,
+    AlertDialog,
+    ScrollView,
+    Divider
 } from "native-base";
-import { ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserService } from "../api/user/userService";
@@ -48,55 +54,100 @@ export default function MyProfile() {
     }, []);
 
     return (
-        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 20, backgroundColor: colors.white }}>
-            <VStack space={4}>
-                <Text fontSize={fontSizes.xl} fontWeight="bold" textAlign="center">Meus Dados</Text>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, backgroundColor: colors.white }}>
+            <VStack flex={1} px={5} pt={10} pb={8} justifyContent="space-between">
+                <VStack space={5}>
+                    <Text fontSize={fontSizes.xl} fontWeight="bold" textAlign="center">
+                        Meus Dados
+                    </Text>
 
-                {userData ? (
-                    <Box bg="gray.100" p={4} borderRadius={12}>
-                        <Text fontSize={fontSizes.md}><Text bold>Nome:</Text> {userData.name}</Text>
-                        <Text fontSize={fontSizes.md}><Text bold>Email:</Text> {userData.email}</Text>
-                        <Text fontSize={fontSizes.md}><Text bold>CPF/CNPJ:</Text> {userData.cpfCnpj}</Text>
-                        <Text fontSize={fontSizes.md}><Text bold>Gênero:</Text> {userData.gender}</Text>
-                        <Text fontSize={fontSizes.md}><Text bold>Instagram:</Text> {userData.instagramPage}</Text>
-                        <Text fontSize={fontSizes.md}><Text bold>Tam. Camiseta:</Text> {userData.tShirtSize}</Text>
-                    </Box>
-                ) : (
-                    <Text>Carregando dados...</Text>
-                )}
+                    {userData ? (
+                        <Box bg="gray.100" p={5} borderRadius={16} shadow={2}>
+                            <VStack space={3}>
+                                <ProfileField label="Nome" value={userData.name} />
+                                <ProfileField label="Email" value={userData.email} />
+                                <ProfileField label="CPF/CNPJ" value={userData.cpfCnpj} />
+                                <ProfileField label="Gênero" value={userData.gender} />
+                                <ProfileField label="Instagram" value={userData.instagramPage} />
+                                <ProfileField label="Tam. Camiseta" value={userData.tShirtSize} />
+                            </VStack>
+                        </Box>
+                    ) : (
+                        <Text textAlign="center" mt={4}>Carregando dados...</Text>
+                    )}
+                </VStack>
 
-                <Button bg={colors.blue[500]} borderRadius={20} mt={4} onPress={() => {
-                    console.log("clicou editar");
-                    navigation.navigate("EditProfile" as never)}}>
-                    <Text fontSize={fontSizes.md} color={colors.white}>Editar Dados</Text>
-                </Button>
+                <VStack space={3} mt={8}>
+                    <Button
+                        bg={colors.blue[500]}
+                        borderRadius={20}
+                        onPress={() => navigation.navigate("EditProfile" as never)}
+                    >
+                        <Text fontSize={fontSizes.md} color={colors.white} fontWeight="bold">
+                            Editar Dados
+                        </Text>
+                    </Button>
 
-                <Button bg="red.500" borderRadius={20} onPress={() => setShowModal(true)}>
-                    <Text fontSize={fontSizes.md} color="white">Excluir Conta</Text>
-                </Button>
+                    <Button
+                        bg="red.500"
+                        borderRadius={20}
+                        onPress={() => setShowModal(true)}
+                    >
+                        <Text fontSize={fontSizes.md} color="white" fontWeight="bold">
+                            Excluir Conta
+                        </Text>
+                    </Button>
 
-                <Button variant="outline" borderColor={colors.gray[400]} borderRadius={20} mt={2} onPress={handleLogout}>
-                    <Text fontSize={fontSizes.md} color={colors.black}>Sair</Text>
-                </Button>
+                    <Button
+                        variant="outline"
+                        borderColor={colors.gray[400]}
+                        borderRadius={20}
+                        onPress={handleLogout}
+                    >
+                        <Text fontSize={fontSizes.md} color={colors.black}>
+                            Sair
+                        </Text>
+                    </Button>
+                </VStack>
+
+                <AlertDialog
+                    leastDestructiveRef={cancelRef}
+                    isOpen={showModal}
+                    onClose={() => setShowModal(false)}
+                >
+                    <AlertDialog.Content>
+                        <AlertDialog.CloseButton />
+                        <AlertDialog.Header>Excluir Conta</AlertDialog.Header>
+                        <AlertDialog.Body>
+                            Tem certeza que deseja excluir sua conta? Esta ação não poderá ser desfeita.
+                        </AlertDialog.Body>
+                        <AlertDialog.Footer>
+                            <Button ref={cancelRef} onPress={() => setShowModal(false)}>
+                                Cancelar
+                            </Button>
+                            <Button colorScheme="danger" ml={3} onPress={handleDeleteAccount}>
+                                Confirmar
+                            </Button>
+                        </AlertDialog.Footer>
+                    </AlertDialog.Content>
+                </AlertDialog>
             </VStack>
-
-            <AlertDialog leastDestructiveRef={cancelRef} isOpen={showModal} onClose={() => setShowModal(false)}>
-                <AlertDialog.Content>
-                    <AlertDialog.CloseButton />
-                    <AlertDialog.Header>Excluir Conta</AlertDialog.Header>
-                    <AlertDialog.Body>
-                        Tem certeza que deseja excluir sua conta? Esta ação não poderá ser desfeita.
-                    </AlertDialog.Body>
-                    <AlertDialog.Footer>
-                        <Button ref={cancelRef} onPress={() => setShowModal(false)}>
-                            Cancelar
-                        </Button>
-                        <Button colorScheme="danger" ml={3} onPress={handleDeleteAccount}>
-                            Confirmar
-                        </Button>
-                    </AlertDialog.Footer>
-                </AlertDialog.Content>
-            </AlertDialog>
         </ScrollView>
+    );
+}
+
+function ProfileField({ label, value }: { label: string, value: string }) {
+    const { fontSizes } = useTheme();
+
+    return (
+        <Box>
+            <Text fontSize={fontSizes.sm} color="gray.500">
+                {label}
+            </Text>
+            <Text fontSize={fontSizes.md} fontWeight="medium">
+                {value || "—"}
+            </Text>
+            <Divider mt={2} />
+        </Box>
     );
 }

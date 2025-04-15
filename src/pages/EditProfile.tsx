@@ -7,14 +7,17 @@ import {
     Text,
     useTheme,
     ScrollView,
-    KeyboardAvoidingView
+    KeyboardAvoidingView,
+    Image
 } from "native-base";
 import { Platform, Alert } from "react-native";
-
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserService } from "../api/user/userService";
 import { UpdateUserPayload } from "../api/user/userTypes";
+import DatePicker from "../components/form/DatePicker";
+import SelectField from "../components/form/SelectField";
+import Logo from "../assets/logo.png";
 
 export default function EditProfile() {
     const { colors, fontSizes } = useTheme();
@@ -86,105 +89,115 @@ export default function EditProfile() {
             style={{ flex: 1 }}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-            <ScrollView contentContainerStyle={{ padding: 20 }}>
-                <Text fontSize={fontSizes.xl} fontWeight="bold" mb={4} textAlign="center">
-                    Editar Perfil
-                </Text>
+            <ScrollView
+                style={{ flex: 1, backgroundColor: colors.white }}
+                contentContainerStyle={{ paddingBottom: 30 }}
+                keyboardShouldPersistTaps="handled"
+            >
+                <VStack flex={1} p={5} space={5} alignItems="center">
+                    <Image source={Logo} alt="Logo" width={150} height={150} resizeMode="contain" mb={4} />
+                    <Text fontSize={fontSizes.xl} fontWeight="bold" textAlign="center">
+                        Editar Perfil
+                    </Text>
 
-                <VStack space={4}>
                     {/* Campos editáveis */}
-                    <FormControl>
-                        <FormControl.Label>Nome</FormControl.Label>
+                    <FormControl w="100%">
+                        <FormControl.Label>Nome Completo</FormControl.Label>
                         <Input
-                            value={userData.name}
-                            onChangeText={(value) => setUserData({ ...userData, name: value })}
+                            variant="filled"
                             bg={colors.gray[200]}
+                            value={userData.name}
+                            onChangeText={(v) => setUserData({ ...userData, name: v })}
                         />
                     </FormControl>
 
-                    <FormControl>
+                    <FormControl w="100%">
                         <FormControl.Label>Instagram</FormControl.Label>
                         <Input
+                            variant="filled"
+                            bg={colors.gray[200]}
                             value={userData.instagramPage}
-                            onChangeText={(value) => setUserData({ ...userData, instagramPage: value })}
-                            bg={colors.gray[200]}
+                            onChangeText={(v) => setUserData({ ...userData, instagramPage: v })}
                         />
+                        <Text fontSize="xs" color="gray.500" mt={1}>
+                            Esta informação fica pública no seu perfil do GoPlay
+                        </Text>
                     </FormControl>
 
-                    <FormControl>
-                        <FormControl.Label>Gênero</FormControl.Label>
-                        <Input
-                            value={userData.gender}
-                            onChangeText={(value) => setUserData({ ...userData, gender: value })}
-                            bg={colors.gray[200]}
-                        />
-                    </FormControl>
+                    <SelectField
+                        label="Gênero"
+                        value={userData.gender}
+                        onChange={(v) => setUserData({ ...userData, gender: v })}
+                        options={[
+                            { label: "Masculino", value: "masculino" },
+                            { label: "Feminino", value: "feminino" },
+                            { label: "Prefiro não informar", value: "" },
+                        ]}
+                    />
 
-                    <FormControl>
-                        <FormControl.Label>Data de Nascimento</FormControl.Label>
-                        <Input
-                            value={userData.birthDate}
-                            onChangeText={(value) => setUserData({ ...userData, birthDate: value })}
-                            placeholder="AAAA-MM-DD"
-                            bg={colors.gray[200]}
-                        />
-                    </FormControl>
+                    <DatePicker
+                        date={new Date(userData.birthDate)}
+                        onChange={(d) =>
+                            setUserData({ ...userData, birthDate: d.toISOString().split("T")[0] })
+                        }
+                    />
 
-                    <FormControl>
-                        <FormControl.Label>Tamanho da Camiseta</FormControl.Label>
-                        <Input
-                            value={userData.tShirtSize}
-                            onChangeText={(value) => setUserData({ ...userData, tShirtSize: value })}
-                            bg={colors.gray[200]}
-                        />
-                    </FormControl>
+                    <SelectField
+                        label="Tamanho Camiseta"
+                        value={userData.tShirtSize}
+                        onChange={(v) => setUserData({ ...userData, tShirtSize: v })}
+                        options={[
+                            { label: "Infantil - 6", value: "Infantil - 6" },
+                            { label: "Infantil - 8", value: "Infantil - 8" },
+                            { label: "Infantil - 10", value: "Infantil - 10" },
+                            { label: "Infantil - 12", value: "Infantil - 12" },
+                            { label: "Infantil - 14", value: "Infantil - 14" },
+                            { label: "PP", value: "PP" },
+                            { label: "P", value: "P" },
+                            { label: "M", value: "M" },
+                            { label: "G", value: "G" },
+                            { label: "GG", value: "GG" },
+                            { label: "XG", value: "XG" },
+                            { label: "XXG", value: "XXG" },
+                        ]}
+                    />
 
                     {/* Campos somente leitura */}
-                    <FormControl isDisabled>
+                    <FormControl w="100%" isDisabled>
                         <FormControl.Label>Usuário</FormControl.Label>
-                        <Input
-                            value={userData.userName}
-                            isDisabled
-                            bg={colors.gray[100]}
-                        />
+                        <Input variant="filled" bg={colors.gray[100]} value={userData.userName} isDisabled />
                     </FormControl>
 
-                    <FormControl isDisabled>
+                    <FormControl w="100%" isDisabled>
                         <FormControl.Label>Email</FormControl.Label>
-                        <Input
-                            value={readOnlyFields.email}
-                            isDisabled
-                            bg={colors.gray[100]}
-                        />
+                        <Input variant="filled" bg={colors.gray[100]} value={readOnlyFields.email} isDisabled />
                     </FormControl>
 
-                    <FormControl isDisabled>
+                    <FormControl w="100%" isDisabled>
                         <FormControl.Label>CPF/CNPJ</FormControl.Label>
-                        <Input
-                            value={readOnlyFields.cpfCnpj}
-                            isDisabled
-                            bg={colors.gray[100]}
-                        />
+                        <Input variant="filled" bg={colors.gray[100]} value={readOnlyFields.cpfCnpj} isDisabled />
                     </FormControl>
 
                     <Button
-                        mt={6}
-                        onPress={handleUpdate}
-                        isLoading={loading}
-                        borderRadius={20}
+                        mt={4}
+                        w="100%"
                         bg={colors.blue[500]}
+                        borderRadius={20}
+                        isLoading={loading}
+                        onPress={handleUpdate}
                     >
-                        <Text color="white" fontWeight="bold" fontSize="md">Salvar Alterações</Text>
+                        <Text fontSize={fontSizes.md} color={colors.white} fontWeight="bold">
+                            Salvar Alterações
+                        </Text>
                     </Button>
 
                     <Button
                         mt={4}
-                        variant="outline"
-                        borderColor={colors.gray[400]}
-                        borderRadius={20}
+                        variant="ghost"
+                        _text={{ color: colors.black, fontFamily: "Montserrat", textDecorationLine: "underline" }}
                         onPress={() => navigation.navigate("Home" as never)}
                     >
-                        <Text color={colors.black} fontSize="md">Voltar para Home</Text>
+                        Voltar
                     </Button>
                 </VStack>
             </ScrollView>
