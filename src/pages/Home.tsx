@@ -1,5 +1,8 @@
 import { VStack, Image, Button, Text, Box, Input, useTheme } from "native-base";
 import Logo from "../assets/logo.png";
+import { MaterialIcons } from '@expo/vector-icons';
+import { Pressable } from "react-native";
+
 
 interface NavigationType {
     navigate: (route: string) => void;
@@ -53,19 +56,16 @@ export default function Home({ navigation }: { navigation: NavigationType }) {
                 </Text>
             </Box>
 
-            <Button
-                mt="auto"
-                w="90%"
-                borderRadius={20}
-                py={3}
-                bg={colors.blue[500]}
-                _pressed={{ opacity: 0.8 }}
-                onPress={() => navigation.navigate("Inicial")}
+            <Pressable
+                style={{
+                    position: 'absolute',
+                    bottom: 20,
+                    right: 20,
+                }}
+                onPress={() => navigation.navigate("MyProfile")}
             >
-                <Text fontSize={fontSizes.md} color={colors.white} fontFamily="Montserrat">
-                    Sair
-                </Text>
-            </Button>
+                <MaterialIcons name="person" size={32} color={colors.black} />
+            </Pressable>
         </VStack>
     );
 }

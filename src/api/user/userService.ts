@@ -89,7 +89,7 @@ export const UserService = {
     },
 
     async passwordResetLink(payload: PasswordResetLinkPayload) {
-        const response = await fetch(Endpoints.UserManager.PasswordResetLink, {
+        const response = await fetch(Endpoints.AccessManager.PasswordResetLink, {
             method: 'POST',
             headers,
             body: JSON.stringify(payload), // payload já deve estar no formato { data: { email } }
@@ -105,7 +105,7 @@ export const UserService = {
     },
 
     async resetPassword(token: string, payload: ResetPasswordPayload) {
-        const url = `${Endpoints.UserManager.ResetPassword}?token=${encodeURIComponent(token)}`;
+        const url = `${Endpoints.AccessManager.ResetPassword}?token=${encodeURIComponent(token)}`;
         const response = await fetch(url, {
             method: 'POST',
             headers,

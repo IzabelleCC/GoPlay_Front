@@ -17,6 +17,7 @@ export interface CreateUserPayload {
 export interface UpdateUserPayload {
     data: {
         id: string;
+        userName: string;
         name: string;
         instagramPage: string;
         gender: string;
@@ -27,7 +28,6 @@ export interface UpdateUserPayload {
 
 export interface ResetPasswordPayload {
     data: {
-        email: string;
         password: string;
     };
 }
@@ -41,3 +41,4 @@ export interface PasswordResetLinkPayload {
         email: string
     };
 }
+
