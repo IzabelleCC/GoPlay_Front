@@ -1,9 +1,19 @@
 import React, { useState } from "react";
 import {
-    Box, Image, FormControl, Input, Button, Text, Link, useTheme, VStack
+    Box,
+    Image,
+    FormControl,
+    Input,
+    Button,
+    Text,
+    Link,
+    useTheme,
+    VStack
 } from "native-base";
 import {
-    Alert, KeyboardAvoidingView, Platform, ScrollView
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -17,7 +27,9 @@ export default function Login() {
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
-    const [showModal, setShowModal] = useState(false);
+    const [showResetModal, setShowResetModal] = useState(false);
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
 
     const { colors, fontSizes } = useTheme();
@@ -27,41 +39,62 @@ export default function Login() {
         try {
             const token = await AccessService.login({ data: { userName, password } });
             await AsyncStorage.setItem("userName", userName);
-            console.log("Login realizado com sucesso. Token:", token);
+            setUserName("");
+            setPassword("");
             navigation.navigate("Home" as never);
         } catch (error: any) {
-            console.log("Erro ao logar", error);
-            Alert.alert("Erro ao logar", error.message);
+            handleBackendError(error, "Erro ao realizar login.");
         }
     };
 
     const handleResetPassword = async () => {
         if (!email) {
-            Alert.alert("Erro", "Informe um e-mail válido");
+            setErrorMessage("Informe um e-mail válido.");
+            setShowErrorModal(true);
             return;
         }
 
         try {
             setLoading(true);
             await UserService.passwordResetLink({ data: { email } });
-            Alert.alert("Sucesso", "Link de redefinição enviado para seu e-mail.");
-            setShowModal(false);
+            setShowResetModal(false);
             setEmail("");
         } catch (error: any) {
-            Alert.alert("Erro", error.message || "Falha ao enviar e-mail de redefinição.");
+            handleBackendError(error, "Falha ao enviar e-mail de redefinição.");
         } finally {
             setLoading(false);
         }
     };
 
+    const handleBackendError = (error: any, fallback: string) => {
+        let message = fallback;
+        const responseData = error?.response?.data;
+
+        if (responseData) {
+            if (typeof responseData.error === "string") {
+                message = responseData.error;
+            } else if (typeof responseData.message === "string") {
+                message = responseData.message;
+            } else if (typeof responseData === "string") {
+                message = responseData;
+            }
+        } else if (error?.message) {
+            message = error.message;
+        }
+
+        setErrorMessage(message);
+        setShowErrorModal(true);
+    };
+
     const handleBack = () => navigation.navigate("Inicial" as never);
 
-    const modalContent = (
-        <VStack space={3} px={2} py={2}>
+    const resetModalContent = (
+        <VStack space={3} px={2} py={2} width="100%">
             <Text textAlign="center" fontSize="md" color={colors.gray[600]}>
                 Informe o e-mail associado à sua conta para enviarmos um link de redefinição.
             </Text>
-            <FormControl isRequired>
+
+            <FormControl isRequired w="100%">
                 <FormControl.Label>E-mail</FormControl.Label>
                 <Input
                     placeholder="exemplo@email.com"
@@ -72,6 +105,7 @@ export default function Login() {
                     bg={colors.gray[200]}
                     borderRadius={10}
                     fontSize="md"
+                    w="100%"
                 />
             </FormControl>
         </VStack>
@@ -114,7 +148,7 @@ export default function Login() {
                         mt={1}
                         alignSelf="flex-end"
                         _text={{ color: colors.black, textDecoration: "underline", fontFamily: "Montserrat" }}
-                        onPress={() => setShowModal(true)}
+                        onPress={() => setShowResetModal(true)}
                     >
                         Esqueci minha senha
                     </Link>
@@ -142,14 +176,29 @@ export default function Login() {
                     </Button>
                 </VStack>
 
+                {/* Modal para redefinição de senha */}
                 <GenericModal
-                    isOpen={showModal}
-                    onClose={() => setShowModal(false)}
+                    isOpen={showResetModal}
+                    onClose={() => setShowResetModal(false)}
                     title="Redefinição de senha"
-                    body={modalContent}
+                    body={resetModalContent}
                     onConfirm={handleResetPassword}
                     confirmText={loading ? "Enviando..." : "Enviar"}
                     isLoading={loading}
+                    type="info"
+                    variant="reset-password"
+                />
+
+                {/* Modal para erro */}
+                <GenericModal
+                    isOpen={showErrorModal}
+                    onClose={() => setShowErrorModal(false)}
+                    title="Atenção"
+                    body={<Text textAlign="center" color="gray.700">{errorMessage}</Text>}
+                    onConfirm={() => setShowErrorModal(false)}
+                    confirmText="Fechar"
+                    type="error"
+                    variant="error"
                 />
             </ScrollView>
         </KeyboardAvoidingView>

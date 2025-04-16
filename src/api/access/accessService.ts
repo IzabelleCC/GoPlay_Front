@@ -1,37 +1,31 @@
-import { Endpoints } from '../endpoints';
-import { LoginPayload } from './accessTypes';
-
-const headers = { 'Content-Type': 'application/json' };
+import axios from "axios";
+import { Endpoints } from "../endpoints";
+import { LoginPayload } from "./accessTypes";
 
 export const AccessService = {
     async login(payload: LoginPayload) {
-        const response = await fetch(Endpoints.AccessManager.Login, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(payload),
-        });
+        try {
+            const response = await axios.post(Endpoints.AccessManager.Login, payload, {
+                headers: { 'Content-Type': 'application/json' },
+            });
 
-        if (!response.ok) {
-            const error = await response.text();
-            console.error("Erro ao logar:", error);
-            throw new Error('Erro ao logar');
+            return response.data; // Token
+        } catch (error: any) {
+            console.error("Erro ao logar:", error?.response?.data || error.message);
+            throw error;
         }
-
-        return response.text(); // Token
     },
 
     async logout() {
-        const response = await fetch(Endpoints.AccessManager.Logout, {
-            method: 'POST',
-            headers,
-        });
+        try {
+            const response = await axios.post(Endpoints.AccessManager.Logout, {}, {
+                headers: { 'Content-Type': 'application/json' },
+            });
 
-        if (!response.ok) {
-            const error = await response.text();
-            console.error("Erro ao deslogar:", error);
-            throw new Error('Erro ao deslogar');
+            return response.data;
+        } catch (error: any) {
+            console.error("Erro ao deslogar:", error?.response?.data || error.message);
+            throw error;
         }
-
-        return response.text();
     }
 };

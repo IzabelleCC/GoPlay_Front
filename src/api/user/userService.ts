@@ -1,123 +1,83 @@
-import { Endpoints } from '../endpoints';
+import axios from "axios";
+import { Endpoints } from "../endpoints";
 import {
     CreateUserPayload,
     UpdateUserPayload,
     ResetPasswordPayload,
     PasswordResetLinkPayload,
-} from './userTypes';
-
-const headers = { 'Content-Type': 'application/json' };
+} from "./userTypes";
 
 export const UserService = {
-
     async createUser(payload: CreateUserPayload) {
-        const response = await fetch(Endpoints.UserManager.Base, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(payload),
-        });
-    
-        if (!response.ok) {
-            const error = await response.text();
-            console.error('Erro ao criar usuário:', error);
-            throw new Error('Erro ao criar usuário');
+        try {
+            await axios.post(Endpoints.UserManager.Base, payload);
+            return { success: true };
+        } catch (error: any) {
+            console.error("Erro ao criar usuário:", error);
+            throw error;
         }
-
-        return { success: true };
     },
 
     async updateUser(payload: UpdateUserPayload) {
-        const response = await fetch(Endpoints.UserManager.Base, {
-            method: 'PUT',
-            headers,
-            body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-            const error = await response.text();
-            console.error('Erro ao atualizar usuário:', error);
-            throw new Error('Erro ao atualizar usuário');
+        try {
+            const response = await axios.put(Endpoints.UserManager.Base, payload);
+            return response.data;
+        } catch (error: any) {
+            console.error("Erro ao atualizar usuário:", error);
+            throw error;
         }
-
-        return response.json();
     },
 
     async getUserByUserName(userName: string) {
-        const response = await fetch(`${Endpoints.UserManager.GetByUserName}/${userName}`, {
-            method: 'GET',
-            headers,
-        });
-
-        if (!response.ok) {
-            const error = await response.text();
-            console.error('Erro ao buscar usuário:', error);
-            throw new Error('Erro ao buscar usuário');
+        try {
+            const response = await axios.get(`${Endpoints.UserManager.GetByUserName}/${userName}`);
+            return response.data;
+        } catch (error: any) {
+            console.error("Erro ao buscar usuário:", error);
+            throw error;
         }
-
-        return response.json();
     },
 
     async deleteUser(userName: string) {
-        const response = await fetch(`${Endpoints.UserManager.Delete}/${userName}`, {
-            method: 'DELETE',
-            headers,
-        });
-
-        if (!response.ok) {
-            const error = await response.text();
-            console.error('Erro ao deletar usuário:', error);
-            throw new Error('Erro ao deletar usuário');
+        try {
+            const response = await axios.delete(`${Endpoints.UserManager.Delete}/${userName}`);
+            return response.data;
+        } catch (error: any) {
+            console.error("Erro ao deletar usuário:", error);
+            throw error;
         }
-
-        return response.text();
     },
 
     async confirmEmail(email: string) {
-        const url = `${Endpoints.UserManager.EmailConfirmation}?email=${encodeURIComponent(email)}`;
-        const response = await fetch(url, {
-            method: 'GET',
-            headers,
-        });
-
-        if (!response.ok) {
-            const error = await response.text();
-            console.error('Erro ao confirmar e-mail:', error);
-            throw new Error('Erro ao confirmar e-mail');
+        try {
+            const response = await axios.get(`${Endpoints.UserManager.EmailConfirmation}?email=${encodeURIComponent(email)}`);
+            return response.data;
+        } catch (error: any) {
+            console.error("Erro ao confirmar e-mail:", error);
+            throw error;
         }
-
-        return response.text();
     },
 
     async passwordResetLink(payload: PasswordResetLinkPayload) {
-        const response = await fetch(Endpoints.AccessManager.PasswordResetLink, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(payload), // payload já deve estar no formato { data: { email } }
-        });
-
-        if (!response.ok) {
-            const error = await response.text();
-            console.error('Erro ao enviar link de redefinição de senha:', error);
-            throw new Error('Erro ao enviar link de redefinição de senha');
+        try {
+            const response = await axios.post(Endpoints.AccessManager.PasswordResetLink, payload);
+            return response.data;
+        } catch (error: any) {
+            console.error("Erro ao enviar link de redefinição de senha:", error);
+            throw error;
         }
-
-        return response.text();
     },
 
     async resetPassword(token: string, payload: ResetPasswordPayload) {
-        const url = `${Endpoints.AccessManager.ResetPassword}?token=${encodeURIComponent(token)}`;
-        const response = await fetch(url, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-            const error = await response.text();
-            console.error('Erro ao redefinir senha:', error);
-            throw new Error('Erro ao redefinir senha');
+        try {
+            const response = await axios.post(
+                `${Endpoints.AccessManager.ResetPassword}?token=${encodeURIComponent(token)}`,
+                payload
+            );
+            return response.data;
+        } catch (error: any) {
+            console.error("Erro ao redefinir senha:", error);
+            throw error;
         }
-
-        return response.text();
     },
 };
