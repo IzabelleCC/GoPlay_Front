@@ -10,7 +10,7 @@ import {
     KeyboardAvoidingView,
     Image
 } from "native-base";
-import { Platform, Alert } from "react-native";
+import { Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserService } from "../api/user/userService";
@@ -18,6 +18,7 @@ import { UpdateUserPayload } from "../api/user/userTypes";
 import DatePicker from "../components/form/DatePicker";
 import SelectField from "../components/form/SelectField";
 import Logo from "../assets/logo.png";
+import GenericModal from "../components/modals/GenericModal";
 
 export default function EditProfile() {
     const { colors, fontSizes } = useTheme();
@@ -39,6 +40,9 @@ export default function EditProfile() {
     });
 
     const [loading, setLoading] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalMessage, setModalMessage] = useState("");
+    const [modalType, setModalType] = useState<"success" | "error">("success");
 
     const fetchUserData = async () => {
         try {
@@ -54,7 +58,6 @@ export default function EditProfile() {
                     birthDate: data.birthDate,
                     tShirtSize: data.tShirtSize
                 });
-
                 setReadOnlyFields({
                     email: data.email,
                     cpfCnpj: data.cpfCnpj
@@ -70,13 +73,23 @@ export default function EditProfile() {
             setLoading(true);
             const payload: UpdateUserPayload = { data: userData };
             await UserService.updateUser(payload);
-            Alert.alert("Sucesso", "Dados atualizados com sucesso.");
-            navigation.goBack();
+            setModalMessage("Dados atualizados com sucesso.");
+            setModalType("success");
+            setModalVisible(true);
         } catch (error: any) {
             console.error("Erro ao atualizar:", error);
-            Alert.alert("Erro", error.message || "Erro ao atualizar os dados.");
+            setModalMessage(error.message || "Erro ao atualizar os dados.");
+            setModalType("error");
+            setModalVisible(true);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleModalClose = () => {
+        setModalVisible(false);
+        if (modalType === "success") {
+            navigation.navigate("MyProfile" as never);
         }
     };
 
@@ -100,7 +113,6 @@ export default function EditProfile() {
                         Editar Perfil
                     </Text>
 
-                    {/* Campos editáveis */}
                     <FormControl w="100%">
                         <FormControl.Label>Nome Completo</FormControl.Label>
                         <Input
@@ -136,7 +148,7 @@ export default function EditProfile() {
                     />
 
                     <DatePicker
-                        date={new Date(userData.birthDate)}
+                        date={userData.birthDate ? new Date(userData.birthDate) : new Date("2000-01-01")}
                         onChange={(d) =>
                             setUserData({ ...userData, birthDate: d.toISOString().split("T")[0] })
                         }
@@ -162,7 +174,6 @@ export default function EditProfile() {
                         ]}
                     />
 
-                    {/* Campos somente leitura */}
                     <FormControl w="100%" isDisabled>
                         <FormControl.Label>Usuário</FormControl.Label>
                         <Input variant="filled" bg={colors.gray[100]} value={userData.userName} isDisabled />
@@ -201,6 +212,17 @@ export default function EditProfile() {
                     </Button>
                 </VStack>
             </ScrollView>
+
+            <GenericModal
+                isOpen={modalVisible}
+                onClose={handleModalClose}
+                title={modalType === "success" ? "Sucesso" : "Erro"}
+                body={<Text textAlign="center" color="gray.700">{modalMessage}</Text>}
+                confirmText="Fechar"
+                onConfirm={handleModalClose}
+                type={modalType}
+                variant={modalType === "success" || modalType === "error" ? modalType : "info"}
+            />
         </KeyboardAvoidingView>
     );
 }

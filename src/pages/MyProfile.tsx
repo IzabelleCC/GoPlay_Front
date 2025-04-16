@@ -1,25 +1,24 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
     VStack,
     Text,
     Box,
     Button,
     useTheme,
-    AlertDialog,
     ScrollView,
     Divider
 } from "native-base";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserService } from "../api/user/userService";
+import GenericModal from "../components/modals/GenericModal";
 
 export default function MyProfile() {
     const { colors, fontSizes } = useTheme();
     const navigation = useNavigation();
-    const cancelRef = useRef(null);
 
     const [userData, setUserData] = useState<any>(null);
-    const [showModal, setShowModal] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     const fetchUserData = async () => {
         try {
@@ -42,7 +41,7 @@ export default function MyProfile() {
         try {
             await UserService.deleteUser(userData.userName);
             await AsyncStorage.removeItem("userName");
-            setShowModal(false);
+            setShowConfirmModal(false);
             navigation.navigate("Inicial" as never);
         } catch (error) {
             console.error("Erro ao excluir conta:", error);
@@ -91,7 +90,7 @@ export default function MyProfile() {
                     <Button
                         bg="red.500"
                         borderRadius={20}
-                        onPress={() => setShowModal(true)}
+                        onPress={() => setShowConfirmModal(true)}
                     >
                         <Text fontSize={fontSizes.md} color="white" fontWeight="bold">
                             Excluir Conta
@@ -108,29 +107,31 @@ export default function MyProfile() {
                             Sair
                         </Text>
                     </Button>
+
+                    <Button
+                        variant="ghost"
+                        _text={{ color: colors.black, fontFamily: "Montserrat", textDecorationLine: "underline" }}
+                        onPress={() => navigation.navigate("Home" as never)}
+                    >
+                        Voltar
+                    </Button>
                 </VStack>
 
-                <AlertDialog
-                    leastDestructiveRef={cancelRef}
-                    isOpen={showModal}
-                    onClose={() => setShowModal(false)}
-                >
-                    <AlertDialog.Content>
-                        <AlertDialog.CloseButton />
-                        <AlertDialog.Header>Excluir Conta</AlertDialog.Header>
-                        <AlertDialog.Body>
+                {/* Modal de confirmação de exclusão */}
+                <GenericModal
+                    isOpen={showConfirmModal}
+                    onClose={() => setShowConfirmModal(false)}
+                    title="Excluir Conta"
+                    type="info"
+                    variant="confirm-delete"
+                    body={
+                        <Text textAlign="center" color="gray.700">
                             Tem certeza que deseja excluir sua conta? Esta ação não poderá ser desfeita.
-                        </AlertDialog.Body>
-                        <AlertDialog.Footer>
-                            <Button ref={cancelRef} onPress={() => setShowModal(false)}>
-                                Cancelar
-                            </Button>
-                            <Button colorScheme="danger" ml={3} onPress={handleDeleteAccount}>
-                                Confirmar
-                            </Button>
-                        </AlertDialog.Footer>
-                    </AlertDialog.Content>
-                </AlertDialog>
+                        </Text>
+                    }
+                    onConfirm={handleDeleteAccount}
+                    confirmText="Confirmar Exclusão"
+                />
             </VStack>
         </ScrollView>
     );
