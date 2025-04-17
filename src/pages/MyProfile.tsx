@@ -52,6 +52,12 @@ export default function MyProfile() {
         fetchUserData();
     }, []);
 
+    const formatDate = (isoDate: string) => {
+        if (!isoDate) return "—";
+        const date = new Date(isoDate);
+        return new Intl.DateTimeFormat("pt-BR").format(date); // dd/mm/yyyy
+    };
+
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1, backgroundColor: colors.white }}>
             <VStack flex={1} px={5} pt={10} pb={8} justifyContent="space-between">
@@ -64,8 +70,10 @@ export default function MyProfile() {
                         <Box bg="gray.100" p={5} borderRadius={16} shadow={2}>
                             <VStack space={3}>
                                 <ProfileField label="Nome" value={userData.name} />
+                                <ProfileField label="Usuário" value={userData.userName} />
                                 <ProfileField label="Email" value={userData.email} />
                                 <ProfileField label="CPF/CNPJ" value={userData.cpfCnpj} />
+                                <ProfileField label="Data de Nascimento" value={formatDate(userData.birthDate)} />
                                 <ProfileField label="Gênero" value={userData.gender} />
                                 <ProfileField label="Instagram" value={userData.instagramPage} />
                                 <ProfileField label="Tam. Camiseta" value={userData.tShirtSize} />
@@ -117,7 +125,6 @@ export default function MyProfile() {
                     </Button>
                 </VStack>
 
-                {/* Modal de confirmação de exclusão */}
                 <GenericModal
                     isOpen={showConfirmModal}
                     onClose={() => setShowConfirmModal(false)}

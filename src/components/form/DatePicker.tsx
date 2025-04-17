@@ -39,10 +39,13 @@ export default function DatePicker({ date, onChange }: Props) {
                         isReadOnly
                         value={formattedDate}
                         placeholder="Selecionar data"
-                        bg="gray.200"
+                        bg="gray.100"
+                        borderColor="blue.800"
+                        borderWidth={1}
+                        borderRadius={10}
                         InputRightElement={
                             <TouchableOpacity onPress={openDatePicker}>
-                                <Icon as={CalendarIcon} size={5} mr="2" color="gray.400" />
+                                <Icon as={CalendarIcon} size={5} mr="2" color="gray.300" />
                             </TouchableOpacity>
                         }
                     />

@@ -1,5 +1,6 @@
 import { VStack, Image, Button, Text, Box, Input, useTheme } from "native-base";
 import Logo from "../assets/logo.png";
+import { Montserrat_800ExtraBold } from "@expo-google-fonts/montserrat";
 
 interface NavigationType {
     navigate: (route: string) => void;
@@ -20,8 +21,8 @@ export default function Home({ navigation }: { navigation: NavigationType }) {
                 <Image
                     source={Logo}
                     alt="Logo"
-                    width={150}
-                    height={150}
+                    width={70}
+                    height={70}
                     resizeMode="contain"
                 />
 
@@ -30,14 +31,14 @@ export default function Home({ navigation }: { navigation: NavigationType }) {
                     variant="rounded"
                     fontSize={fontSizes.md}
                     textAlign="center"
-                    bg={colors.gray[300]}
+                    bg={colors.gray[100]}
                     w="90%"
                     borderRadius={20}
                 />
 
                 <Box
                     w="100%"
-                    bg="gray.200"
+                    bg={colors.gray[200]}
                     p={4}
                     borderRadius={12}
                     shadow={1}
