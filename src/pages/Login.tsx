@@ -102,7 +102,9 @@ export default function Login() {
                     onChangeText={setEmail}
                     keyboardType="email-address"
                     autoCapitalize="none"
-                    bg={colors.gray[200]}
+                    bg={colors.gray[100]}
+                    borderColor={colors.blue[800]}
+                    borderWidth={1}
                     borderRadius={10}
                     fontSize="md"
                     w="100%"
@@ -129,7 +131,10 @@ export default function Login() {
                         <Input
                             value={userName}
                             onChangeText={setUserName}
-                            bg={colors.gray[300]}
+                            bg={colors.gray[100]}
+                            borderColor={colors.blue[800]}
+                            borderWidth={1}
+                            borderRadius={10}
                             fontSize={fontSizes.md}
                         />
                     </FormControl>
@@ -140,7 +145,10 @@ export default function Login() {
                             value={password}
                             onChangeText={setPassword}
                             fontSize={fontSizes.md}
-                            bg={colors.gray[300]}
+                            bg={colors.gray[100]}
+                            borderColor={colors.blue[800]}
+                            borderWidth={1}
+                            borderRadius={10}
                         />
                     </FormControl>
 

@@ -8,7 +8,8 @@ import {
     useTheme,
     ScrollView,
     KeyboardAvoidingView,
-    Image
+    Image,
+    useToast
 } from "native-base";
 import { Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -23,6 +24,7 @@ import GenericModal from "../components/modals/GenericModal";
 export default function EditProfile() {
     const { colors, fontSizes } = useTheme();
     const navigation = useNavigation();
+    const toast = useToast();
 
     const [userData, setUserData] = useState<UpdateUserPayload["data"]>({
         id: "",
@@ -68,6 +70,14 @@ export default function EditProfile() {
         }
     };
 
+    const showReadOnlyTip = (message: string) => {
+        toast.show({
+            title: message,
+            placement: "top",
+            bg: "gray.700"
+        });
+    };
+
     const handleUpdate = async () => {
         try {
             setLoading(true);
@@ -108,85 +118,116 @@ export default function EditProfile() {
                 keyboardShouldPersistTaps="handled"
             >
                 <VStack flex={1} p={5} space={5} alignItems="center">
-                    <Image source={Logo} alt="Logo" width={150} height={150} resizeMode="contain" mb={4} />
+                    <Image source={Logo} alt="Logo" width={70} height={70} resizeMode="contain" mb={4} />
                     <Text fontSize={fontSizes.xl} fontWeight="bold" textAlign="center">
                         Editar Perfil
                     </Text>
 
                     <FormControl w="100%">
-                        <FormControl.Label>Nome Completo</FormControl.Label>
+                        <FormControl.Label>Nome</FormControl.Label>
                         <Input
-                            variant="filled"
-                            bg={colors.gray[200]}
                             value={userData.name}
                             onChangeText={(v) => setUserData({ ...userData, name: v })}
+                            bg={colors.gray[100]}
+                            borderColor={colors.blue[800]}
+                            borderWidth={1}
+                            borderRadius={10}
+                        />
+                    </FormControl>
+
+                    <FormControl w="100%">
+                        <FormControl.Label>Email</FormControl.Label>
+                        <Input
+                            value={readOnlyFields.email}
+                            isReadOnly
+                            onFocus={() => showReadOnlyTip("O e-mail não pode ser alterado.")}
+                            bg={colors.gray[100]}
+                            borderColor={colors.blue[800]}
+                            borderWidth={1}
+                            borderRadius={10}
+                        />
+                    </FormControl>
+
+                    <FormControl w="100%">
+                        <FormControl.Label>CPF/CNPJ</FormControl.Label>
+                        <Input
+                            value={readOnlyFields.cpfCnpj}
+                            isReadOnly
+                            onFocus={() => showReadOnlyTip("O CPF/CNPJ não pode ser alterado.")}
+                            bg={colors.gray[100]}
+                            borderColor={colors.blue[800]}
+                            borderWidth={1}
+                            borderRadius={10}
+                        />
+                    </FormControl>
+
+                    <FormControl w="100%">
+                        <FormControl.Label>Usuário</FormControl.Label>
+                        <Input
+                            value={userData.userName}
+                            isReadOnly
+                            onFocus={() => showReadOnlyTip("O nome de usuário não pode ser alterado.")}
+                            bg={colors.gray[100]}
+                            borderColor={colors.blue[800]}
+                            borderWidth={1}
+                            borderRadius={10}
+                        />
+                    </FormControl>
+
+                    <FormControl w="100%">
+                        <SelectField
+                            label="Gênero"
+                            value={userData.gender}
+                            onChange={(v) => setUserData({ ...userData, gender: v })}
+                            options={[
+                                { label: "Masculino", value: "masculino" },
+                                { label: "Feminino", value: "feminino" },
+                                { label: "Prefiro não informar", value: "" }
+                            ]}
+                        />
+                    </FormControl>
+
+                    <FormControl w="100%">
+                        <DatePicker
+                            date={userData.birthDate ? new Date(userData.birthDate) : new Date("2000-01-01")}
+                            onChange={(d) =>
+                                setUserData({ ...userData, birthDate: d.toISOString().split("T")[0] })
+                            }
+                        />
+                    </FormControl>
+
+                    <FormControl w="100%">
+                        <SelectField
+                            label="Tamanho Camiseta"
+                            value={userData.tShirtSize}
+                            onChange={(v) => setUserData({ ...userData, tShirtSize: v })}
+                            options={[
+                                { label: "Infantil - 6", value: "Infantil - 6" },
+                                { label: "Infantil - 8", value: "Infantil - 8" },
+                                { label: "Infantil - 10", value: "Infantil - 10" },
+                                { label: "Infantil - 12", value: "Infantil - 12" },
+                                { label: "Infantil - 14", value: "Infantil - 14" },
+                                { label: "PP", value: "PP" },
+                                { label: "P", value: "P" },
+                                { label: "M", value: "M" },
+                                { label: "G", value: "G" },
+                                { label: "GG", value: "GG" },
+                                { label: "XG", value: "XG" },
+                                { label: "XXG", value: "XXG" },
+                            ]}
                         />
                     </FormControl>
 
                     <FormControl w="100%">
                         <FormControl.Label>Instagram</FormControl.Label>
                         <Input
-                            variant="filled"
-                            bg={colors.gray[200]}
                             value={userData.instagramPage}
                             onChangeText={(v) => setUserData({ ...userData, instagramPage: v })}
+                            bg={colors.gray[100]}
+                            borderColor={colors.blue[800]}
+                            borderWidth={1}
+                            borderRadius={10}
                         />
-                        <Text fontSize="xs" color="gray.500" mt={1}>
-                            Esta informação fica pública no seu perfil do GoPlay
-                        </Text>
-                    </FormControl>
-
-                    <SelectField
-                        label="Gênero"
-                        value={userData.gender}
-                        onChange={(v) => setUserData({ ...userData, gender: v })}
-                        options={[
-                            { label: "Masculino", value: "masculino" },
-                            { label: "Feminino", value: "feminino" },
-                            { label: "Prefiro não informar", value: "" },
-                        ]}
-                    />
-
-                    <DatePicker
-                        date={userData.birthDate ? new Date(userData.birthDate) : new Date("2000-01-01")}
-                        onChange={(d) =>
-                            setUserData({ ...userData, birthDate: d.toISOString().split("T")[0] })
-                        }
-                    />
-
-                    <SelectField
-                        label="Tamanho Camiseta"
-                        value={userData.tShirtSize}
-                        onChange={(v) => setUserData({ ...userData, tShirtSize: v })}
-                        options={[
-                            { label: "Infantil - 6", value: "Infantil - 6" },
-                            { label: "Infantil - 8", value: "Infantil - 8" },
-                            { label: "Infantil - 10", value: "Infantil - 10" },
-                            { label: "Infantil - 12", value: "Infantil - 12" },
-                            { label: "Infantil - 14", value: "Infantil - 14" },
-                            { label: "PP", value: "PP" },
-                            { label: "P", value: "P" },
-                            { label: "M", value: "M" },
-                            { label: "G", value: "G" },
-                            { label: "GG", value: "GG" },
-                            { label: "XG", value: "XG" },
-                            { label: "XXG", value: "XXG" },
-                        ]}
-                    />
-
-                    <FormControl w="100%" isDisabled>
-                        <FormControl.Label>Usuário</FormControl.Label>
-                        <Input variant="filled" bg={colors.gray[100]} value={userData.userName} isDisabled />
-                    </FormControl>
-
-                    <FormControl w="100%" isDisabled>
-                        <FormControl.Label>Email</FormControl.Label>
-                        <Input variant="filled" bg={colors.gray[100]} value={readOnlyFields.email} isDisabled />
-                    </FormControl>
-
-                    <FormControl w="100%" isDisabled>
-                        <FormControl.Label>CPF/CNPJ</FormControl.Label>
-                        <Input variant="filled" bg={colors.gray[100]} value={readOnlyFields.cpfCnpj} isDisabled />
                     </FormControl>
 
                     <Button

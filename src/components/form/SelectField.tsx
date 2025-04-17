@@ -23,6 +23,10 @@ export default function SelectField({
                 onValueChange={onChange}
                 placeholder="Selecione uma opção"
                 minWidth="100%"
+                bg="gray.100"
+                borderColor="blue.300"
+                borderWidth={1}
+                borderRadius={10}
                 _selectedItem={{
                     bg: "gray.100",
                     endIcon: <CheckIcon size="5" />,
