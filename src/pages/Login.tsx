@@ -37,11 +37,13 @@ export default function Login() {
 
     const handleSignIn = async () => {
         try {
-            const token = await AccessService.login({ data: { userName, password } });
+            var response = await AccessService.login({ data: { userName, password } });
             await AsyncStorage.setItem("userName", userName);
             setUserName("");
             setPassword("");
-            navigation.navigate("Home" as never);
+            if(response.data.user.userType == 1) navigation.navigate("HomePlayer" as never);
+            if(response.data.user.userType == 2) navigation.navigate("HomeAdm" as never);
+
         } catch (error: any) {
             handleBackendError(error, "Erro ao realizar login.");
         }

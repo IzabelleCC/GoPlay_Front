@@ -9,7 +9,7 @@ export const AccessService = {
                 headers: { 'Content-Type': 'application/json' },
             });
 
-            return response.data; // Token
+            return response.data;
         } catch (error: any) {
             console.error("Erro ao logar:", error?.response?.data || error.message);
             throw error;

@@ -6,7 +6,7 @@ interface NavigationType {
     navigate: (route: string) => void;
 }
 
-export default function Home({ navigation }: { navigation: NavigationType }) {
+export default function HomePlayer({ navigation }: { navigation: NavigationType }) {
     const { colors, fontSizes } = useTheme();
 
     return (
@@ -46,7 +46,7 @@ export default function Home({ navigation }: { navigation: NavigationType }) {
                     mt={4}
                 >
                     <Text fontSize={fontSizes.lg} fontWeight="bold" mb={2}>
-                        Meus Torneios
+                        Meus Torneios PLAYER
                     </Text>
                     <Text fontSize={fontSizes.sm} color="gray.600">
                         Nenhum torneio disponível no momento.
