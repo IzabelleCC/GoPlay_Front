@@ -22,7 +22,10 @@
       "package": "com.izabellecesario.goPlay"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "build": {
+        "devtool": "source-map"
+      }
     },
     "plugins": [
       "expo-font"

@@ -1,5 +1,5 @@
 // src/components/form/DatePicker.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Platform, TouchableOpacity } from 'react-native';
 import { Input, FormControl, Modal, Button, Text, Icon } from 'native-base';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -14,6 +14,10 @@ export default function DatePicker({ date, onChange }: Props) {
     const [showModal, setShowModal] = useState(false);
     const [showPicker, setShowPicker] = useState(false); // Android
     const [tempDate, setTempDate] = useState(date);
+
+    useEffect(() => {
+        setTempDate(date);
+    }, [date]);
 
     const formattedDate = tempDate.toLocaleDateString('pt-BR');
 

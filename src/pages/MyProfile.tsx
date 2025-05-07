@@ -26,14 +26,22 @@ export default function MyProfile() {
             if (storedUserName) {
                 const data = await UserService.getUserByUserName(storedUserName);
                 setUserData(data);
+
+                if (data?.userType) 
+                    await AsyncStorage.setItem("userType", data.userType.toString());
             }
         } catch (error) {
             console.error("Erro ao carregar dados do usuário:", error);
         }
     };
 
+    useEffect(() => {
+        fetchUserData();
+    }, []);
+
     const handleLogout = async () => {
         await AsyncStorage.removeItem("userName");
+        await AsyncStorage.removeItem("userType");
         navigation.navigate("Login" as never);
     };
 
@@ -41,6 +49,7 @@ export default function MyProfile() {
         try {
             await UserService.deleteUser(userData.userName);
             await AsyncStorage.removeItem("userName");
+            await AsyncStorage.removeItem("userType");
             setShowConfirmModal(false);
             navigation.navigate("Inicial" as never);
         } catch (error) {
@@ -119,7 +128,15 @@ export default function MyProfile() {
                     <Button
                         variant="ghost"
                         _text={{ color: colors.black, fontFamily: "Montserrat", textDecorationLine: "underline" }}
-                        onPress={() => navigation.navigate("Home" as never)}
+                        onPress={() => 
+                            {
+                                AsyncStorage.getItem("userType").then((userType) => {
+                                    if (userType === "1")
+                                        navigation.navigate("HomePlayer" as never);
+                                    if (userType === "2")
+                                        navigation.navigate("HomeAdm" as never);
+                                });
+                            }}
                     >
                         Voltar
                     </Button>
