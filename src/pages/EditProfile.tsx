@@ -64,6 +64,8 @@ export default function EditProfile() {
                     email: data.email,
                     cpfCnpj: data.cpfCnpj
                 });
+                await AsyncStorage.setItem("userType", data.userType.toString());
+                console.log("Dados do usuário:", data);
             }
         } catch (error) {
             console.error("Erro ao carregar dados do usuário:", error);
@@ -189,11 +191,14 @@ export default function EditProfile() {
 
                     <FormControl w="100%">
                         <DatePicker
-                            date={userData.birthDate ? new Date(userData.birthDate) : new Date("2000-01-01")}
-                            onChange={(d) =>
-                                setUserData({ ...userData, birthDate: d.toISOString().split("T")[0] })
-                            }
-                        />
+                              date={
+                                  new Date(userData.birthDate)
+                                }
+                                onChange={(d) =>
+                                    setUserData({ ...userData, birthDate: d.toISOString().split("T")[0] })
+                                }
+                                
+                                />
                     </FormControl>
 
                     <FormControl w="100%">
@@ -247,7 +252,17 @@ export default function EditProfile() {
                         mt={4}
                         variant="ghost"
                         _text={{ color: colors.black, fontFamily: "Montserrat", textDecorationLine: "underline" }}
-                        onPress={() => navigation.navigate("Home" as never)}
+                        onPress={() => 
+                            {
+                                AsyncStorage.getItem("userType").then((userType) => {
+                                    if (userType === "1"){
+                                        navigation.navigate("HomePlayer" as never);
+                                    }
+                                    if (userType === "2"){
+                                        navigation.navigate("HomeAdm" as never);
+                                    }
+                                });
+                            }}
                     >
                         Voltar
                     </Button>

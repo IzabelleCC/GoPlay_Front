@@ -27,6 +27,8 @@ export default function Login() {
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showResetModal, setShowResetModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -37,11 +39,16 @@ export default function Login() {
 
     const handleSignIn = async () => {
         try {
-            const token = await AccessService.login({ data: { userName, password } });
+            var response = await AccessService.login({ data: { userName, password } });
             await AsyncStorage.setItem("userName", userName);
             setUserName("");
             setPassword("");
-            navigation.navigate("Home" as never);
+            console.log("login com sucesso");
+            console.log(response);
+            console.log(response.result.user.userType);
+            if(response.result.user.userType == 1) navigation.navigate("HomePlayer" as never);
+            if(response.result.user.userType == 2) navigation.navigate("HomeAdm" as never);
+
         } catch (error: any) {
             handleBackendError(error, "Erro ao realizar login.");
         }
@@ -58,6 +65,8 @@ export default function Login() {
             setLoading(true);
             await UserService.passwordResetLink({ data: { email } });
             setShowResetModal(false);
+            setSuccessMessage("Link de redefinição de senha enviado.");
+            setShowSuccessModal(true);
             setEmail("");
         } catch (error: any) {
             handleBackendError(error, "Falha ao enviar e-mail de redefinição.");
@@ -208,6 +217,18 @@ export default function Login() {
                     type="error"
                     variant="error"
                 />
+                {/* Modal de sucesso */}
+                <GenericModal
+                    isOpen={showSuccessModal}
+                    onClose={() => setShowSuccessModal(false)}
+                    title="Sucesso"
+                    body={<Text textAlign="center" color="gray.700">{successMessage}</Text>}
+                    onConfirm={() => setShowSuccessModal(false)}
+                    confirmText="Fechar"
+                    type="success"
+                    variant="success"
+                />
+
             </ScrollView>
         </KeyboardAvoidingView>
     );

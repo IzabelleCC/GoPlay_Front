@@ -11,6 +11,7 @@ import {
     Image,
 } from "native-base";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { RootStackParamList } from "../navigation/Routes";
 import { useNavigation } from "@react-navigation/native";
 import Logo from "../assets/logo.png";
@@ -56,9 +57,10 @@ export default function Register() {
 
         try {
             const response = await UserService.createUser(payload);
-            console.log("response", response);
             if (response.success) {
-                navigation.navigate("Home");
+                await AsyncStorage.setItem("userName", payload.data.userName);
+                if(payload.data.userType == 1) navigation.navigate("HomePlayer");
+                if(payload.data.userType == 2) navigation.navigate("HomeAdm");
             }
         } catch (error) {
             console.error("Erro ao criar conta:", error);
