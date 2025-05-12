@@ -1,73 +1,92 @@
-import { VStack, Image, Button, Text, Box, Input, useTheme } from "native-base";
+import { VStack, Image, Button, Text, Input, ScrollView, useTheme } from "native-base";
 import Logo from "../assets/logo.png";
-import { Montserrat_800ExtraBold } from "@expo-google-fonts/montserrat";
+import { useNavigation } from "@react-navigation/native";
+import { useEffect, useState } from "react";
+import { TournamentService } from "../api/tournament/tournamentService";
+import TournamentCard from "../components/TournamentCard";
 
-interface NavigationType {
-    navigate: (route: string) => void;
-}
+export default function HomeAdm() {
+  const { colors, fontSizes } = useTheme();
+  const navigation: any = useNavigation();
+  const [tournaments, setTournaments] = useState<any[]>([]);
+  const [search, setSearch] = useState("");
 
-export default function HomeAdm({ navigation }: { navigation: NavigationType }) {
-    const { colors, fontSizes } = useTheme();
+  const fetchTournaments = async () => {
+    try {
+      const data = await TournamentService.getAllTournaments();
+      setTournaments(data);
+    } catch (err) {
+      console.error("Erro ao carregar torneios", err);
+    }
+  };
 
-    return (
-        <VStack
-            flex={1}
-            bg={colors.white}
-            px={5}
-            pt={10}
-            justifyContent="space-between"
-        >
-            <VStack alignItems="center" space={6}>
-                <Image
-                    source={Logo}
-                    alt="Logo"
-                    width={70}
-                    height={70}
-                    resizeMode="contain"
-                />
+  const searchTournament = async (text: string) => {
+    setSearch(text);
 
-                <Input
-                    placeholder="Buscar torneios"
-                    variant="rounded"
-                    fontSize={fontSizes.md}
-                    textAlign="center"
-                    bg={colors.gray[100]}
-                    w="90%"
-                    borderRadius={20}
-                />
+    if (!text.trim()) {
+      fetchTournaments();
+      return;
+    }
 
-                <Box
-                    w="100%"
-                    bg={colors.gray[200]}
-                    p={4}
-                    borderRadius={12}
-                    shadow={1}
-                    alignItems="center"
-                    mt={4}
-                >
-                    <Text fontSize={fontSizes.lg} fontWeight="bold" mb={2}>
-                        Meus Torneios ADM
-                    </Text>
-                    <Text fontSize={fontSizes.sm} color="gray.600">
-                        Nenhum torneio disponível no momento.
-                    </Text>
-                </Box>
-            </VStack>
+    try {
+      const data = await TournamentService.getTournamentByName(text.trim());
+      setTournaments(data ? [data] : []);
+    } catch (err) {
+      console.error("Erro ao buscar torneio por nome", err);
+      setTournaments([]); // Se erro, lista vazia
+    }
+  };
 
-            {/* Botão centralizado no rodapé */}
-            <Button
-                mt={6}
-                mb={4}
-                alignSelf="center"
-                borderRadius={20}
-                w="70%"
-                bg={colors.blue[500]}
-                onPress={() => navigation.navigate("MyProfile")}
-            >
-                <Text fontSize={fontSizes.md} color={colors.white} fontWeight="bold">
-                    Meus Dados
-                </Text>
-            </Button>
-        </VStack>
-    );
+  useEffect(() => {
+    fetchTournaments();
+  }, []);
+
+  return (
+    <VStack flex={1} bg={colors.white} px={5} pt={10} pb={4} justifyContent="space-between">
+      <VStack alignItems="center" space={6} flex={1}>
+        <Image source={Logo} alt="Logo" width={70} height={70} resizeMode="contain" />
+        <Text fontSize={fontSizes.lg} fontWeight="bold">MEUS TORNEIOS</Text>
+
+        <Input
+          placeholder="Buscar torneios"
+          variant="rounded"
+          fontSize={fontSizes.md}
+          textAlign="center"
+          bg={colors.gray[100]}
+          w="90%"
+          borderRadius={20}
+          value={search}
+          onChangeText={searchTournament}
+        />
+
+        <ScrollView w="100%" mt={4} maxH="72%">
+          <VStack space={4}>
+            {tournaments.map(t => (
+              <TournamentCard
+                key={t.id}
+                id={t.id}
+                tournamentName={t.name}
+                onEdit={() => navigation.navigate("EditTournament", { id: t.id })}
+                onInsertResult={() => navigation.navigate("InsertResult", { id: t.id })}
+                onDeleted={fetchTournaments}
+              />
+            ))}
+          </VStack>
+        </ScrollView>
+      </VStack>
+
+      <Button
+        mt={6}
+        alignSelf="center"
+        borderRadius={20}
+        w="70%"
+        bg={colors.blue[500]}
+        onPress={() => navigation.navigate("CreateTournament")}
+      >
+        <Text fontSize={fontSizes.md} color={colors.white} fontWeight="bold">
+          Criar Novo Torneio
+        </Text>
+      </Button>
+    </VStack>
+  );
 }

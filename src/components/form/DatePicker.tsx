@@ -1,4 +1,3 @@
-// src/components/form/DatePicker.tsx
 import React, { useState, useEffect } from 'react';
 import { Platform, TouchableOpacity } from 'react-native';
 import { Input, FormControl, Modal, Button, Text, Icon } from 'native-base';
@@ -8,9 +7,10 @@ import { Calendar as CalendarIcon } from 'lucide-react-native';
 interface Props {
     date: Date;
     onChange: (date: Date) => void;
+    label: string; // novo campo para personalizar o título
 }
 
-export default function DatePicker({ date, onChange }: Props) {
+export default function DatePicker({ date, onChange, label }: Props) {
     const [showModal, setShowModal] = useState(false);
     const [showPicker, setShowPicker] = useState(false); // Android
     const [tempDate, setTempDate] = useState(date);
@@ -37,7 +37,7 @@ export default function DatePicker({ date, onChange }: Props) {
     return (
         <>
             <FormControl w="100%">
-                <FormControl.Label>Data de Nascimento</FormControl.Label>
+                <FormControl.Label>{label}</FormControl.Label>
                 <TouchableOpacity onPress={openDatePicker}>
                     <Input
                         isReadOnly
@@ -77,7 +77,7 @@ export default function DatePicker({ date, onChange }: Props) {
                 <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
                     <Modal.Content>
                         <Modal.CloseButton />
-                        <Modal.Header>Selecione a data</Modal.Header>
+                        <Modal.Header>{label}</Modal.Header>
                         <Modal.Body>
                             <DateTimePicker
                                 value={tempDate}
