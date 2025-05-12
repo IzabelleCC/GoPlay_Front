@@ -10,6 +10,8 @@ import HomeAdm from "../pages/HomeAdm";
 import Register from "../pages/Register";
 import MyProfile from "../pages/MyProfile";
 import EditProfile from "../pages/EditProfile";
+import CreateTournament from "../pages/CreateTournament";
+import EditTournament from "../pages/EditTournament";
 
 export type RootStackParamList = {
     Inicial: undefined;
@@ -19,6 +21,8 @@ export type RootStackParamList = {
     Register: undefined;
     MyProfile: undefined;
     EditProfile: undefined;
+    CreateTournament: undefined;
+    EditTournament: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -34,6 +38,8 @@ const linking = {
             Register: "register",
             MyProfile: "myprofile",
             EditProfile: "editprofile",
+            CreateTournament: "createtournament",
+            EditTournament: "edittournament",
         },
     },
 };
@@ -49,6 +55,8 @@ export default function Routes() {
                 <Stack.Screen name="Register" component={Register} />
                 <Stack.Screen name="MyProfile" component={MyProfile} />
                 <Stack.Screen name="EditProfile" component={EditProfile} />
+                <Stack.Screen name="CreateTournament" component={CreateTournament} />
+                <Stack.Screen name="EditTournament" component={EditTournament} />
             </Stack.Navigator>
         </NavigationContainer>
     );

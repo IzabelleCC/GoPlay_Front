@@ -115,7 +115,7 @@ export default function Register() {
                         ]}
                     />
 
-                    <DatePicker date={form.birthDate} onChange={(d) => handleInput("birthDate", d)} />
+                    <DatePicker label="Data de Nascimento" date={form.birthDate} onChange={(d) => handleInput("birthDate", d)} />
 
                     <PasswordInput placeholder="Senha" value={form.password} onChangeText={(v) => handleInput("password", v)} />
                     <PasswordInput placeholder="Confirmar Senha" value={form.confirmPassword} onChangeText={(v) => handleInput("confirmPassword", v)} />

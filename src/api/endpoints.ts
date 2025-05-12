@@ -12,5 +12,14 @@ export const Endpoints = {
         GetByUserName: `${API_BASE}/UserManager/GetByUserName`,
         Delete: `${API_BASE}/UserManager`,
         EmailConfirmation: `${API_BASE}/UserManager/emailConfirmation`,
-    }
+    },
+    TournamentManager: {
+        Base: `${API_BASE}/TournamentManager`,
+        GetById: `${API_BASE}/TournamentManager/GetById`,
+        GetAll: `${API_BASE}/TournamentManager`,
+        GeByName: `${API_BASE}/TournamentManager/GetByTournamentName`,
+        Create: `${API_BASE}/TournamentManager`,
+        Update: `${API_BASE}/TournamentManager`,
+        Delete: `${API_BASE}/TournamentManager`,
+    },
 };

@@ -191,6 +191,7 @@ export default function EditProfile() {
 
                     <FormControl w="100%">
                         <DatePicker
+                            label="Data de Nascimento"
                               date={
                                   new Date(userData.birthDate)
                                 }
