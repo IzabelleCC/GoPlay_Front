@@ -6,13 +6,17 @@ import {
   Button,
   useTheme,
   ScrollView,
-  IconButton,
+  TextArea,
 } from "native-base";
-import { MaterialIcons } from "@expo/vector-icons";
+import {
+  NativeSyntheticEvent,
+  TextInputContentSizeChangeEventData,
+} from "react-native";
 import { TournamentService } from "../api/tournament/tournamentService";
 import CategoryInput from "../components/CategoryInput";
 import DatePicker from "../components/form/DatePicker";
 import GenericModal from "../components/modals/GenericModal";
+import AutoGrowingTextArea from "../components/form/AutoGrowingTextArea";
 
 interface Category {
   categoryType: string;
@@ -39,10 +43,18 @@ export default function CreateTournament({ navigation }: any) {
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [showDuplicateCategoryModal, setShowDuplicateCategoryModal] = useState(false);
+  const [showDuplicateCategoryModal, setShowDuplicateCategoryModal] =
+    useState(false);
+  const [invalidFields, setInvalidFields] = useState<string[]>([]);
 
   const handleAddCategory = () => {
     setCategories([...categories, { categoryType: "", playerLimit: "" }]);
+  };
+
+  const handleRemoveCategory = (index: number) => {
+    const updated = [...categories];
+    updated.splice(index, 1);
+    setCategories(updated);
   };
 
   const handleChangeCategory = (
@@ -56,19 +68,31 @@ export default function CreateTournament({ navigation }: any) {
   };
 
   const hasDuplicateCategories = () => {
-    const names = categories.map(c => c.categoryType.trim().toLowerCase());
+    const names = categories
+      .filter((c) => c.categoryType.trim())
+      .map((c) => c.categoryType.trim().toLowerCase());
     return new Set(names).size !== names.length;
   };
 
-  const isFormValid = () => {
-    return (
-      name.trim() &&
-      description.trim() &&
-      location.trim() &&
-      fee.trim() &&
-      courtQty.trim() &&
-      categories.every(c => c.categoryType.trim() && c.playerLimit.trim())
-    );
+  const isFormValid = (): boolean => {
+    const missing: string[] = [];
+
+    if (!name.trim()) missing.push("Nome do Torneio");
+    if (!description.trim()) missing.push("Descrição");
+    if (!location.trim()) missing.push("Local");
+    if (!fee.trim()) missing.push("Valor da inscrição");
+    if (!courtQty.trim()) missing.push("Quantidade de quadras");
+
+    categories.forEach((c, i) => {
+      const hasAnyValue = c.categoryType.trim() || c.playerLimit.trim();
+      if (hasAnyValue) {
+        if (!c.categoryType.trim()) missing.push(`Categoria ${i + 1}`);
+        if (!c.playerLimit.trim()) missing.push(`Quantidade de duplas ${i + 1}`);
+      }
+    });
+
+    setInvalidFields(missing);
+    return missing.length === 0;
   };
 
   const handleSubmit = async () => {
@@ -93,10 +117,12 @@ export default function CreateTournament({ navigation }: any) {
         location,
         registrationFee: Number(fee),
         courtQuantity: Number(courtQty),
-        categories: categories.map((c) => ({
-          categoryType: c.categoryType,
-          playerLimit: Number(c.playerLimit),
-        })),
+        categories: categories
+          .filter((c) => c.categoryType.trim() && c.playerLimit.trim())
+          .map((c) => ({
+            categoryType: c.categoryType,
+            playerLimit: Number(c.playerLimit),
+          })),
       },
     };
 
@@ -116,11 +142,43 @@ export default function CreateTournament({ navigation }: any) {
           Cadastre um novo torneio
         </Text>
 
-        <Input placeholder="Nome do Torneio" value={name} onChangeText={setName} bg={colors.gray[100]} borderRadius={10} />
-        <Input placeholder="Descrição" value={description} onChangeText={setDescription} bg={colors.gray[100]} borderRadius={10} />
-        <Input placeholder="Local" value={location} onChangeText={setLocation} bg={colors.gray[100]} borderRadius={10} />
-        <Input placeholder="Valor da inscrição" value={fee} onChangeText={setFee} keyboardType="numeric" bg={colors.gray[100]} borderRadius={10} />
-        <Input placeholder="Quantidade de quadras" value={courtQty} onChangeText={setCourtQty} keyboardType="numeric" bg={colors.gray[100]} borderRadius={10} />
+        <Input
+          placeholder="Nome do Torneio"
+          value={name}
+          onChangeText={setName}
+          bg={colors.gray[100]}
+          borderRadius={10}
+        />
+
+        <AutoGrowingTextArea
+          value={description}
+          onChange={setDescription}
+          placeholder="Descrição"
+        />
+
+        <Input
+          placeholder="Local"
+          value={location}
+          onChangeText={setLocation}
+          bg={colors.gray[100]}
+          borderRadius={10}
+        />
+        <Input
+          placeholder="Valor da inscrição"
+          value={fee}
+          onChangeText={setFee}
+          keyboardType="numeric"
+          bg={colors.gray[100]}
+          borderRadius={10}
+        />
+        <Input
+          placeholder="Quantidade de quadras"
+          value={courtQty}
+          onChangeText={setCourtQty}
+          keyboardType="numeric"
+          bg={colors.gray[100]}
+          borderRadius={10}
+        />
 
         <DatePicker label="Data de Início dos Jogos" date={startDate} onChange={setStartDate} />
         <DatePicker label="Data de Término dos Jogos" date={endDate} onChange={setEndDate} />
@@ -132,17 +190,15 @@ export default function CreateTournament({ navigation }: any) {
             key={index}
             value={category}
             onChange={(key, value) => handleChangeCategory(index, key, value)}
+            onAdd={index === categories.length - 1 ? handleAddCategory : undefined}
+            onRemove={categories.length > 1 ? () => handleRemoveCategory(index) : undefined}
           />
         ))}
 
-        <IconButton
-          icon={<MaterialIcons name="add-circle-outline" size={24} color="black" />}
-          onPress={handleAddCategory}
-          alignSelf="flex-end"
-        />
-
         <Button bg={colors.blue[500]} borderRadius={20} mt={4} onPress={handleSubmit}>
-          <Text color={colors.white} fontWeight="bold">Cadastrar torneio</Text>
+          <Text color={colors.white} fontWeight="bold">
+            Cadastrar torneio
+          </Text>
         </Button>
 
         <Button
@@ -152,7 +208,9 @@ export default function CreateTournament({ navigation }: any) {
           borderRadius={20}
           onPress={() => navigation.navigate("HomeAdm")}
         >
-          <Text fontWeight="bold" color={colors.gray[600]}>Voltar</Text>
+          <Text fontWeight="bold" color={colors.gray[600]}>
+            Voltar
+          </Text>
         </Button>
       </VStack>
 
@@ -172,7 +230,22 @@ export default function CreateTournament({ navigation }: any) {
         isOpen={showErrorModal}
         onClose={() => setShowErrorModal(false)}
         title="Erro"
-        body={<Text textAlign="center">Preencha todos os campos obrigatórios corretamente.</Text>}
+        body={
+          invalidFields.length > 0 ? (
+            <VStack space={1}>
+              <Text textAlign="center">Preencha os campos obrigatórios:</Text>
+              {invalidFields.map((field, idx) => (
+                <Text key={idx} textAlign="center" color="red.500">
+                  • {field}
+                </Text>
+              ))}
+            </VStack>
+          ) : (
+            <Text textAlign="center">
+              Preencha todos os campos obrigatórios corretamente.
+            </Text>
+          )
+        }
         type="error"
         variant="info"
       />
@@ -181,7 +254,11 @@ export default function CreateTournament({ navigation }: any) {
         isOpen={showDuplicateCategoryModal}
         onClose={() => setShowDuplicateCategoryModal(false)}
         title="Categoria duplicada"
-        body={<Text textAlign="center">Não é permitido cadastrar duas categorias com o mesmo nome.</Text>}
+        body={
+          <Text textAlign="center">
+            Não é permitido cadastrar duas categorias com o mesmo nome.
+          </Text>
+        }
         type="error"
         variant="info"
       />

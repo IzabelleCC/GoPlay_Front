@@ -1,6 +1,6 @@
 import { VStack, Image, Button, Text, Box, Input, useTheme } from "native-base";
 import Logo from "../assets/logo.png";
-import { Montserrat_800ExtraBold } from "@expo-google-fonts/montserrat";
+import { MaterialIcons } from "@expo/vector-icons";
 
 interface NavigationType {
     navigate: (route: string) => void;
@@ -54,19 +54,16 @@ export default function HomePlayer({ navigation }: { navigation: NavigationType 
                 </Box>
             </VStack>
 
-            {/* Botão centralizado no rodapé */}
             <Button
                 mt={6}
                 mb={4}
                 alignSelf="center"
-                borderRadius={20}
-                w="70%"
+                borderRadius="full"
                 bg={colors.blue[500]}
                 onPress={() => navigation.navigate("MyProfile")}
+                p={3}
             >
-                <Text fontSize={fontSizes.md} color={colors.white} fontWeight="bold">
-                    Meus Dados
-                </Text>
+                <MaterialIcons name="person" size={28} color="white" />
             </Button>
         </VStack>
     );
