@@ -7,9 +7,8 @@ import {
   useTheme,
   ScrollView,
   IconButton,
-  Center,
   FormControl,
-  HStack
+  HStack,
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRoute, useNavigation, NavigationProp } from "@react-navigation/native";
@@ -46,6 +45,7 @@ export default function EditTournament() {
   const [showModalSuccess, setShowModalSuccess] = useState(false);
   const [showModalError, setShowModalError] = useState(false);
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<number | null>(null);
 
   useEffect(() => {
     const loadTournament = async () => {
@@ -146,42 +146,35 @@ export default function EditTournament() {
         <DatePicker label="Prazo de Pagamento" date={paymentDeadline} onChange={setPaymentDeadline} />
 
         {categories.map((category, index) => (
-          <VStack key={index} space={2} bg={colors.blue[300]} px={4} pt={4} pb={4} borderRadius={10}>
+          <VStack key={index} bg={colors.blue[300]} p={4} borderRadius={10} space={3}>
             <FormControl>
-              <FormControl.Label>Nome da Categoria</FormControl.Label>
+              <FormControl.Label>Categoria</FormControl.Label>
               <Input
                 value={category.categoryType}
                 onChangeText={(text) => handleChangeCategory(index, "categoryType", text)}
-                bg={colors.white}
+                bg={colors.gray[100]}
                 borderRadius={10}
               />
             </FormControl>
+
             <FormControl>
-              <FormControl.Label>Quantidade de Jogadores</FormControl.Label>
-              <Input
-                value={category.playerLimit}
-                onChangeText={(text) => handleChangeCategory(index, "playerLimit", text)}
-                keyboardType="numeric"
-                bg={colors.white}
-                borderRadius={10}
-              />
+              <FormControl.Label>Quantidade de duplas</FormControl.Label>
+              <HStack alignItems="center" space={2}>
+                <Input
+                  flex={1}
+                  value={category.playerLimit}
+                  onChangeText={(text) => handleChangeCategory(index, "playerLimit", text)}
+                  keyboardType="numeric"
+                  bg={colors.gray[100]}
+                  borderRadius={10}
+                />
+                <IconButton
+                  icon={<MaterialIcons name="delete" size={24} color="black" />}
+                  variant="ghost"
+                  onPress={() => setCategoryToDelete(index)}
+                />
+              </HStack>
             </FormControl>
-            <HStack mt={2} space={4} justifyContent="center" alignItems="center">
-              <Button
-                size="sm"
-                bg={colors.blue[500]}
-                borderRadius={10}
-                onPress={() => handleSaveCategory(index)}
-              >
-                <Text color={colors.white}>Salvar</Text>
-              </Button>
-              <IconButton
-                size="2xl"
-                variant="ghost"
-                icon={<MaterialIcons name="delete" size={32} color="black" />}
-                onPress={() => handleRemoveCategory(index)}
-              />
-            </HStack>
           </VStack>
         ))}
 
@@ -228,6 +221,22 @@ export default function EditTournament() {
         body={<Text textAlign="center">Não é permitido cadastrar duas categorias com o mesmo nome.</Text>}
         type="error"
         variant="info"
+      />
+
+      <GenericModal
+        isOpen={categoryToDelete !== null}
+        onClose={() => setCategoryToDelete(null)}
+        title="Confirmar exclusão"
+        body={<Text textAlign="center">Deseja excluir esta categoria?</Text>}
+        type="info"
+        variant="confirm-delete"
+        confirmText="Confirmar"
+        onConfirm={() => {
+          if (categoryToDelete !== null) {
+            handleRemoveCategory(categoryToDelete);
+            setCategoryToDelete(null);
+          }
+        }}
       />
     </ScrollView>
   );

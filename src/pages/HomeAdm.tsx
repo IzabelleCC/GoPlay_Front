@@ -1,15 +1,28 @@
-import { VStack, Image, Button, Text, Input, ScrollView, useTheme } from "native-base";
+import {
+  VStack,
+  Image,
+  Button,
+  Text,
+  Input,
+  ScrollView,
+  useTheme,
+  HStack,
+  Pressable,
+} from "native-base";
+import { MaterialIcons } from "@expo/vector-icons";
 import Logo from "../assets/logo.png";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { TournamentService } from "../api/tournament/tournamentService";
 import TournamentCard from "../components/TournamentCard";
 
+
 export default function HomeAdm() {
   const { colors, fontSizes } = useTheme();
   const navigation: any = useNavigation();
   const [tournaments, setTournaments] = useState<any[]>([]);
   const [search, setSearch] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
 
   const fetchTournaments = async () => {
     try {
@@ -20,20 +33,18 @@ export default function HomeAdm() {
     }
   };
 
-  const searchTournament = async (text: string) => {
-    setSearch(text);
-
-    if (!text.trim()) {
+  const searchTournament = async () => {
+    if (!search.trim()) {
       fetchTournaments();
       return;
     }
 
     try {
-      const data = await TournamentService.getTournamentByName(text.trim());
-      setTournaments(data ? [data] : []);
+      const data = await TournamentService.getTournamentByName(search.trim());
+      setTournaments(data || []);
     } catch (err) {
       console.error("Erro ao buscar torneio por nome", err);
-      setTournaments([]); // Se erro, lista vazia
+      setTournaments([]);
     }
   };
 
@@ -47,18 +58,41 @@ export default function HomeAdm() {
         <Image source={Logo} alt="Logo" width={70} height={70} resizeMode="contain" />
         <Text fontSize={fontSizes.lg} fontWeight="bold">MEUS TORNEIOS</Text>
 
-        <Input
-          placeholder="Buscar torneios"
-          variant="rounded"
-          fontSize={fontSizes.md}
-          textAlign="center"
-          bg={colors.gray[100]}
-          w="90%"
-          borderRadius={20}
-          value={search}
-          onChangeText={searchTournament}
-        />
+        {/* Campo de busca com estilo do protótipo */}
+        <HStack w="90%" alignSelf="center">
+          <Input
+            flex={1}
+            placeholder="Buscar torneios"
+            fontSize={fontSizes.md}
+            bg={isFocused ? colors.gray[200] : colors.gray[100]}
+            borderTopRightRadius={0}
+            borderBottomRightRadius={0}
+            borderTopLeftRadius={20}
+            borderBottomLeftRadius={20}
+            value={search}
+            onChangeText={setSearch}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => {
+              setIsFocused(false);
+              searchTournament();
+            }}
+          />
+          <Pressable
+            onPress={searchTournament}
+            bg={colors.gray[100]}
+            borderTopLeftRadius={0}
+            borderBottomLeftRadius={0}
+            borderTopRightRadius={20}
+            borderBottomRightRadius={20}
+            px={4}
+            justifyContent="center"
+            alignItems="center"
+          >
+            <MaterialIcons name="search" size={20} color="black" />
+          </Pressable>
+        </HStack>
 
+        {/* Lista de torneios */}
         <ScrollView w="100%" mt={4} maxH="72%">
           <VStack space={4}>
             {tournaments.map(t => (
@@ -71,22 +105,37 @@ export default function HomeAdm() {
                 onDeleted={fetchTournaments}
               />
             ))}
+
+            {tournaments.length === 0 && (
+              <Text textAlign="center" mt={4} color={colors.gray[500]}>
+                Nenhum torneio encontrado.
+              </Text>
+            )}
           </VStack>
         </ScrollView>
       </VStack>
 
-      <Button
-        mt={6}
-        alignSelf="center"
-        borderRadius={20}
-        w="70%"
-        bg={colors.blue[500]}
-        onPress={() => navigation.navigate("CreateTournament")}
-      >
-        <Text fontSize={fontSizes.md} color={colors.white} fontWeight="bold">
-          Criar Novo Torneio
-        </Text>
-      </Button>
+
+      <HStack space={4} mt={6} mb={4} alignSelf="center">
+        <Button
+          borderRadius="full"
+          bg={colors.blue[500]}
+          onPress={() => navigation.navigate("CreateTournament")}
+          p={3}
+        >
+          <MaterialIcons name="emoji-events" size={28} color="white" />
+        </Button>
+
+        <Button
+          borderRadius="full"
+          bg={colors.blue[500]}
+          onPress={() => navigation.navigate("MyProfile")}
+          p={3}
+        >
+          <MaterialIcons name="person" size={28} color="white" />
+        </Button>
+      </HStack>
+
     </VStack>
   );
 }

@@ -18,161 +18,135 @@ export default function MyProfile() {
     const navigation = useNavigation();
 
     const [userData, setUserData] = useState<any>(null);
+    const [userType, setUserType] = useState<number | null>(null);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     const fetchUserData = async () => {
-        try {
-            const storedUserName = await AsyncStorage.getItem("userName");
-            if (storedUserName) {
-                const data = await UserService.getUserByUserName(storedUserName);
-                setUserData(data);
-
-                if (data?.userType) 
-                    await AsyncStorage.setItem("userType", data.userType.toString());
-            }
-        } catch (error) {
-            console.error("Erro ao carregar dados do usuário:", error);
+        const storedUserName = await AsyncStorage.getItem("userName");
+        const storedUserType = await AsyncStorage.getItem("userType");
+        if (storedUserType) setUserType(Number(storedUserType));
+        if (storedUserName) {
+            const data = await UserService.getUserByUserName(storedUserName);
+            setUserData(data);
         }
     };
 
-    useEffect(() => {
-        fetchUserData();
-    }, []);
-
     const handleLogout = async () => {
-        await AsyncStorage.removeItem("userName");
-        await AsyncStorage.removeItem("userType");
+        await AsyncStorage.clear();
         navigation.navigate("Login" as never);
     };
 
-    const handleDeleteAccount = async () => {
-        try {
-            await UserService.deleteUser(userData.userName);
-            await AsyncStorage.removeItem("userName");
-            await AsyncStorage.removeItem("userType");
-            setShowConfirmModal(false);
-            navigation.navigate("Inicial" as never);
-        } catch (error) {
-            console.error("Erro ao excluir conta:", error);
-        }
-    };
-
     useEffect(() => {
         fetchUserData();
     }, []);
 
-    const formatDate = (isoDate: string) => {
-        if (!isoDate) return "—";
-        const date = new Date(isoDate);
-        return new Intl.DateTimeFormat("pt-BR").format(date); // dd/mm/yyyy
-    };
-
     return (
-        <ScrollView contentContainerStyle={{ flexGrow: 1, backgroundColor: colors.white }}>
-            <VStack flex={1} px={5} pt={10} pb={8} justifyContent="space-between">
-                <VStack space={5}>
-                    <Text fontSize={fontSizes.xl} fontWeight="bold" textAlign="center">
-                        Meus Dados
+        <ScrollView flex={1} bg={colors.white} p={5}>
+            <VStack space={5} alignItems="center">
+                <Text fontSize={fontSizes.xl} fontWeight="bold">Meus Dados</Text>
+
+                {userData && (
+                    <Box w="100%" bg={colors.gray[100]} p={4} borderRadius={12} shadow={1}>
+                        <Text>Nome</Text>
+                        <Text bold>{userData.name}</Text>
+                        <Divider my={2} />
+
+                        <Text>Usuário</Text>
+                        <Text bold>{userData.userName}</Text>
+                        <Divider my={2} />
+
+                        <Text>Email</Text>
+                        <Text bold>{userData.email}</Text>
+                        <Divider my={2} />
+
+                        <Text>CPF/CNPJ</Text>
+                        <Text bold>{userData.cpfCnpj}</Text>
+                        <Divider my={2} />
+
+                        {userType !== 2 && (
+                            <>
+                                <Text>Data de Nascimento</Text>
+                                <Text bold>{new Date(userData.birthDate).toLocaleDateString("pt-BR")}</Text>
+                                <Divider my={2} />
+                            </>
+                        )}
+
+                        {userType !== 2 && (
+                            <>
+                                <Text>Gênero</Text>
+                                <Text bold>{userData.gender || "—"}</Text>
+                                <Divider my={2} />
+                            </>
+                        )}
+
+                        <Text>Instagram</Text>
+                        <Text bold>{userData.instagramPage || "—"}</Text>
+                        <Divider my={2} />
+
+                        {userType !== 2 && (
+                            <>
+                                <Text>Tam. Camiseta</Text>
+                                <Text bold>{userData.tShirtSize || "—"}</Text>
+                            </>
+                        )}
+                    </Box>
+                )}
+
+                <Button
+                    mt={4}
+                    w="100%"
+                    bg={colors.blue[500]}
+                    borderRadius={20}
+                    onPress={() => navigation.navigate("EditProfile" as never)}
+                >
+                    <Text fontSize={fontSizes.md} color={colors.white} fontWeight="bold">
+                        Editar Dados
                     </Text>
+                </Button>
 
-                    {userData ? (
-                        <Box bg="gray.100" p={5} borderRadius={16} shadow={2}>
-                            <VStack space={3}>
-                                <ProfileField label="Nome" value={userData.name} />
-                                <ProfileField label="Usuário" value={userData.userName} />
-                                <ProfileField label="Email" value={userData.email} />
-                                <ProfileField label="CPF/CNPJ" value={userData.cpfCnpj} />
-                                <ProfileField label="Data de Nascimento" value={formatDate(userData.birthDate)} />
-                                <ProfileField label="Gênero" value={userData.gender} />
-                                <ProfileField label="Instagram" value={userData.instagramPage} />
-                                <ProfileField label="Tam. Camiseta" value={userData.tShirtSize} />
-                            </VStack>
-                        </Box>
-                    ) : (
-                        <Text textAlign="center" mt={4}>Carregando dados...</Text>
-                    )}
-                </VStack>
+                <Button
+                    mt={2}
+                    w="100%"
+                    bg={colors.red[600]}
+                    borderRadius={20}
+                    onPress={() => setShowConfirmModal(true)}
+                >
+                    <Text fontSize={fontSizes.md} color={colors.white} fontWeight="bold">
+                        Excluir Conta
+                    </Text>
+                </Button>
 
-                <VStack space={3} mt={8}>
-                    <Button
-                        bg={colors.blue[500]}
-                        borderRadius={20}
-                        onPress={() => navigation.navigate("EditProfile" as never)}
-                    >
-                        <Text fontSize={fontSizes.md} color={colors.white} fontWeight="bold">
-                            Editar Dados
-                        </Text>
-                    </Button>
+                <Button
+                    mt={2}
+                    variant="ghost"
+                    _text={{ color: colors.black }}
+                    onPress={handleLogout}
+                >
+                    Sair
+                </Button>
 
-                    <Button
-                        bg="red.500"
-                        borderRadius={20}
-                        onPress={() => setShowConfirmModal(true)}
-                    >
-                        <Text fontSize={fontSizes.md} color="white" fontWeight="bold">
-                            Excluir Conta
-                        </Text>
-                    </Button>
-
-                    <Button
-                        variant="outline"
-                        borderColor={colors.gray[400]}
-                        borderRadius={20}
-                        onPress={handleLogout}
-                    >
-                        <Text fontSize={fontSizes.md} color={colors.black}>
-                            Sair
-                        </Text>
-                    </Button>
-
-                    <Button
-                        variant="ghost"
-                        _text={{ color: colors.black, fontFamily: "Montserrat", textDecorationLine: "underline" }}
-                        onPress={() => 
-                            {
-                                AsyncStorage.getItem("userType").then((userType) => {
-                                    if (userType === "1")
-                                        navigation.navigate("HomePlayer" as never);
-                                    if (userType === "2")
-                                        navigation.navigate("HomeAdm" as never);
-                                });
-                            }}
-                    >
-                        Voltar
-                    </Button>
-                </VStack>
-
-                <GenericModal
-                    isOpen={showConfirmModal}
-                    onClose={() => setShowConfirmModal(false)}
-                    title="Excluir Conta"
-                    type="info"
-                    variant="confirm-delete"
-                    body={
-                        <Text textAlign="center" color="gray.700">
-                            Tem certeza que deseja excluir sua conta? Esta ação não poderá ser desfeita.
-                        </Text>
-                    }
-                    onConfirm={handleDeleteAccount}
-                    confirmText="Confirmar Exclusão"
-                />
+                <Button
+                    variant="ghost"
+                    _text={{ color: colors.gray[600], textDecorationLine: "underline" }}
+                    onPress={() => {
+                        if (userType === 1) navigation.navigate("HomePlayer" as never);
+                        if (userType === 2) navigation.navigate("HomeAdm" as never);
+                    }}
+                >
+                    Voltar
+                </Button>
             </VStack>
+
+            <GenericModal
+                isOpen={showConfirmModal}
+                onClose={() => setShowConfirmModal(false)}
+                title="Confirmação"
+                body={<Text>Tem certeza que deseja excluir sua conta?</Text>}
+                confirmText="Excluir"
+                onConfirm={() => {/* chamada para deletar conta */ }}
+                type="error"
+                variant="info"
+            />
         </ScrollView>
-    );
-}
-
-function ProfileField({ label, value }: { label: string, value: string }) {
-    const { fontSizes } = useTheme();
-
-    return (
-        <Box>
-            <Text fontSize={fontSizes.sm} color="gray.500">
-                {label}
-            </Text>
-            <Text fontSize={fontSizes.md} fontWeight="medium">
-                {value || "—"}
-            </Text>
-            <Divider mt={2} />
-        </Box>
     );
 }
