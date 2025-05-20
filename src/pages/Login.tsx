@@ -44,8 +44,8 @@ export default function Login() {
             setUserName("");
             setPassword("");
             console.log("login com sucesso");
-            console.log(response);
-            console.log(response.result.user.userType);
+            await AsyncStorage.setItem("userId", response.result.user.id);
+            await AsyncStorage.setItem("userType", response.result.user.userType.toString());
             if(response.result.user.userType == 1) navigation.navigate("HomePlayer" as never);
             if(response.result.user.userType == 2) navigation.navigate("HomeAdm" as never);
 

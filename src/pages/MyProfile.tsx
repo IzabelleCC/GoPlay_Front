@@ -24,6 +24,7 @@ export default function MyProfile() {
     const fetchUserData = async () => {
         const storedUserName = await AsyncStorage.getItem("userName");
         const storedUserType = await AsyncStorage.getItem("userType");
+        console.log("storedUserType", storedUserType);
         if (storedUserType) setUserType(Number(storedUserType));
         if (storedUserName) {
             const data = await UserService.getUserByUserName(storedUserName);
