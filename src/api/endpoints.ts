@@ -35,5 +35,9 @@ export const Endpoints = Object.freeze({
     Create: null,
     Update: null,
     Delete: null,
+    GenerateGroupMatches: "GenerateGroupMatches",
+    ConfirmAttendance: "ConfirmAttendance",
+    InsertGroupResults: "InsertGroupResults",
+    InsertEliminationResults: "InsertEliminationResults"
   }),
 });
