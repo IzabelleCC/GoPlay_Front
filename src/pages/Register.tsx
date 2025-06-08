@@ -9,6 +9,7 @@ import {
     useTheme,
     Checkbox,
     Image,
+    Radio,
 } from "native-base";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -59,8 +60,8 @@ export default function Register() {
             const response = await UserService.createUser(payload);
             if (response.success) {
                 await AsyncStorage.setItem("userName", payload.data.userName);
-                if(payload.data.userType == 1) navigation.navigate("HomePlayer");
-                if(payload.data.userType == 2) navigation.navigate("HomeAdm");
+                if (payload.data.userType == 1) navigation.navigate("HomePlayer");
+                if (payload.data.userType == 2) navigation.navigate("HomeAdm");
             }
         } catch (error) {
             console.error("Erro ao criar conta:", error);
@@ -80,6 +81,26 @@ export default function Register() {
                 <VStack flex={1} p={5} space={5} alignItems="center">
                     <Image source={Logo} alt="Logo" width={150} height={150} resizeMode="contain" mb={4} />
                     <Text fontSize={fontSizes.xl} fontWeight="bold">Crie sua conta gratuitamente</Text>
+
+                    <FormControl w="100%" alignItems="center">
+                        <FormControl.Label alignSelf="center" mb={2}>Selecione seu perfil</FormControl.Label>
+                        <Radio.Group
+                            name="userType"
+                            value={form.userType.toString()}
+                            onChange={(value) => {
+                                setForm((prev) => ({
+                                    ...prev,
+                                    userType: parseInt(value),
+                                }));
+                            }}
+                            flexDirection="row"
+                            justifyContent="center"
+                            space={5}
+                        >
+                            <Radio value="1" my={1}>Jogador</Radio>
+                            <Radio value="2" my={1}>Adm Torneios</Radio>
+                        </Radio.Group>
+                    </FormControl>
 
                     <FormControl w="100%">
                         <FormControl.Label>Seu Perfil (login)</FormControl.Label>
@@ -104,18 +125,43 @@ export default function Register() {
                         <Input keyboardType="numeric" variant="filled" bg={colors.gray[200]} onChangeText={(v) => handleInput("cpfCnpj", v)} />
                     </FormControl>
 
-                    <SelectField
-                        label="Gênero"
-                        value={form.gender}
-                        onChange={(v) => handleInput("gender", v)}
-                        options={[
-                            { label: "Masculino", value: "masculino" },
-                            { label: "Feminino", value: "feminino" },
-                            { label: "Prefiro não informar", value: "" },
-                        ]}
-                    />
+                    {/* Renderiza somente para Jogador */}
+                    {form.userType === 1 && (
+                        <>
+                            <SelectField
+                                label="Gênero"
+                                value={form.gender}
+                                onChange={(v) => handleInput("gender", v)}
+                                options={[
+                                    { label: "Masculino", value: "masculino" },
+                                    { label: "Feminino", value: "feminino" },
+                                    { label: "Prefiro não informar", value: "" },
+                                ]}
+                            />
 
-                    <DatePicker label="Data de Nascimento" date={form.birthDate} onChange={(d) => handleInput("birthDate", d)} />
+                            <DatePicker label="Data de Nascimento" date={form.birthDate} onChange={(d) => handleInput("birthDate", d)} />
+
+                            <SelectField
+                                label="Tamanho Camiseta"
+                                value={form.tShirtSize}
+                                onChange={(v) => handleInput("tShirtSize", v)}
+                                options={[
+                                    { label: "Infantil - 6", value: "Infantil - 6" },
+                                    { label: "Infantil - 8", value: "Infantil - 8" },
+                                    { label: "Infantil - 10", value: "Infantil - 10" },
+                                    { label: "Infantil - 12", value: "Infantil - 12" },
+                                    { label: "Infantil - 14", value: "Infantil - 14" },
+                                    { label: "PP", value: "PP" },
+                                    { label: "P", value: "P" },
+                                    { label: "M", value: "M" },
+                                    { label: "G", value: "G" },
+                                    { label: "GG", value: "GG" },
+                                    { label: "XG", value: "XG" },
+                                    { label: "XXG", value: "XXG" },
+                                ]}
+                            />
+                        </>
+                    )}
 
                     <PasswordInput placeholder="Senha" value={form.password} onChangeText={(v) => handleInput("password", v)} />
                     <PasswordInput placeholder="Confirmar Senha" value={form.confirmPassword} onChangeText={(v) => handleInput("confirmPassword", v)} />
@@ -127,44 +173,6 @@ export default function Register() {
                             Esta informação fica pública e com link para o Instagram no seu perfil do GoPlay
                         </Text>
                     </FormControl>
-
-                    <SelectField
-                        label="Tamanho Camiseta"
-                        value={form.tShirtSize}
-                        onChange={(v) => handleInput("tShirtSize", v)}
-                        options={[
-                            { label: "Infantil - 6", value: "Infantil - 6" },
-                            { label: "Infantil - 8", value: "Infantil - 8" },
-                            { label: "Infantil - 10", value: "Infantil - 10" },
-                            { label: "Infantil - 12", value: "Infantil - 12" },
-                            { label: "Infantil - 14", value: "Infantil - 14" },
-                            { label: "PP", value: "PP" },
-                            { label: "P", value: "P" },
-                            { label: "M", value: "M" },
-                            { label: "G", value: "G" },
-                            { label: "GG", value: "GG" },
-                            { label: "XG", value: "XG" },
-                            { label: "XXG", value: "XXG" },
-                        ]}
-                    />
-
-                    <Text mt={2}>Selecione seu perfil</Text>
-                    <Checkbox.Group
-                        accessibilityLabel="Tipo de usuário"
-                        value={form.userType !== 0 ? [form.userType.toString()] : []}
-                        onChange={(values) => {
-                            if (values.length > 0) {
-                                const selected = values[0];
-                                setForm((prev) => ({
-                                    ...prev,
-                                    userType: selected === "1" ? 1 : 2,
-                                }));
-                            }
-                        }}
-                    >
-                        <Checkbox value="1" my={1}>Jogador</Checkbox>
-                        <Checkbox value="2">Adm Torneios</Checkbox>
-                    </Checkbox.Group>
 
                     <Button mt={6} bg={colors.blue[500]} w="100%" borderRadius={20} onPress={handleSubmit}>
                         <Text fontSize={fontSizes.md} color={colors.white}>Criar minha conta</Text>

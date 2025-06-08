@@ -14,6 +14,7 @@ export interface CreateTournamentPayload {
         location: string;
         registrationFee: number;
         courtQuantity: number;
+        admUserId: string;
         categories: TournamentCategory[];
     };
 }
@@ -30,6 +31,7 @@ export interface UpdateTournamentPayload {
         location: string;
         registrationFee: number;
         courtQuantity: number;
+        admUserId: string;
         categories: TournamentCategory[];
     };
 }

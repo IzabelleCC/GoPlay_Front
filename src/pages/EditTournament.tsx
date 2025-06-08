@@ -16,6 +16,7 @@ import { TournamentService } from "../api/tournament/tournamentService";
 import DatePicker from "../components/form/DatePicker";
 import GenericModal from "../components/modals/GenericModal";
 import { RootStackParamList } from "../navigation/Routes";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Category {
   categoryType: string;
@@ -100,26 +101,35 @@ export default function EditTournament() {
   };
 
   const handleSubmit = async () => {
-    const payload = {
-      data: {
-        id,
-        name,
-        description,
-        gamesStartDate: startDate.toISOString(),
-        gamesEndDate: endDate.toISOString(),
-        registrationDeadline: registrationDeadline.toISOString(),
-        paymentDeadline: paymentDeadline.toISOString(),
-        location,
-        registrationFee: Number(fee),
-        courtQuantity: Number(courtQty),
-        categories: categories.map((c) => ({
-          categoryType: c.categoryType,
-          playerLimit: Number(c.playerLimit),
-        })),
-      },
-    };
-
     try {
+      const userId = await AsyncStorage.getItem("userId");
+
+      if (!userId) {
+        console.error("Usuário não encontrado no armazenamento.");
+        setShowModalError(true);
+        return;
+      }
+
+      const payload = {
+        data: {
+          id,
+          name,
+          description,
+          gamesStartDate: startDate.toISOString(),
+          gamesEndDate: endDate.toISOString(),
+          registrationDeadline: registrationDeadline.toISOString(),
+          paymentDeadline: paymentDeadline.toISOString(),
+          location,
+          registrationFee: Number(fee),
+          courtQuantity: Number(courtQty),
+          admUserId: userId,
+          categories: categories.map((c) => ({
+            categoryType: c.categoryType,
+            playerLimit: Number(c.playerLimit),
+          })),
+        },
+      };
+
       await TournamentService.updateTournament(payload);
       setShowModalSuccess(true);
     } catch (err) {
@@ -168,11 +178,20 @@ export default function EditTournament() {
                   bg={colors.gray[100]}
                   borderRadius={10}
                 />
+
                 <IconButton
                   icon={<MaterialIcons name="delete" size={24} color="black" />}
                   variant="ghost"
                   onPress={() => setCategoryToDelete(index)}
                 />
+
+                {index === categories.length - 1 && (
+                  <IconButton
+                    icon={<MaterialIcons name="add" size={24} color="black" />}
+                    variant="ghost"
+                    onPress={() => setCategories([...categories, { categoryType: "", playerLimit: "" }])}
+                  />
+                )}
               </HStack>
             </FormControl>
           </VStack>

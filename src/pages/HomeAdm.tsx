@@ -15,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { TournamentService } from "../api/tournament/tournamentService";
 import TournamentCard from "../components/TournamentCard";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export default function HomeAdm() {
@@ -24,9 +25,14 @@ export default function HomeAdm() {
   const [search, setSearch] = useState("");
   const [isFocused, setIsFocused] = useState(false);
 
+  
+
   const fetchTournaments = async () => {
     try {
-      const data = await TournamentService.getAllTournaments();
+      const userId = await AsyncStorage.getItem("userId");
+      const data = await TournamentService.getTournamentsByAdmUserId(userId || "");
+      const storedUserType = await AsyncStorage.getItem("userType");
+      console.log("storedUserType", storedUserType);
       setTournaments(data);
     } catch (err) {
       console.error("Erro ao carregar torneios", err);
