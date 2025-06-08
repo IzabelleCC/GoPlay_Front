@@ -6,17 +6,13 @@ import {
   Button,
   useTheme,
   ScrollView,
-  TextArea,
 } from "native-base";
-import {
-  NativeSyntheticEvent,
-  TextInputContentSizeChangeEventData,
-} from "react-native";
 import { TournamentService } from "../api/tournament/tournamentService";
 import CategoryInput from "../components/CategoryInput";
 import DatePicker from "../components/form/DatePicker";
 import GenericModal from "../components/modals/GenericModal";
 import AutoGrowingTextArea from "../components/form/AutoGrowingTextArea";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Category {
   categoryType: string;
@@ -43,8 +39,7 @@ export default function CreateTournament({ navigation }: any) {
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [showDuplicateCategoryModal, setShowDuplicateCategoryModal] =
-    useState(false);
+  const [showDuplicateCategoryModal, setShowDuplicateCategoryModal] = useState(false);
   const [invalidFields, setInvalidFields] = useState<string[]>([]);
 
   const handleAddCategory = () => {
@@ -106,27 +101,37 @@ export default function CreateTournament({ navigation }: any) {
       return;
     }
 
-    const payload = {
-      data: {
-        name,
-        description,
-        gamesStartDate: startDate.toISOString(),
-        gamesEndDate: endDate.toISOString(),
-        registrationDeadline: registrationDeadline.toISOString(),
-        paymentDeadline: paymentDeadline.toISOString(),
-        location,
-        registrationFee: Number(fee),
-        courtQuantity: Number(courtQty),
-        categories: categories
-          .filter((c) => c.categoryType.trim() && c.playerLimit.trim())
-          .map((c) => ({
-            categoryType: c.categoryType,
-            playerLimit: Number(c.playerLimit),
-          })),
-      },
-    };
-
     try {
+      const userId = await AsyncStorage.getItem("userId");
+      console.log("userId", userId);
+
+      if (!userId) {
+        console.error("Usuário não encontrado no armazenamento.");
+        setShowErrorModal(true);
+        return;
+      }
+
+      const payload = {
+        data: {
+          name,
+          description,
+          gamesStartDate: startDate.toISOString(),
+          gamesEndDate: endDate.toISOString(),
+          registrationDeadline: registrationDeadline.toISOString(),
+          paymentDeadline: paymentDeadline.toISOString(),
+          location,
+          registrationFee: Number(fee),
+          courtQuantity: Number(courtQty),
+          admUserId: userId,
+          categories: categories
+            .filter((c) => c.categoryType.trim() && c.playerLimit.trim())
+            .map((c) => ({
+              categoryType: c.categoryType,
+              playerLimit: Number(c.playerLimit),
+            })),
+        },
+      };
+
       await TournamentService.createTournament(payload);
       setShowSuccessModal(true);
     } catch (err) {
