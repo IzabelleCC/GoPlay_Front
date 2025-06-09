@@ -1,7 +1,48 @@
+export interface CategoryPlayer {
+    id: number;
+    categoryId: number;
+    firstUserId: string;
+    secondUserId: string;
+    registerStatus: number;
+    firstUserPaymentConfirmed: boolean;
+    secondUserPaymentConfirmed: boolean;
+    firstUserTxId: string | null;
+    secondUserTxId: string | null;
+    matchGroups: any[]; // tipável depois
+}
+
 export interface TournamentCategory {
+    id: number;
     categoryType: string;
     playerLimit: number;
+    tournamentId: number;
+    isDoubles: boolean;
+    categoryPlayers: CategoryPlayer[];
+    matchGroups: any[];
+    gameMatches: any[];
 }
+
+export interface Tournament {
+    id: number;
+    name: string;
+    description: string;
+    createdAt: string; // ISO date
+    gamesStartDate: string; // ISO date
+    gamesEndDate: string;   // ISO date
+    registrationDeadline: string; // ISO date
+    paymentDeadline: string;      // ISO date
+    location: string;
+    registrationFee: number;
+    isActive: boolean;
+    courtQuantity: number;
+    admUserId: string;
+    latitude: number;
+    longitude: number;
+    admUser: any;
+    categories: TournamentCategory[];
+}
+
+// Seus payloads continuam os mesmos:
 
 export interface CreateTournamentPayload {
     data: {
@@ -60,4 +101,3 @@ export interface InsertEliminationResultsPayload {
     game1: number;
     game2: number;
 }
-

@@ -24,6 +24,7 @@ export const Endpoints = Object.freeze({
     GetByUserName: "GetByUserName",
     Delete: null,
     EmailConfirmation: "emailConfirmation",
+    GetByName: "GetByName"
   }),
 
   TournamentManager: buildControllerEndpoints("TournamentManager", {
@@ -39,7 +40,7 @@ export const Endpoints = Object.freeze({
     ConfirmAttendance: "ConfirmAttendance",
     InsertGroupResults: "InsertGroupResults",
     InsertEliminationResults: "InsertEliminationResults",
-    Teste: "Teste",
+    GetCategoriesByTournamentId: "GetCategoryByTournamentId",
   }),
 
   CategoryPlayer: buildControllerEndpoints("CategoryPlayer", {

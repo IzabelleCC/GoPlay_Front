@@ -6,6 +6,7 @@ import {
   RegisterCategoryPlayerPayload,
   UpdateCategoryPlayerPayload,
   GeneratePaymentParams,
+  GeneratePaymentResponse, // adicionado
 } from "./categoryPlayerTypes";
 
 export const CategoryPlayerService = {
@@ -74,12 +75,12 @@ export const CategoryPlayerService = {
       const response = await axios.get(`${Endpoints.CategoryPlayer.GetByUser}/${userId}`);
       return response.data;
     } catch (error: any) {
-      console.error("Erro ao buscar jogadores por usuário:", error);
+      console.error("Erro ao buscar inscrições do usuário:", error);
       throw error;
     }
   },
 
-  async generatePayment(params: GeneratePaymentParams) {
+  async generatePayment(params: GeneratePaymentParams): Promise<GeneratePaymentResponse> {
     try {
       const response = await axios.post(Endpoints.CategoryPlayer.GeneratePayment, null, {
         params: {

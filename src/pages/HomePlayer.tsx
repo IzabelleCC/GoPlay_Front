@@ -1,70 +1,98 @@
-import { VStack, Image, Button, Text, Box, Input, useTheme } from "native-base";
-import Logo from "../assets/logo.png";
-import { MaterialIcons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
+import {
+  VStack,
+  Text,
+  useTheme,
+  ScrollView,
+  Box,
+  Spinner,
+  Center,
+} from "native-base";
+import { CategoryPlayerService } from "../api/categoryPlayer/categoryPlayerService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { CategoryPlayerResponse } from "../api/categoryPlayer/categoryPlayerTypes";
+import { RegisterStatusEnum } from "../@types/enums";
 
-interface NavigationType {
-    navigate: (route: string) => void;
-}
+export default function HomePlayer({ navigation }: any) {
+  const { colors, fontSizes } = useTheme();
+  const [loading, setLoading] = useState(true);
+  const [inscricoes, setInscricoes] = useState<CategoryPlayerResponse[]>([]);
 
-export default function HomePlayer({ navigation }: { navigation: NavigationType }) {
-    const { colors, fontSizes } = useTheme();
+  useEffect(() => {
+    async function loadInscricoes() {
+      try {
+        const userId = await AsyncStorage.getItem("userId");
+        if (!userId) throw new Error("Usuário não encontrado.");
 
-    return (
-        <VStack
-            flex={1}
-            bg={colors.white}
-            px={5}
-            pt={10}
-            justifyContent="space-between"
-        >
-            <VStack alignItems="center" space={6}>
-                <Image
-                    source={Logo}
-                    alt="Logo"
-                    width={70}
-                    height={70}
-                    resizeMode="contain"
-                />
+        const response = await CategoryPlayerService.getCategoryPlayersByUser(userId);
 
-                <Input
-                    placeholder="Buscar torneios"
-                    variant="rounded"
-                    fontSize={fontSizes.md}
-                    textAlign="center"
-                    bg={colors.gray[100]}
-                    w="90%"
-                    borderRadius={20}
-                />
+        setInscricoes(response);
+      } catch (error) {
+        console.error("Erro ao carregar inscrições:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-                <Box
-                    w="100%"
-                    bg={colors.gray[200]}
-                    p={4}
-                    borderRadius={12}
-                    shadow={1}
-                    alignItems="center"
-                    mt={4}
-                >
-                    <Text fontSize={fontSizes.lg} fontWeight="bold" mb={2}>
-                        Meus Torneios PLAYER
-                    </Text>
-                    <Text fontSize={fontSizes.sm} color="gray.600">
-                        Nenhum torneio disponível no momento.
-                    </Text>
-                </Box>
-            </VStack>
+    loadInscricoes();
+  }, []);
 
-            <Button
-                mt={6}
-                mb={4}
-                alignSelf="center"
-                borderRadius="full"
-                bg={colors.blue[500]}
-                onPress={() => navigation.navigate("MyProfile")}
-                p={3}
+  const getStatusDescricao = (status: number) => {
+    switch (status) {
+      case RegisterStatusEnum.InscricaoRealizada:
+        return "Inscrição Realizada";
+      case RegisterStatusEnum.AguardandoConfirmacaoPagamento:
+        return "Aguardando Confirmação de Pagamento";
+      case RegisterStatusEnum.InscricaoConfirmada:
+        return "Inscrição Confirmada";
+      default:
+        return "Status Desconhecido";
+    }
+  };
+
+  return (
+    <ScrollView flex={1} bg={colors.white} p={4}>
+      <VStack alignItems="center" mb={6}>
+        <Text fontSize={fontSizes.lg} fontWeight="bold" mt={2}>
+          Minhas Inscrições
+        </Text>
+      </VStack>
+
+      {loading ? (
+        <Center flex={1}>
+          <Spinner size="lg" color={colors.blue[500]} />
+          <Text mt={4}>Carregando inscrições...</Text>
+        </Center>
+      ) : inscricoes.length === 0 ? (
+        <Text textAlign="center" color={colors.gray[500]}>
+          Nenhuma inscrição encontrada.
+        </Text>
+      ) : (
+        <VStack space={4}>
+          {inscricoes.map((inscricao) => (
+            <Box
+              key={inscricao.id}
+              p={4}
+              bg={colors.gray[100]}
+              borderRadius={10}
             >
-                <MaterialIcons name="person" size={28} color="white" />
-            </Button>
+              <Text fontWeight="bold" mb={1}>
+                ID da Inscrição: {inscricao.id}
+              </Text>
+              <Text mb={1}>Categoria ID: {inscricao.categoryId}</Text>
+              <Text mb={1}>Status: {getStatusDescricao(inscricao.registerStatus)}</Text>
+              <Text mb={1}>
+                Pagamento 1:{" "}
+                {inscricao.firstUserPaymentConfirmed ? "Confirmado" : "Pendente"}
+              </Text>
+              <Text>
+                Pagamento 2:{" "}
+                {inscricao.secondUserPaymentConfirmed ? "Confirmado" : "Pendente"}
+              </Text>
+            </Box>
+          ))}
         </VStack>
-    );
+      )}
+    </ScrollView>
+  );
 }

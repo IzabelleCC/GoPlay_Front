@@ -13,6 +13,11 @@ import EditProfile from "../pages/EditProfile";
 import CreateTournament from "../pages/CreateTournament";
 import EditTournament from "../pages/EditTournament";
 
+import PlayerTournaments from "../pages/PlayerTournaments";
+import TournamentDetails from "../pages/TournamentDetails";
+import CategoryRegister from "../pages/CategoryRegister";
+import PaymentPage from "../pages/PaymentPage";
+
 export type RootStackParamList = {
     Inicial: undefined;
     Login: undefined;
@@ -23,6 +28,10 @@ export type RootStackParamList = {
     EditProfile: undefined;
     CreateTournament: undefined;
     EditTournament: undefined;
+    PlayerTournaments: undefined;
+    TournamentDetails: { tournamentId: number };
+    CategoryRegister: { tournamentId: number; categoryId: number };
+    PaymentPage: { categoryPlayerId: number };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -40,6 +49,10 @@ const linking = {
             EditProfile: "editprofile",
             CreateTournament: "createtournament",
             EditTournament: "edittournament",
+            PlayerTournaments: "playertournaments",
+            TournamentDetails: "tournamentdetails/:tournamentId",
+            CategoryRegister: "categoryregister/:tournamentId/:categoryId",
+            PaymentPage: "paymentpage/:categoryPlayerId",
         },
     },
 };
@@ -57,6 +70,10 @@ export default function Routes() {
                 <Stack.Screen name="EditProfile" component={EditProfile} />
                 <Stack.Screen name="CreateTournament" component={CreateTournament} />
                 <Stack.Screen name="EditTournament" component={EditTournament} />
+                <Stack.Screen name="PlayerTournaments" component={PlayerTournaments} />
+                <Stack.Screen name="TournamentDetails" component={TournamentDetails} />
+                <Stack.Screen name="CategoryRegister" component={CategoryRegister} />
+                <Stack.Screen name="PaymentPage" component={PaymentPage} /> 
             </Stack.Navigator>
         </NavigationContainer>
     );

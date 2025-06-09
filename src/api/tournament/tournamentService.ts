@@ -120,5 +120,15 @@ export const TournamentService = {
       throw error;
     }
   },
-  
+
+  async getCategoriesByTournamentId(tournamentId: number) {
+    try {
+      const response = await axios.get(`${Endpoints.TournamentManager.GetCategoriesByTournamentId}/${tournamentId}`);
+      return response.data;
+    } catch (error: any) {
+      console.error("Erro ao buscar categorias do torneio:", error);
+      throw error;
+    }
+  }
+
 };
