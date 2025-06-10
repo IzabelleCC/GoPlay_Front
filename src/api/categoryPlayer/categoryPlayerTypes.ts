@@ -64,3 +64,28 @@ export interface CategoryPlayerResponse {
   secondUserTxId: string | null;
   matchGroups: any[];
 }
+
+export interface CategoryPlayerFullInfoResponse {
+  categoryPlayer: {
+    id: number;
+    categoryId: number;
+    registerStatus: number;
+  };
+  firstUserName: string;
+  secondUserName: string;
+  category: {
+    id: number;
+    categoryType: string;
+    isDoubles: boolean;
+  };
+  registerCount: number;
+  tournament: {
+    id: number;
+    name: string;
+    gamesStartDate: string;
+    gamesEndDate: string;
+    registrationDeadline: string;
+    status: number;
+  };
+}
+

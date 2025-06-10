@@ -1,12 +1,11 @@
-// CategoryPlayerService.ts
-
 import axios from "axios";
 import { Endpoints } from "../endpoints";
 import {
   RegisterCategoryPlayerPayload,
   UpdateCategoryPlayerPayload,
   GeneratePaymentParams,
-  GeneratePaymentResponse, // adicionado
+  GeneratePaymentResponse,
+  CategoryPlayerFullInfoResponse,
 } from "./categoryPlayerTypes";
 
 export const CategoryPlayerService = {
@@ -91,6 +90,16 @@ export const CategoryPlayerService = {
       return response.data;
     } catch (error: any) {
       console.error("Erro ao gerar pagamento:", error);
+      throw error;
+    }
+  },
+
+  async getCategoryPlayersFullInfoByUser(userId: string): Promise<CategoryPlayerFullInfoResponse[]> {
+    try {
+      const response = await axios.get(`${Endpoints.CategoryPlayer.ByUserIdReturnsFullInfo}/${userId}`);
+      return response.data;
+    } catch (error: any) {
+      console.error("Erro ao buscar inscrições completas do usuário:", error);
       throw error;
     }
   },
