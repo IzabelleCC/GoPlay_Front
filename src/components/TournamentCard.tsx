@@ -1,108 +1,119 @@
-import { Box, Button, HStack, IconButton, Text, VStack, useTheme, Tooltip } from "native-base";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useState } from "react";
-import GenericModal from "./modals/GenericModal";
-import { TournamentService } from "../api/tournament/tournamentService";
+import { Box, Button, HStack, Icon, Image, Text, VStack, useTheme } from "native-base";
+import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import dayjs from "dayjs";
 
 interface Props {
   id: number;
-  tournamentName: string;
-  onEdit: () => void;
-  onInsertResult: () => void;
-  onDeleted: () => void;
+  name: string;
+  imageUrl?: string;
+  organizerUserName: string;
+  organizerName: string;
+  city: string;
+  state: string;
+  totalCategories: number;
+  openCategories: number;
+  registrationDeadline: string;
+  onPress: () => void;
 }
 
-export default function TournamentCard({
+export default function TournamentCardPlayer({
   id,
-  tournamentName,
-  onEdit,
-  onInsertResult,
-  onDeleted,
+  name,
+  imageUrl,
+  organizerUserName,
+  organizerName,
+  city,
+  state,
+  totalCategories,
+  openCategories,
+  registrationDeadline,
+  onPress,
 }: Props) {
   const { colors, fontSizes } = useTheme();
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-  const handleDelete = async () => {
-    try {
-      await TournamentService.deleteTournament(id);
-      onDeleted();
-    } catch (error) {
-      console.error("Erro ao excluir torneio:", error);
-    } finally {
-      setShowConfirmModal(false);
-    }
+  const daysUntilRegistrationDeadline = (registrationDeadline: string) => {
+    const today = dayjs();
+    const deadline = dayjs(registrationDeadline);
+    const diff = deadline.diff(today, "day");
+    return diff >= 0 ? diff : 0;
   };
 
   return (
-    <>
-      <Box
-        w="100%"
-        bg={colors.gray[200]}
-        p={4}
-        borderRadius={12}
-        shadow={1}
-        alignItems="center"
-      >
-        <VStack space={4} alignItems="center" w="100%">
-          <Tooltip
-            label={tournamentName}
-            placement="top"
-            openDelay={300}
-            bg={colors.gray[300]}
-            _text={{ color: colors.black }}
-          >
-            <Text
-              fontSize={fontSizes.lg}
-              fontWeight="bold"
-              textAlign="center"
-              isTruncated
-              w="100%"
-              maxW="350"
-            >
-              {tournamentName}
+    <Box
+      w="100%"
+      bg={colors.white}
+      p={4}
+      borderRadius={12}
+      shadow={1}
+      borderWidth={1}
+      borderColor={colors.gray[200]}
+      mb={3}
+    >
+      {/* Header */}
+      <HStack alignItems="center" space={3} mb={2}>
+        <Image
+          source={{
+            uri: imageUrl
+              ? imageUrl
+              : "https://via.placeholder.com/60.png?text=Torneio",
+          }}
+          alt="Imagem do Torneio"
+          borderRadius={50}
+          width={50}
+          height={50}
+        />
+
+        <VStack flex={1}>
+          <Text fontWeight="bold" fontSize={fontSizes.md} color={colors.blue[800]}>
+            {name}
+          </Text>
+          <Text fontSize="xs" color={colors.black}>
+            @{organizerUserName} • {organizerName}
+          </Text>
+          <HStack alignItems="center" space={1}>
+            <Icon as={MaterialIcons} name="place" size="xs" color={colors.gray[300]} />
+            <Text fontSize="xs" color={colors.gray[300]}>
+              {city} - {state}
             </Text>
-          </Tooltip>
-
-          <HStack space={4} alignItems="center">
-            <Button
-              px={5}
-              py={2}
-              bg={colors.blue[500]}
-              borderRadius={12}
-              onPress={onInsertResult}
-              _text={{ fontSize: fontSizes.md, fontWeight: "bold" }}
-            >
-              Inserir Resultados
-            </Button>
-
-            <IconButton
-              icon={<MaterialIcons name="edit" size={28} color="black" />}
-              onPress={onEdit}
-              aria-label="Editar"
-            />
-
-            <IconButton
-              icon={<MaterialIcons name="delete" size={28} color="black" />}
-              onPress={() => setShowConfirmModal(true)}
-              aria-label="Excluir"
-            />
           </HStack>
         </VStack>
-      </Box>
+      </HStack>
 
-      <GenericModal
-        isOpen={showConfirmModal}
-        onClose={() => setShowConfirmModal(false)}
-        title="Confirmação"
-        body={
-          <Text textAlign="center">
-            Deseja realmente excluir o torneio "{tournamentName}"?
+      {/* Info */}
+      <HStack justifyContent="space-between" mb={3}>
+        <VStack alignItems="center">
+          <HStack alignItems="center" space={1}>
+            <Icon as={MaterialCommunityIcons} name="format-list-bulleted" size="sm" color={colors.black} />
+            <Text fontWeight="bold" fontSize={fontSizes.sm} color={colors.black}>
+              {totalCategories} Categorias
+            </Text>
+          </HStack>
+          <Text fontSize="xs" color={colors.gray[300]}>
+            {openCategories} com inscr. abertas
           </Text>
-        }
-        confirmText="Confirmar"
-        onConfirm={handleDelete}
-        variant="confirm-delete"
-      />
-    </>
+        </VStack>
+
+        <VStack alignItems="center">
+          <HStack alignItems="center" space={1}>
+            <Icon as={MaterialIcons} name="access-time" size="sm" color={colors.black} />
+            <Text fontWeight="bold" fontSize={fontSizes.sm} color={colors.black}>
+              {daysUntilRegistrationDeadline(registrationDeadline)} dias
+            </Text>
+          </HStack>
+          <Text fontSize="xs" color={colors.gray[300]}>
+            Fim das inscrições
+          </Text>
+        </VStack>
+      </HStack>
+
+      {/* Botão */}
+      <Button
+        bg="green.500"
+        _pressed={{ bg: "green.600" }}
+        onPress={onPress}
+      >
+        Inscreva-se
+      </Button>
+    </Box>
   );
 }

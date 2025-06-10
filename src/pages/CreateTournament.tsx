@@ -13,6 +13,8 @@ import DatePicker from "../components/form/DatePicker";
 import GenericModal from "../components/modals/GenericModal";
 import AutoGrowingTextArea from "../components/form/AutoGrowingTextArea";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import LocationInput from "../components/form/LocationInput";
+import { CreateTournamentPayload } from "../api/tournament/tournamentTypes";
 
 interface Category {
   categoryType: string;
@@ -25,6 +27,8 @@ export default function CreateTournament({ navigation }: any) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
   const [fee, setFee] = useState("");
   const [courtQty, setCourtQty] = useState("");
 
@@ -75,6 +79,7 @@ export default function CreateTournament({ navigation }: any) {
     if (!name.trim()) missing.push("Nome do Torneio");
     if (!description.trim()) missing.push("Descrição");
     if (!location.trim()) missing.push("Local");
+    if (latitude === null || longitude === null) missing.push("Selecione um local válido");
     if (!fee.trim()) missing.push("Valor da inscrição");
     if (!courtQty.trim()) missing.push("Quantidade de quadras");
 
@@ -111,7 +116,8 @@ export default function CreateTournament({ navigation }: any) {
         return;
       }
 
-      const payload = {
+      // montar o payload com o tipo CreateTournamentPayload
+      const payload: CreateTournamentPayload = {
         data: {
           name,
           description,
@@ -120,6 +126,8 @@ export default function CreateTournament({ navigation }: any) {
           registrationDeadline: registrationDeadline.toISOString(),
           paymentDeadline: paymentDeadline.toISOString(),
           location,
+          latitude: latitude!, // sabemos que não é null aqui
+          longitude: longitude!, // sabemos que não é null aqui
           registrationFee: Number(fee),
           courtQuantity: Number(courtQty),
           admUserId: userId,
@@ -161,13 +169,15 @@ export default function CreateTournament({ navigation }: any) {
           placeholder="Descrição"
         />
 
-        <Input
-          placeholder="Local"
+        <LocationInput
           value={location}
-          onChangeText={setLocation}
-          bg={colors.gray[100]}
-          borderRadius={10}
+          onChange={(address, lat, lng) => {
+            setLocation(address);
+            setLatitude(lat);
+            setLongitude(lng);
+          }}
         />
+
         <Input
           placeholder="Valor da inscrição"
           value={fee}

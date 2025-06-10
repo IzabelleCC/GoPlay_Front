@@ -13,7 +13,13 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 
 type ModalType = "info" | "success" | "error";
-type ModalVariant = "info" | "success" | "error" | "confirm-delete" | "reset-password";
+type ModalVariant =
+    | "info"
+    | "success"
+    | "error"
+    | "confirm-delete"
+    | "reset-password"
+    | "confirm-payment";
 
 interface GenericModalProps {
     isOpen: boolean;
@@ -96,6 +102,30 @@ export default function GenericModal({
                         onPress={onClose}
                     >
                         <Text color={colors.gray[600]} fontWeight="bold">Cancelar</Text>
+                    </Button>
+                </VStack>
+            );
+        }
+
+        if (variant === "confirm-payment") {
+            return (
+                <VStack space={3} mt={6} w="100%">
+                    <Button
+                        bg={colors.blue[500]}
+                        borderRadius={20}
+                        onPress={onConfirm}
+                        isLoading={isLoading}
+                        _pressed={{ opacity: 0.9 }}
+                    >
+                        <Text color="white" fontWeight="bold">{confirmText}</Text>
+                    </Button>
+                    <Button
+                        variant="outline"
+                        borderColor={colors.gray[400]}
+                        borderRadius={20}
+                        onPress={onClose}
+                    >
+                        <Text color={colors.gray[600]} fontWeight="bold">Fechar</Text>
                     </Button>
                 </VStack>
             );

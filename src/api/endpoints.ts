@@ -24,6 +24,7 @@ export const Endpoints = Object.freeze({
     GetByUserName: "GetByUserName",
     Delete: null,
     EmailConfirmation: "emailConfirmation",
+    GetByName: "GetByName"
   }),
 
   TournamentManager: buildControllerEndpoints("TournamentManager", {
@@ -35,5 +36,22 @@ export const Endpoints = Object.freeze({
     Create: null,
     Update: null,
     Delete: null,
+    GenerateGroupMatches: "GenerateGroupMatches",
+    ConfirmAttendance: "ConfirmAttendance",
+    InsertGroupResults: "InsertGroupResults",
+    InsertEliminationResults: "InsertEliminationResults",
+    GetCategoriesByTournamentId: "GetCategoryByTournamentId",
+  }),
+
+  CategoryPlayer: buildControllerEndpoints("CategoryPlayer", {
+    Register: "Register", // POST /api/CategoryPlayer/Register
+    GetAll: null,         // GET /api/CategoryPlayer
+    Update: null,         // PUT /api/CategoryPlayer
+    GetById: null,        // GET /api/CategoryPlayer/{id}
+    Delete: null,         // DELETE /api/CategoryPlayer/{id}
+    GetByCategory: "ByCategory", // GET /api/CategoryPlayer/ByCategory/{categoryId}
+    GetByUser: "ByUser",         // GET /api/CategoryPlayer/ByUser/{userId}
+    GeneratePayment: "GeneratePayment", // POST /api/CategoryPlayer/GeneratePayment
+    ByUserIdReturnsFullInfo: "GetByUserIdReturnsFullInfo",
   }),
 });

@@ -42,3 +42,17 @@ export interface PasswordResetLinkPayload {
     };
 }
 
+export interface UserBasicData {
+    id: string;
+    name: string;
+    userName: string;
+    email: string;
+    phoneNumber?: string;
+    gender?: string;
+    birthDate?: string;
+    tShirtSize?: string;
+    userType: number;
+}
+
+
+

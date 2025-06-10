@@ -3,6 +3,9 @@ import { Endpoints } from "../endpoints";
 import {
   CreateTournamentPayload,
   UpdateTournamentPayload,
+  ConfirmAttendancePayload,
+  InsertGroupResultsPayload,
+  InsertEliminationResultsPayload,
 } from "./tournamentTypes";
 
 export const TournamentService = {
@@ -75,4 +78,57 @@ export const TournamentService = {
       throw error;
     }
   },
+
+  // NOVOS MÉTODOS
+
+  async generateGroupMatches(tournamentId: number) {
+    try {
+      const response = await axios.post(`${Endpoints.TournamentManager.GenerateGroupMatches}/${tournamentId}`);
+      return response.data;
+    } catch (error: any) {
+      console.error("Erro ao gerar grupos:", error);
+      throw error;
+    }
+  },
+
+  async confirmAttendance(payload: ConfirmAttendancePayload) {
+    try {
+      const response = await axios.post(Endpoints.TournamentManager.ConfirmAttendance, payload);
+      return response.data;
+    } catch (error: any) {
+      console.error("Erro ao confirmar presença:", error);
+      throw error;
+    }
+  },
+
+  async insertGroupResults(payload: InsertGroupResultsPayload) {
+    try {
+      const response = await axios.post(Endpoints.TournamentManager.InsertGroupResults, payload);
+      return response.data;
+    } catch (error: any) {
+      console.error("Erro ao inserir resultados dos grupos:", error);
+      throw error;
+    }
+  },
+
+  async insertEliminationResults(payload: InsertEliminationResultsPayload) {
+    try {
+      const response = await axios.post(Endpoints.TournamentManager.InsertEliminationResults, payload);
+      return response.data;
+    } catch (error: any) {
+      console.error("Erro ao inserir resultados de eliminatórias:", error);
+      throw error;
+    }
+  },
+
+  async getCategoriesByTournamentId(tournamentId: number) {
+    try {
+      const response = await axios.get(`${Endpoints.TournamentManager.GetCategoriesByTournamentId}/${tournamentId}`);
+      return response.data;
+    } catch (error: any) {
+      console.error("Erro ao buscar categorias do torneio:", error);
+      throw error;
+    }
+  }
+
 };

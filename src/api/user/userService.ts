@@ -80,4 +80,15 @@ export const UserService = {
             throw error;
         }
     },
+
+    async searchUsersByName(name: string) {
+        try {
+            const response = await axios.get(`${Endpoints.UserManager.GetByName}/${encodeURIComponent(name)}`);
+            return response.data;
+        } catch (error: any) {
+            console.error("Erro ao buscar usuários por nome:", error);
+            throw error;
+        }
+    }
+    
 };
