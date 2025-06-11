@@ -12,11 +12,11 @@ import MyProfile from "../pages/MyProfile";
 import EditProfile from "../pages/EditProfile";
 import CreateTournament from "../pages/CreateTournament";
 import EditTournament from "../pages/EditTournament";
-
 import PlayerTournaments from "../pages/PlayerTournaments";
 import TournamentDetails from "../pages/TournamentDetails";
 import CategoryRegister from "../pages/CategoryRegister";
 import PaymentPage from "../pages/PaymentPage";
+import CategoryDetails from "../pages/CategoryDetails";
 
 export type RootStackParamList = {
     Inicial: undefined;
@@ -32,6 +32,7 @@ export type RootStackParamList = {
     TournamentDetails: { tournamentId: number };
     CategoryRegister: { tournamentId: number; categoryId: number };
     PaymentPage: { categoryPlayerId: number };
+    CategoryDetails: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -53,6 +54,7 @@ const linking = {
             TournamentDetails: "tournamentdetails/:tournamentId",
             CategoryRegister: "categoryregister/:tournamentId/:categoryId",
             PaymentPage: "paymentpage/:categoryPlayerId",
+            CategoryDetails: "categorydetails",
         },
     },
 };
@@ -74,6 +76,7 @@ export default function Routes() {
                 <Stack.Screen name="TournamentDetails" component={TournamentDetails} />
                 <Stack.Screen name="CategoryRegister" component={CategoryRegister} />
                 <Stack.Screen name="PaymentPage" component={PaymentPage} /> 
+                <Stack.Screen name="CategoryDetails" component={CategoryDetails} />
             </Stack.Navigator>
         </NavigationContainer>
     );
