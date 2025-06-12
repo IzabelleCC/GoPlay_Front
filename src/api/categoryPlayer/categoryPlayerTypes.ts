@@ -1,11 +1,9 @@
-// Payload para POST /api/CategoryPlayer/Register
 export interface RegisterCategoryPlayerPayload {
   categoryId: number;
   firstUserId: string;
   secondUserId: string;
 }
 
-// Payload para PUT /api/CategoryPlayer
 export interface UpdateCategoryPlayerPayload {
   id: number;
   firstUserId: string;
@@ -14,7 +12,6 @@ export interface UpdateCategoryPlayerPayload {
   secondUserPaymentConfirmed: boolean;
 }
 
-// Parâmetros de query para POST /api/CategoryPlayer/GeneratePayment
 export interface GeneratePaymentParams {
   registrationId: number;
   userId: string;
@@ -87,5 +84,30 @@ export interface CategoryPlayerFullInfoResponse {
     registrationDeadline: string;
     status: number;
   };
+}
+
+export interface TournamentMatchesResultDto {
+  tournamentId: number;
+  tournamentName: string;
+  groups: CategoryGroupsDto[];
+}
+
+export interface CategoryGroupsDto {
+  categoryId: number;
+  categoryType: string;
+  groups: GroupDto[];
+}
+
+export interface GroupDto {
+  groupNumber: number;
+  players: GroupPlayerDto[];
+}
+
+export interface GroupPlayerDto {
+  id: number;
+  firstUserId: string;
+  firstUserName: string;
+  secondUserId: string;
+  secondUserName: string;
 }
 

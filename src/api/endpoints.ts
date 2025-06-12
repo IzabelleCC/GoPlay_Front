@@ -53,5 +53,6 @@ export const Endpoints = Object.freeze({
     GetByUser: "ByUser",         // GET /api/CategoryPlayer/ByUser/{userId}
     GeneratePayment: "GeneratePayment", // POST /api/CategoryPlayer/GeneratePayment
     ByUserIdReturnsFullInfo: "GetByUserIdReturnsFullInfo",
+    GetMatchGroupByCategoryId: "GetMatchGroupByCategoryId",
   }),
 });

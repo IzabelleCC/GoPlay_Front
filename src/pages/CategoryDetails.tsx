@@ -55,37 +55,37 @@ export default function CategoryDetails() {
 
     const getTournamentBadgeLabel = (status: number) => {
         switch (status) {
-          case 0:
-          case 1:
-            return "Inscrições Abertas";
-          case 2:
-            return "Inscrições Encerradas";
-          case 3:
-            return "Em Andamento";
-          case 4:
-            return "Concluído";
-          case 5:
-            return "Chaves Geradas";
-          default:
-            return "Status Desconhecido";
+            case 0:
+            case 1:
+                return "Inscrições Abertas";
+            case 2:
+                return "Inscrições Encerradas";
+            case 3:
+                return "Em Andamento";
+            case 4:
+                return "Concluído";
+            case 5:
+                return "Chaves Geradas";
+            default:
+                return "Status Desconhecido";
         }
-      };
-    
-      const getTournamentBadgeColor = (status: number) => {
+    };
+
+    const getTournamentBadgeColor = (status: number) => {
         switch (status) {
-          case 4:
-            return colors.gray[200];
-          case 0:
-          case 1:
-          case 3:
-          case 5:
-            return "green.500";
-          case 2:
-            return "red.500";
-          default:
-            return colors.gray[300];
+            case 4:
+                return colors.gray[200];
+            case 0:
+            case 1:
+            case 3:
+            case 5:
+                return "green.500";
+            case 2:
+                return "red.500";
+            default:
+                return colors.gray[300];
         }
-      };
+    };
 
     const handleGenerateMatches = async () => {
         try {
@@ -107,11 +107,11 @@ export default function CategoryDetails() {
             <VStack alignItems="center" mb={6}>
                 <Image
                     source={{
-                        uri: "https://via.placeholder.com/120.png?text=Torneio",
+                        uri: "https://itaguara.com/wp-content/uploads/2022/04/2-beach-soccer-thumb.jpg",
                     }}
                     alt="Imagem do Torneio"
-                    borderRadius={60}
-                    width={100}
+                    borderRadius={6}
+                    width={500}
                     height={100}
                     mb={3}
                 />
@@ -166,12 +166,12 @@ export default function CategoryDetails() {
                             <HStack space={3} alignItems="center" mb={2}>
                                 <Image
                                     source={{
-                                        uri: "https://via.placeholder.com/60.png?text=Circuito",
+                                        uri: "https://img.favpng.com/4/19/3/beach-tennis-tennis-t-shirt-serve-png-favpng-dsZSu0xit617YDdkPWYfyUuxR.jpg",
                                     }}
                                     alt="Imagem Categoria"
                                     borderRadius={30}
-                                    width={50}
-                                    height={50}
+                                    width={70}
+                                    height={70}
                                 />
                                 <VStack flex={1}>
                                     <Text
@@ -222,17 +222,17 @@ export default function CategoryDetails() {
                                     {/* Duplas/Inscritos */}
                                     <VStack alignItems="center">
                                         <Text fontSize="lg" fontWeight="bold" color={colors.black}>
-                                            {cat.categoryPlayers.length}
+                                            {cat.registerCount}
                                         </Text>
                                         <Text fontSize="xs" color={colors.black}>
                                             {cat.isDoubles ? "Duplas" : "Inscritos"}
                                         </Text>
                                     </VStack>
 
-                                    {/* Jogos */}
+                                    {/* Jogos - não vem mais na API, colocar 0 */}
                                     <VStack alignItems="center">
                                         <Text fontSize="lg" fontWeight="bold" color={colors.black}>
-                                            {cat.gameMatches.length}
+                                            0
                                         </Text>
                                         <Text fontSize="xs" color={colors.black}>
                                             Jogos
@@ -242,12 +242,35 @@ export default function CategoryDetails() {
 
                                 {/* Ícones Horários + Chaves */}
                                 <HStack space={4}>
-                                    <Button variant="ghost" p={2}>
-                                        <MaterialIcons name="calendar-today" size={20} color="black" />
-                                    </Button>
-                                    <Button variant="ghost" p={2}>
-                                        <MaterialIcons name="emoji-events" size={20} color="black" />
-                                    </Button>
+                                    {/* Botão Horário */}
+                                    <VStack alignItems="center">
+                                        <Button variant="ghost" p={2}>
+                                            <MaterialIcons name="calendar-today" size={30} color="black" />
+                                        </Button>
+                                        <Text fontSize="xs" color={colors.black}>
+                                            Horário
+                                        </Text>
+                                    </VStack>
+
+                                    {/* Botão Chaves */}
+                                    <VStack alignItems="center">
+                                        <Button
+                                            variant="ghost"
+                                            p={2}
+                                            onPress={() =>
+                                                navigation.navigate("MatchGroup", {
+                                                    categoryId: cat.id,
+                                                    tournamentId: tournamentId,
+                                                    categoryName: cat.categoryType,
+                                                })
+                                            }
+                                        >
+                                            <MaterialIcons name="emoji-events" size={30} color="black" />
+                                        </Button>
+                                        <Text fontSize="xs" color={colors.black}>
+                                            Chaves
+                                        </Text>
+                                    </VStack>
                                 </HStack>
                             </HStack>
                         </Box>
