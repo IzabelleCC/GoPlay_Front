@@ -33,6 +33,9 @@ export default function MatchGroup() {
         3: 12,
     });
 
+    // IDs das duplas expandidas
+    const [expandedIds, setExpandedIds] = useState<number[]>([]);
+
     const fetchMatchGroups = async () => {
         try {
             setLoading(true);
@@ -65,8 +68,8 @@ export default function MatchGroup() {
                 source={{ uri: "https://www.hhcc.co.in/wp-content/plugins/business_reviews/photos/5dd3d47d719e11574163581.png" }}
                 alt="Avatar 1"
                 borderRadius={50}
-                width={8}
-                height={8}
+                width={10}
+                height={10}
                 position="absolute"
                 left={0}
                 zIndex={1}
@@ -75,10 +78,10 @@ export default function MatchGroup() {
                 source={{ uri: "https://www.hhcc.co.in/wp-content/plugins/business_reviews/photos/5dd3d47d719e11574163581.png" }}
                 alt="Avatar 2"
                 borderRadius={50}
-                width={8}
-                height={8}
+                width={10}
+                height={10}
                 position="absolute"
-                left={5}
+                left={7}
                 zIndex={0}
             />
         </ZStack>
@@ -98,11 +101,11 @@ export default function MatchGroup() {
                     height={60}
                     mb={2}
                 />
-                <Text fontSize={fontSizes.md} fontWeight="bold" textAlign="center">
+                <Text fontSize={fontSizes.xl} fontWeight="bold" textAlign="center" color={colors.blue[800]}>
                     {matchGroupData?.tournamentName || "Nome do Torneio"}
                 </Text>
-                <Text fontSize={fontSizes.sm} color={colors.gray[600]} textAlign="center">
-                    {matchGroupData?.groups[0]?.categoryType || "Categoria"}
+                <Text fontSize={fontSizes.lg} color={colors.gray[800]} fontWeight="bold" textAlign="center">
+                    {matchGroupData?.groups[0]?.categoryName.toUpperCase() || "Categoria"}
                 </Text>
             </VStack>
 
@@ -112,17 +115,17 @@ export default function MatchGroup() {
                     Fase de Grupos
                 </Text>
                 <VStack alignItems="center">
-                    <Icon as={MaterialIcons} name="arrow-forward" size={5} color="black" />
+                    <Icon as={MaterialIcons} name="arrow-forward" size={7} color="black" />
                     <Button
-                        bg={colors.gray[300]}
+                        bg={colors.white}
                         borderRadius="full"
                         px={2}
-                        py={1}
-                        mt={1}
+                        py={0}
+                        mt={0}
                         onPress={() => navigation.navigate("QuarterFinal")}
                         _pressed={{ opacity: 0.8 }}
                     >
-                        <Text fontSize="xs" fontWeight="bold" color="black">
+                        <Text fontSize="md" fontWeight="bold" color="black">
                             QF
                         </Text>
                     </Button>
@@ -169,8 +172,8 @@ export default function MatchGroup() {
                                         </Text>
 
                                         <Button
-                                            bg={colors.gray[300]}
-                                            borderRadius="full"
+                                            bg={colors.gray[100]}
+                                            borderRadius={15}
                                             px={3}
                                             py={1}
                                             height={8}
@@ -183,53 +186,99 @@ export default function MatchGroup() {
                                                 <Text fontSize="xs" color={colors.black}>
                                                     N° Quadra
                                                 </Text>
-                                                <Text fontSize="sm" fontWeight="bold" color={colors.black}>
+                                                <Text fontSize="md" fontWeight="bold" color={colors.black}>
                                                     {quadras[groupDto.groupNumber] || "-"}
                                                 </Text>
-                                                <Icon as={MaterialIcons} name="arrow-forward" size={4} color="black" />
+                                                <Icon as={MaterialIcons} name="arrow-forward" size={5} color="black" />
                                             </HStack>
                                         </Button>
                                     </HStack>
 
                                     {/* Lista de duplas */}
-                                    {groupDto.players.map((player, index) => (
-                                        <HStack
-                                            key={player.id}
-                                            justifyContent="space-between"
-                                            alignItems="center"
-                                            mb={2}
-                                        >
-                                            <HStack space={3} alignItems="center" flex={1}>
-                                                {renderDoubleAvatar()}
-                                                <VStack maxW="70%">
-                                                    <Text
-                                                        color={colors.black}
-                                                        fontSize={fontSizes.sm}
-                                                        numberOfLines={1}
-                                                        ellipsizeMode="tail"
-                                                    >
-                                                        {player.firstUserName}
-                                                    </Text>
-                                                    <Text
-                                                        color={colors.black}
-                                                        fontSize={fontSizes.sm}
-                                                        numberOfLines={1}
-                                                        ellipsizeMode="tail"
-                                                    >
-                                                        {player.secondUserName}
-                                                    </Text>
-                                                </VStack>
-                                            </HStack>
-                                            <VStack alignItems="center">
-                                                <Text fontWeight="bold" color={colors.black}>
-                                                    {index + 1}º
-                                                </Text>
-                                                <Text fontSize="xs" color="blue.600" underline>
-                                                    ver infos
-                                                </Text>
-                                            </VStack>
-                                        </HStack>
-                                    ))}
+                                    {groupDto.players.map((player, index) => {
+                                        const isOpen = expandedIds.includes(player.id);
+
+                                        return (
+                                            <Box key={player.id} mb={2}>
+                                                <HStack justifyContent="space-between" alignItems="center">
+                                                    <HStack space={7} alignItems="center" flex={1}>
+                                                        {renderDoubleAvatar()}
+                                                        <VStack maxW="70%">
+                                                            <Text
+                                                                color={colors.black}
+                                                                fontSize={fontSizes.sm}
+                                                                numberOfLines={1}
+                                                                ellipsizeMode="tail"
+                                                            >
+                                                                {player.firstUserName}
+                                                            </Text>
+                                                            <Text
+                                                                color={colors.black}
+                                                                fontSize={fontSizes.sm}
+                                                                numberOfLines={1}
+                                                                ellipsizeMode="tail"
+                                                            >
+                                                                {player.secondUserName}
+                                                            </Text>
+                                                        </VStack>
+                                                    </HStack>
+                                                    <VStack alignItems="flex-end">
+                                                        <Text fontWeight="bold" color={colors.black}>
+                                                            {index + 1}º
+                                                        </Text>
+                                                        <Text
+                                                            fontSize="xs"
+                                                            color={isOpen ? "red.500" : "blue.600"}
+                                                            underline
+                                                            onPress={() => {
+                                                                setExpandedIds((prev) =>
+                                                                    prev.includes(player.id)
+                                                                        ? prev.filter((id) => id !== player.id)
+                                                                        : [...prev, player.id]
+                                                                );
+                                                            }}
+                                                        >
+                                                            {isOpen ? "fechar" : "ver infos"}
+                                                        </Text>
+                                                    </VStack>
+                                                </HStack>
+
+                                                {/* Expand content */}
+                                                {isOpen && (
+                                                    <Box bg={colors.gray[100]} mt={2} p={3} borderRadius={8}>
+                                                        <HStack justifyContent="space-between" mb={2}>
+                                                            <VStack alignItems="center">
+                                                                <Text bold>0</Text>
+                                                                <Text fontSize="xs" color="gray.600">Jogos</Text>
+                                                            </VStack>
+                                                            <VStack alignItems="center">
+                                                                <Text bold>0</Text>
+                                                                <Text fontSize="xs" color="gray.600">Vitórias</Text>
+                                                            </VStack>
+                                                            <VStack alignItems="center">
+                                                                <Text bold>0</Text>
+                                                                <Text fontSize="xs" color="gray.600">Derrotas</Text>
+                                                            </VStack>
+                                                        </HStack>
+                                                        <HStack justifyContent="space-between">
+                                                            <VStack alignItems="center">
+                                                                <Text bold>0 / 0</Text>
+                                                                <Text fontSize="xs" color="gray.600">Sets</Text>
+                                                            </VStack>
+                                                            <VStack alignItems="center">
+                                                                <Text bold>0 / 0</Text>
+                                                                <Text fontSize="xs" color="gray.600">Games</Text>
+                                                            </VStack>
+                                                            <VStack alignItems="center">
+                                                                <Text bold>0 / 0</Text>
+                                                                <Text fontSize="xs" color="gray.600">Tiebreaks</Text>
+                                                            </VStack>
+                                                        </HStack>
+                                                    </Box>
+                                                )}
+                                            </Box>
+                                        );
+                                    })}
 
                                     <Divider bg={colors.gray[300]} my={3} />
 
@@ -250,53 +299,6 @@ export default function MatchGroup() {
                                             <Text color={colors.gray[500]}>
                                                 Sem horário definido — Por favor, aguarde
                                             </Text>
-
-                                            <HStack justifyContent="space-between" alignItems="center" mt={2}>
-                                                <HStack space={3} alignItems="center" flex={1}>
-                                                    {renderDoubleAvatar()}
-                                                    <VStack maxW="70%">
-                                                        <Text
-                                                            color={colors.black}
-                                                            fontSize={fontSizes.sm}
-                                                            numberOfLines={1}
-                                                            ellipsizeMode="tail"
-                                                        >
-                                                            {match[0]?.firstUserName}
-                                                        </Text>
-                                                        <Text
-                                                            color={colors.black}
-                                                            fontSize={fontSizes.sm}
-                                                            numberOfLines={1}
-                                                            ellipsizeMode="tail"
-                                                        >
-                                                            {match[0]?.secondUserName}
-                                                        </Text>
-                                                    </VStack>
-                                                </HStack>
-
-                                                <HStack space={3} alignItems="center" flex={1} justifyContent="flex-end">
-                                                    {renderDoubleAvatar()}
-                                                    <VStack maxW="70%">
-                                                        <Text
-                                                            color={colors.black}
-                                                            fontSize={fontSizes.sm}
-                                                            numberOfLines={1}
-                                                            ellipsizeMode="tail"
-                                                        >
-                                                            {match[1]?.firstUserName}
-                                                        </Text>
-                                                        <Text
-                                                            color={colors.black}
-                                                            fontSize={fontSizes.sm}
-                                                            numberOfLines={1}
-                                                            ellipsizeMode="tail"
-                                                        >
-                                                            {match[1]?.secondUserName}
-                                                        </Text>
-                                                    </VStack>
-                                                </HStack>
-                                            </HStack>
-
                                             <Text mt={2} color="red.500" fontWeight="bold">
                                                 Placar Pendente
                                             </Text>
@@ -308,7 +310,7 @@ export default function MatchGroup() {
                 </VStack>
             )}
 
-            {/* Botão Voltar com margem menor */}
+            {/* Botão Voltar */}
             <Center mt={4} mb={6}>
                 <Button
                     bg={colors.blue[500]}

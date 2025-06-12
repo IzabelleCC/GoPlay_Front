@@ -94,7 +94,7 @@ export interface TournamentMatchesResultDto {
 
 export interface CategoryGroupsDto {
   categoryId: number;
-  categoryType: string;
+  categoryName: string;
   groups: GroupDto[];
 }
 
