@@ -1,4 +1,3 @@
-// src/pages/Initial/Initial.tsx
 import { VStack, useTheme, Box } from "native-base";
 import { Image } from "react-native";
 import LogoImg from "../assets/logo.png";
