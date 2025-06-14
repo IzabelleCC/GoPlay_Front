@@ -7,6 +7,7 @@ import {
   GeneratePaymentResponse,
   CategoryPlayerFullInfoResponse,
   TournamentMatchesResultDto,
+  GroupResultDto,
 } from "./categoryPlayerTypes";
 
 export const CategoryPlayerService = {
@@ -111,6 +112,21 @@ export const CategoryPlayerService = {
       return response.data;
     } catch (error: any) {
       console.error("Erro ao buscar grupos da categoria:", error);
+      throw error;
+    }
+  },
+
+  async getGroupResultByCategoryIdAndGroupNumber(
+    categoryId: number,
+    groupNumber: number
+  ): Promise<GroupResultDto[]> {
+    try {
+      const response = await axios.get(
+        `${Endpoints.CategoryPlayer.GetGroupResultByCategoryIdAndGroupNumber}/${categoryId}/${groupNumber}`
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error("Erro ao buscar resultado do grupo:", error);
       throw error;
     }
   },

@@ -111,3 +111,26 @@ export interface GroupPlayerDto {
   secondUserName: string;
 }
 
+export interface GroupResultDto {
+  categoryId: number;
+  groupNumber: number;
+  registrationCategoryId: number;
+  scheduledAt: string | null;
+  attendanceConfirmed: boolean;
+  position: number;
+  wins: number;
+  losses: number;
+  setsBalance: number;
+  game1: number | null;
+  game2: number | null;
+  game3: number | null;
+  game4: number | null;
+  game5: number | null;
+  sumOfGamesWon: number;
+  sumOfGamesLost: number;
+  gamesBalance: number;
+  tiebreaks: number;
+  matchStage: number;
+}
+
+

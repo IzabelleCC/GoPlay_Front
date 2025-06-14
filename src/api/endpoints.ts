@@ -44,15 +44,16 @@ export const Endpoints = Object.freeze({
   }),
 
   CategoryPlayer: buildControllerEndpoints("CategoryPlayer", {
-    Register: "Register", // POST /api/CategoryPlayer/Register
-    GetAll: null,         // GET /api/CategoryPlayer
-    Update: null,         // PUT /api/CategoryPlayer
-    GetById: null,        // GET /api/CategoryPlayer/{id}
-    Delete: null,         // DELETE /api/CategoryPlayer/{id}
-    GetByCategory: "ByCategory", // GET /api/CategoryPlayer/ByCategory/{categoryId}
-    GetByUser: "ByUser",         // GET /api/CategoryPlayer/ByUser/{userId}
-    GeneratePayment: "GeneratePayment", // POST /api/CategoryPlayer/GeneratePayment
+    Register: "Register",
+    GetAll: null,
+    Update: null,
+    GetById: null,
+    Delete: null,
+    GetByCategory: "ByCategory",
+    GetByUser: "ByUser",
+    GeneratePayment: "GeneratePayment",
     ByUserIdReturnsFullInfo: "GetByUserIdReturnsFullInfo",
     GetMatchGroupByCategoryId: "GetMatchGroupByCategoryId",
+    GetGroupResultByCategoryIdAndGroupNumber: "GetGroupResultByCategoryId",
   }),
 });
