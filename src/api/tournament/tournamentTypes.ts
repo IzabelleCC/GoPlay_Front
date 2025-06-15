@@ -67,11 +67,11 @@ export interface ConfirmAttendancePayload {
 
 export interface InsertGroupResultsItem {
     registrationCategoryId: number;
-    game1: number;
-    game2: number;
-    game3: number;
-    game4: number;
-    game5: number;
+    game1: number | null;
+    game2: number | null;
+    game3: number | null;
+    game4: number | null;
+    game5: number | null;
 }
 
 export type InsertGroupResultsPayload = InsertGroupResultsItem[];

@@ -8,32 +8,47 @@ import {
   useTheme,
   HStack,
   Pressable,
+  Box,
+  Center,
+  Divider,
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import Logo from "../assets/logo.png";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { TournamentService } from "../api/tournament/tournamentService";
-import TournamentCard from "../components/TournamentCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import dayjs from "dayjs";
+import BadgeStatus from "../components/BadgeStatus";
+import GenericModal from "../components/modals/GenericModal";
 
 export default function HomeAdm() {
   const { colors, fontSizes } = useTheme();
   const navigation: any = useNavigation();
+
   const [tournaments, setTournaments] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedTournamentId, setSelectedTournamentId] = useState<number | null>(null);
+
+  // modal de geração de chaves
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+  const [generateModalTitle, setGenerateModalTitle] = useState("");
+  const [generateModalBody, setGenerateModalBody] = useState("");
+  const [generateModalType, setGenerateModalType] = useState<"success" | "error">("success");
 
   const fetchTournaments = async () => {
     try {
-      const userId = await AsyncStorage.getItem("userId");
-      const data = await TournamentService.getTournamentsByAdmUserId(userId || "");
-      const storedUserType = await AsyncStorage.getItem("userType");
-      console.log("storedUserType", storedUserType);
-      setTournaments(data);
+      const storedUserId = await AsyncStorage.getItem("userId");
+      setUserId(storedUserId);
+
+      if (storedUserId) {
+        const data = await TournamentService.getTournamentsByAdmUserId(storedUserId);
+        setTournaments(data);
+      }
     } catch (err) {
       console.error("Erro ao carregar torneios", err);
     }
@@ -54,74 +69,227 @@ export default function HomeAdm() {
     }
   };
 
+  const handleGenerateMatches = async (tournamentId: number) => {
+    try {
+      await TournamentService.generateGroupMatches(tournamentId);
+
+      setGenerateModalTitle("Chaves geradas com sucesso!");
+      setGenerateModalBody("As chaves do torneio foram geradas corretamente.");
+      setGenerateModalType("success");
+      setIsGenerateModalOpen(true);
+    } catch (err) {
+      console.error("Erro ao gerar chaves", err);
+
+      setGenerateModalTitle("Erro ao gerar chaves");
+      setGenerateModalBody("Ocorreu um erro ao tentar gerar as chaves. Tente novamente.");
+      setGenerateModalType("error");
+      setIsGenerateModalOpen(true);
+    }
+  };
+
+  const handleDeleteTournament = async () => {
+    if (!selectedTournamentId) return;
+
+    setIsDeleting(false);
+
+    try {
+      await TournamentService.deleteTournament(selectedTournamentId);
+      fetchTournaments();
+    } catch (err) {
+      console.error("Erro ao excluir torneio", err);
+    }
+  };
+
+  const formatDate = (dateStr: string) => {
+    return dayjs(dateStr).format("DD/MM/YYYY");
+  };
+
+  const getTournamentBadgeLabel = (status: number) => {
+    switch (status) {
+      case 0:
+      case 1:
+        return "Inscrições Abertas";
+      case 2:
+        return "Inscrições Encerradas";
+      case 3:
+        return "Em Andamento";
+      case 4:
+        return "Concluído";
+      case 5:
+        return "Chaves Geradas";
+      default:
+        return "Status Desconhecido";
+    }
+  };
+
+  const getTournamentBadgeColor = (status: number) => {
+    switch (status) {
+      case 4:
+        return colors.gray[200];
+      case 0:
+      case 1:
+      case 3:
+      case 5:
+        return "green.500";
+      case 2:
+        return "red.500";
+      default:
+        return colors.gray[300];
+    }
+  };
+
   useEffect(() => {
     fetchTournaments();
   }, []);
 
   return (
-    <VStack flex={1} bg={colors.white} px={5} pt={10} pb={4} justifyContent="space-between">
-      <VStack alignItems="center" space={6} flex={1}>
-        <Image source={Logo} alt="Logo" width={70} height={70} resizeMode="contain" />
-        <Text fontSize={fontSizes.lg} fontWeight="bold">MEUS TORNEIOS</Text>
-
-        {/* Campo de busca com estilo do protótipo */}
-        <HStack w="90%" alignSelf="center">
-          <Input
-            flex={1}
-            placeholder="Buscar torneios"
-            fontSize={fontSizes.md}
-            bg={isFocused ? colors.gray[200] : colors.gray[100]}
-            borderTopRightRadius={0}
-            borderBottomRightRadius={0}
-            borderTopLeftRadius={20}
-            borderBottomLeftRadius={20}
-            value={search}
-            onChangeText={setSearch}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => {
-              setIsFocused(false);
-              searchTournament();
-            }}
-          />
-          <Pressable
-            onPress={searchTournament}
-            bg={colors.gray[100]}
-            borderTopLeftRadius={0}
-            borderBottomLeftRadius={0}
-            borderTopRightRadius={20}
-            borderBottomRightRadius={20}
-            px={4}
-            justifyContent="center"
-            alignItems="center"
-          >
-            <MaterialIcons name="search" size={20} color="black" />
-          </Pressable>
-        </HStack>
-
-        {/* Lista de torneios */}
-        <ScrollView w="100%" mt={4} maxH="72%">
-          <VStack space={4}>
-            {tournaments.map(t => (
-              <TournamentCard
-                key={t.id}
-                id={t.id}
-                tournamentName={t.name}
-                onEdit={() => navigation.navigate("EditTournament", { id: t.id })}
-                onInsertResult={() => navigation.navigate("InsertResult", { id: t.id })}
-                onDeleted={fetchTournaments}
-              />
-            ))}
-
-            {tournaments.length === 0 && (
-              <Text textAlign="center" mt={4} color={colors.gray[500]}>
-                Nenhum torneio encontrado.
-              </Text>
-            )}
-          </VStack>
-        </ScrollView>
+    <ScrollView flex={1} bg={colors.white} p={4}>
+      <VStack alignItems="center" mb={6}>
+        <Image source={Logo} alt="Logo" width={90} height={90} resizeMode="contain" />
+        <Text fontSize={fontSizes.lg} fontWeight="bold" mt={2}>
+          Meus Torneios
+        </Text>
       </VStack>
 
+      {/* Campo de busca */}
+      <HStack w="90%" alignSelf="center" mb={4}>
+        <Input
+          flex={1}
+          placeholder="Buscar torneios"
+          fontSize={fontSizes.md}
+          bg={isFocused ? colors.gray[200] : colors.gray[100]}
+          borderTopRightRadius={0}
+          borderBottomRightRadius={0}
+          borderTopLeftRadius={20}
+          borderBottomLeftRadius={20}
+          value={search}
+          onChangeText={setSearch}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => {
+            setIsFocused(false);
+            searchTournament();
+          }}
+        />
+        <Pressable
+          onPress={searchTournament}
+          bg={colors.gray[100]}
+          borderTopLeftRadius={0}
+          borderBottomLeftRadius={0}
+          borderTopRightRadius={20}
+          borderBottomRightRadius={20}
+          px={4}
+          justifyContent="center"
+          alignItems="center"
+        >
+          <MaterialIcons name="search" size={20} color="black" />
+        </Pressable>
+      </HStack>
 
+      {/* Lista de torneios */}
+      {tournaments.length === 0 ? (
+        <Text textAlign="center" mt={4} color={colors.gray[500]}>
+          Nenhum torneio encontrado.
+        </Text>
+      ) : (
+        <VStack space={4}>
+          {tournaments.map((t) => (
+            <Box
+              key={t.id}
+              p={4}
+              bg={colors.white}
+              borderRadius={10}
+              shadow={1}
+              borderWidth={1}
+              borderColor={colors.gray[200]}
+            >
+              <Center mb={3}>
+                <Image
+                  source={{
+                    uri: "https://via.placeholder.com/80.png?text=Torneio",
+                  }}
+                  alt="Imagem do Torneio"
+                  borderRadius={50}
+                  width={50}
+                  height={50}
+                />
+              </Center>
+
+              <Text fontWeight="bold" fontSize={fontSizes.md} mb={1} color={colors.blue[800]}>
+                {t.name}
+              </Text>
+
+              <Text color={colors.black} fontSize={fontSizes.sm} mb={1}>
+                Termina em {formatDate(t.gamesEndDate)}
+              </Text>
+
+              <HStack space={2} mb={2} flexWrap="wrap" alignItems="center">
+                <BadgeStatus
+                  label={getTournamentBadgeLabel(t.status)}
+                  bgColor={getTournamentBadgeColor(t.status)}
+                  textColor={colors.black}
+                  fontWeight="bold"
+                />
+              </HStack>
+
+              <Divider bg={colors.gray[200]} my={2} />
+
+              <HStack justifyContent="space-between" alignItems="center" mt={2}>
+                <HStack space={8} alignItems="center">
+                  <VStack alignItems="center">
+                    <Text fontSize="lg" fontWeight="bold" color={colors.black}>
+                      {t.categories.length}
+                    </Text>
+                    <Text fontSize="xs" color={colors.black}>
+                      Categorias
+                    </Text>
+                  </VStack>
+                </HStack>
+
+                <HStack space={1}>
+
+                  {/* Botão Ir Categorias */}
+                  <Button
+                    variant="outline"
+                    borderColor={colors.green[500]}
+                    _text={{ color: colors.green[500], fontWeight: "bold" }}
+                    onPress={() =>
+                      navigation.navigate("CategoryDetails", {
+                        tournamentId: t.id,
+                        tournamentName: t.name,
+                      })
+                    }
+                  >
+                    Ir Categorias
+                  </Button>
+
+                  {/* Botão Editar */}
+                  <Button
+                    variant="ghost"
+                    p={2}
+                    onPress={() => navigation.navigate("EditTournament", { id: t.id })}
+                  >
+                    <MaterialIcons name="edit" size={30} color="black" />
+                  </Button>
+
+                  {/* Botão Excluir */}
+                  <Button
+                    variant="ghost"
+                    p={2}
+                    onPress={() => {
+                      setSelectedTournamentId(t.id);
+                      setIsDeleting(true);
+                    }}
+                  >
+                    <MaterialIcons name="delete" size={30} color="black" />
+                  </Button>
+                </HStack>
+              </HStack>
+            </Box>
+          ))}
+        </VStack>
+      )}
+
+      {/* Floating buttons */}
       <HStack space={4} mt={6} mb={4} alignSelf="center">
         <Button
           borderRadius="full"
@@ -142,6 +310,31 @@ export default function HomeAdm() {
         </Button>
       </HStack>
 
-    </VStack>
+      {/* Modal de confirmação de delete */}
+      <GenericModal
+        isOpen={isDeleting}
+        onClose={() => setIsDeleting(false)}
+        title="Excluir Torneio"
+        body={
+          <Text textAlign="center">
+            Você tem certeza que deseja excluir este torneio? Esta ação não poderá ser desfeita.
+          </Text>
+        }
+        onConfirm={handleDeleteTournament}
+        confirmText="Excluir"
+        type="error"
+        variant="confirm-delete"
+      />
+
+      {/* Modal de resultado da geração de chaves */}
+      <GenericModal
+        isOpen={isGenerateModalOpen}
+        onClose={() => setIsGenerateModalOpen(false)}
+        title={generateModalTitle}
+        body={<Text textAlign="center">{generateModalBody}</Text>}
+        type={generateModalType}
+        variant="info"
+      />
+    </ScrollView>
   );
 }
