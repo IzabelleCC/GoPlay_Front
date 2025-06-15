@@ -21,6 +21,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TournamentService } from "../api/tournament/tournamentService";
 import { EliminationGameDto, InsertEliminationResultsPayload, CompetitorInfo } from "../api/tournament/tournamentTypes";
 import GenericModal from "../components/modals/GenericModal";
+import EmptyStateCard from "../components/EmptyStateCard";
 
 export default function RoundOf32() {
   const { colors, fontSizes } = useTheme();
@@ -32,59 +33,50 @@ export default function RoundOf32() {
   const [modal, setModal] = useState({ isOpen: false, title: "", body: "", type: "info" });
   const [scoreInputs, setScoreInputs] = useState<Record<number, { game1: string; game2: string }>>({});
   const [submittedGames, setSubmittedGames] = useState<number[]>([]);
+  const [userType, setUserType] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetchData();
+    fetchUserType();
+  }, []);
+
+  const fetchUserType = async () => {
+    const storedType = await AsyncStorage.getItem("userType");
+    if (storedType) {
+      setUserType(Number(storedType));
+    }
+  };
 
   const fetchGames = async (categoryId: number) => {
-    const data = await TournamentService.getEliminationGamesByCategory(categoryId, 4);
+    const data = await TournamentService.getEliminationGamesByCategory(categoryId, 2);
     setGames(data.sort((a, b) => a.numberGame - b.numberGame));
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const categoryIdStr = await AsyncStorage.getItem("categoryId");
-        const categoryName = await AsyncStorage.getItem("categoryName");
-        const tournamentName = await AsyncStorage.getItem("tournamentName");
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const categoryIdStr = await AsyncStorage.getItem("categoryId");
+      const categoryName = await AsyncStorage.getItem("categoryName");
+      const tournamentName = await AsyncStorage.getItem("tournamentName");
 
-        setCategoryName(categoryName || "Categoria");
-        setTournamentName(tournamentName || "Nome do Torneio");
+      setCategoryName(categoryName || "Categoria");
+      setTournamentName(tournamentName || "Nome do Torneio");
 
-        if (categoryIdStr) {
-          const categoryId = Number(categoryIdStr);
-          await fetchGames(categoryId);
-        }
-      } catch (err) {
-        console.error("Erro ao buscar dados:", err);
-      } finally {
-        setLoading(false);
+      if (categoryIdStr) {
+        const categoryId = Number(categoryIdStr);
+        await fetchGames(categoryId);
       }
-    };
-
-    fetchData();
-  }, []);
+    } catch (err) {
+      console.error("Erro ao buscar dados:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const renderDoubleAvatar = () => (
     <ZStack width={10} height={10} mr={3}>
-      <Image
-        source={{ uri: "https://www.hhcc.co.in/wp-content/plugins/business_reviews/photos/5dd3d47d719e11574163581.png" }}
-        alt="Avatar 1"
-        borderRadius={50}
-        width={10}
-        height={10}
-        position="absolute"
-        left={0}
-        zIndex={1}
-      />
-      <Image
-        source={{ uri: "https://www.hhcc.co.in/wp-content/plugins/business_reviews/photos/5dd3d47d719e11574163581.png" }}
-        alt="Avatar 2"
-        borderRadius={50}
-        width={10}
-        height={10}
-        position="absolute"
-        left={8}
-        zIndex={0}
-      />
+      <Image source={{ uri: "https://www.hhcc.co.in/wp-content/plugins/business_reviews/photos/5dd3d47d719e11574163581.png" }} alt="Avatar 1" borderRadius={50} width={10} height={10} position="absolute" left={0} zIndex={1} />
+      <Image source={{ uri: "https://www.hhcc.co.in/wp-content/plugins/business_reviews/photos/5dd3d47d719e11574163581.png" }} alt="Avatar 2" borderRadius={50} width={10} height={10} position="absolute" left={8} zIndex={0} />
     </ZStack>
   );
 
@@ -102,30 +94,14 @@ export default function RoundOf32() {
       <HStack alignItems="center" space={3} flex={1}>
         {renderDoubleAvatar()}
         <VStack ml={3}>
-          <Text
-            fontWeight="bold"
-            color={isBye ? colors.gray[500] : isWinner ? "green.700" : "red.600"}
-          >
-            {competitor?.firstUserName || "BYE"}
-          </Text>
-          <Text
-            fontWeight="bold"
-            color={isBye ? colors.gray[500] : isWinner ? "green.700" : "red.600"}
-          >
-            {competitor?.secondUserName || ""}
-          </Text>
+          <Text fontWeight="bold" color={isBye ? colors.gray[500] : isWinner ? "green.700" : "red.600"}>{competitor?.firstUserName || "BYE"}</Text>
+          <Text fontWeight="bold" color={isBye ? colors.gray[500] : isWinner ? "green.700" : "red.600"}>{competitor?.secondUserName || ""}</Text>
         </VStack>
       </HStack>
 
       {!isBye && !opponentIsBye && (
         isSubmitted ? (
-          <Text
-            fontWeight={isWinner ? "bold" : "normal"}
-            fontSize="md"
-            color={isWinner ? "green.700" : "red.600"}
-          >
-            {score}
-          </Text>
+          <Text fontWeight={isWinner ? "bold" : "normal"} fontSize="md" color={isWinner ? "green.700" : "red.600"}>{score}</Text>
         ) : (
           <Input
             placeholder=""
@@ -147,7 +123,6 @@ export default function RoundOf32() {
       )}
     </HStack>
   );
-
 
   const handleSendResults = async (game: EliminationGameDto) => {
     try {
@@ -179,6 +154,7 @@ export default function RoundOf32() {
   }
 
   return (
+    <Box flex={1} bg={colors.white}>
     <ScrollView px={4} py={4} mb={8}>
       <GenericModal
         isOpen={modal.isOpen}
@@ -189,21 +165,10 @@ export default function RoundOf32() {
       />
 
       <HStack alignItems="center" mb={4}>
-        <Image
-          source={{ uri: "https://img.favpng.com/4/19/3/beach-tennis-tennis-t-shirt-serve-png-favpng-dsZSu0xit617YDdkPWYfyUuxR.jpg" }}
-          alt="Logo"
-          borderRadius={6}
-          width={75}
-          height={75}
-          mr={3}
-        />
+        <Image source={{ uri: "https://img.favpng.com/4/19/3/beach-tennis-tennis-t-shirt-serve-png-favpng-dsZSu0xit617YDdkPWYfyUuxR.jpg" }} alt="Logo" borderRadius={6} width={75} height={75} mr={3} />
         <VStack maxW="80%">
-          <Text fontSize={fontSizes.xl} fontWeight="bold" color={colors.blue[800]}>
-            {tournamentName}
-          </Text>
-          <Text fontSize={fontSizes.md} color={colors.gray[800]} fontWeight="bold">
-            {categoryName.toUpperCase()}
-          </Text>
+          <Text fontSize={fontSizes.xl} fontWeight="bold" color={colors.blue[800]}>{tournamentName}</Text>
+          <Text fontSize={fontSizes.md} color={colors.gray[800]} fontWeight="bold">{categoryName.toUpperCase()}</Text>
         </VStack>
       </HStack>
 
@@ -212,9 +177,7 @@ export default function RoundOf32() {
           <Icon as={MaterialIcons} name="arrow-back" size={6} color="black" />
           <Text fontSize="xs" fontWeight="bold">Voltar</Text>
         </Pressable>
-        <Text fontSize={fontSizes.lg} fontWeight="bold" textAlign="center">
-          Quartas de Finais
-        </Text>
+        <Text fontSize={fontSizes.lg} fontWeight="bold" textAlign="center">Quartas de Finais</Text>
         <VStack position="absolute" right={0} top={0} alignItems="center">
           <Icon as={MaterialIcons} name="arrow-forward" size={6} color="black" />
           <Text fontSize="xs" fontWeight="bold">SF</Text>
@@ -222,75 +185,61 @@ export default function RoundOf32() {
       </Box>
 
       <VStack space={4}>
-        {games.map((game) => {
-          const score1 = game.qtdGames1 ?? 0;
-          const score2 = game.qtdGames2 ?? 0;
+        {games.length === 0 ? (
+          <EmptyStateCard
+            title="Quartas de Finais"
+            message="Aguardando resultados da fase anterior."
+            count={4}
+          />
+        ) : (
+          games.map((game) => {
+            const score1 = game.qtdGames1 ?? 0;
+            const score2 = game.qtdGames2 ?? 0;
 
-          const isBye1 = !game.competitor1?.firstUserName;
-          const isBye2 = !game.competitor2?.firstUserName;
-          const isSubmitted = score1 > 0 || score2 > 0;
-          const isWinner1 = isBye2 || (isSubmitted && score1 > score2);
-          const isWinner2 = isBye1 || (isSubmitted && score2 > score1);
-          const bothNull = !game.competitor1 && !game.competitor2;
+            const isBye1 = !game.competitor1?.firstUserName;
+            const isBye2 = !game.competitor2?.firstUserName;
+            const isSubmitted = score1 > 0 || score2 > 0;
+            const isWinner1 = isBye2 || (isSubmitted && score1 > score2);
+            const isWinner2 = isBye1 || (isSubmitted && score2 > score1);
+            const bothNull = !game.competitor1 && !game.competitor2;
 
+            return (
+              <Box key={game.numberGame} p={4} borderWidth={1} borderColor={colors.gray[300]} borderRadius={10} bg="white">
+                <Text fontSize="xs" fontWeight="bold" mb={2}>#{game.numberGame} • QF</Text>
 
-          return (
-            <Box
-              key={game.numberGame}
-              p={4}
-              borderWidth={1}
-              borderColor={colors.gray[300]}
-              borderRadius={10}
-              bg="white"
-            >
-              <Text fontSize="xs" fontWeight="bold" mb={2}>#{game.numberGame} • QF</Text>
+                {bothNull && !game.competitor1Id && !game.competitor2Id ? (
+                  <EmptyStateCard
+                    title="Quartas de Finais"
+                    message="Aguardando resultados da fase anterior."
+                    count={4}
+                  />
+                ) : (
+                  <>
+                    {renderPlayer(game.competitor1 ?? null, isWinner1, isBye1, scoreInputs[game.numberGame]?.game1 || game.qtdGames1?.toString() || "", isSubmitted, isBye2, game.numberGame, game.competitor1Id!)}
 
-              {bothNull ? (
-                <Text color={colors.gray[500]} italic>Aguardando resultados da fase anterior.</Text>
-              ) : (
-                <>
-                  {renderPlayer(
-                    game.competitor1 ?? null,
-                    isWinner1,
-                    isBye1,
-                    scoreInputs[game.numberGame]?.game1 || game.qtdGames1?.toString() || "",
-                    isSubmitted,
-                    isBye2,
-                    game.numberGame,
-                    game.competitor1Id!
-                  )}
+                    {renderPlayer(game.competitor2 ?? null, isWinner2, isBye2, scoreInputs[game.numberGame]?.game2 || game.qtdGames2?.toString() || "", isSubmitted, isBye1, game.numberGame, game.competitor1Id!)}
 
-                  {renderPlayer(
-                    game.competitor2 ?? null,
-                    isWinner2,
-                    isBye2,
-                    scoreInputs[game.numberGame]?.game2 || game.qtdGames2?.toString() || "",
-                    isSubmitted,
-                    isBye1,
-                    game.numberGame,
-                    game.competitor1Id!
-                  )}
-
-
-                  {!isBye1 && !isBye2 && !isSubmitted && game.competitor1 && game.competitor2 && (
-                    <Button
-                      mt={3}
-                      bg={colors.green[500]}
-                      borderRadius={20}
-                      px={6}
-                      py={3}
-                      onPress={() => handleSendResults(game)}
-                      _pressed={{ opacity: 0.9 }}
-                    >
-                      <Text color="white" fontWeight="bold">Enviar Resultado</Text>
-                    </Button>
-                  )}
-                </>
-              )}
-            </Box>
-          );
-        })}
+                    {!isBye1 && !isBye2 && !isSubmitted && game.competitor1 && game.competitor2 && (
+                      <Button
+                        mt={3}
+                        bg={colors.green[500]}
+                        borderRadius={20}
+                        px={6}
+                        py={3}
+                        onPress={() => handleSendResults(game)}
+                        _pressed={{ opacity: 0.9 }}
+                      >
+                        <Text color="white" fontWeight="bold">Enviar Resultado</Text>
+                      </Button>
+                    )}
+                  </>
+                )}
+              </Box>
+            );
+          })
+        )}
       </VStack>
+
 
       <Center mt={8} mb={4}>
         <Button
@@ -305,5 +254,53 @@ export default function RoundOf32() {
         </Button>
       </Center>
     </ScrollView>
+    <Box
+                marginBottom={3}
+                marginTop={3}
+                px={4}
+                alignItems="center">
+                {/* Floating buttons */}
+                <HStack space={4} justifyContent="center">
+                    {/* Botão Voltar */}
+                    <Button
+                        borderRadius="full"
+                        bg={colors.blue[500]}
+                        onPress={() => navigation.goBack()}
+                        p={3}
+                    >
+                        <MaterialIcons name="chevron-left" size={28} color="white" />
+                    </Button>
+                    {/* Botão Home (casinha) */}
+                    <Button
+                        borderRadius="full"
+                        bg={colors.blue[500]}
+                        onPress={() => navigation.goBack()}
+                        p={3}
+                    >
+                        <MaterialIcons name="home" size={28} color="white" />
+                    </Button>
+
+                    {/* Botão Criar Torneio */}
+                    <Button
+                        borderRadius="full"
+                        bg={colors.blue[500]}
+                        onPress={() => navigation.navigate("CreateTournament" as never)}
+                        p={3}
+                    >
+                        <MaterialIcons name="emoji-events" size={28} color="white" />
+                    </Button>
+
+                    {/* Botão Meu Perfil */}
+                    <Button
+                        borderRadius="full"
+                        bg={colors.blue[500]}
+                        onPress={() => navigation.navigate("MyProfile" as never)}
+                        p={3}
+                    >
+                        <MaterialIcons name="person" size={28} color="white" />
+                    </Button>
+                </HStack>
+            </Box>
+        </Box>
   );
 }
