@@ -77,7 +77,7 @@ export interface InsertGroupResultsItem {
 export type InsertGroupResultsPayload = InsertGroupResultsItem[];
 
 export interface InsertEliminationResultsPayload {
-    categoryId: number;
+    gameEliminationId: number;
     competitorId1: number;
     competitorId2: number;
     game1: number;
@@ -103,4 +103,28 @@ export interface CreateTournamentPayload {
             playerLimit: number;
         }[];
     };
+}
+
+export interface CompetitorInfo {
+    id: number;
+    firstUserId: string;
+    firstUserName: string;
+    secondUserId: string | null;
+    secondUserName: string;
+}
+
+export interface EliminationGameDto {
+    gameEliminationId: number | null;
+    competitor1Id: number | null;
+    competitor2Id: number | null;
+    matchStage: number;
+    matchTime: string | null;
+    courtNumber: number | null;
+    qtdGames1: number | null;
+    qtdGames2: number | null;
+    result: number;
+    numberGame: number;
+    categoryId: number;
+    competitor1: CompetitorInfo;
+    competitor2: CompetitorInfo;
 }

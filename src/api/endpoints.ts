@@ -41,6 +41,7 @@ export const Endpoints = Object.freeze({
     InsertGroupResults: "InsertGroupResults",
     InsertEliminationResults: "InsertEliminationResults",
     GetCategoriesByTournamentId: "GetCategoryByTournamentId",
+    GetEliminationGamesByCategory: "GetEliminationGamesByCategory",
   }),
 
   CategoryPlayer: buildControllerEndpoints("CategoryPlayer", {

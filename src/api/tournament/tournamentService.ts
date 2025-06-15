@@ -6,6 +6,7 @@ import {
   ConfirmAttendancePayload,
   InsertGroupResultsPayload,
   InsertEliminationResultsPayload,
+  EliminationGameDto
 } from "./tournamentTypes";
 
 export const TournamentService = {
@@ -129,6 +130,17 @@ export const TournamentService = {
       console.error("Erro ao buscar categorias do torneio:", error);
       throw error;
     }
+  },
+  
+  async getEliminationGamesByCategory(categoryId: number, matchStage: number) {
+    try {
+      const response = await axios.get(
+        `${Endpoints.TournamentManager.GetEliminationGamesByCategory}/${categoryId}/${matchStage}`
+      );
+      return response.data as EliminationGameDto[];
+    } catch (error: any) {
+      console.error("Erro ao buscar jogos de eliminação:", error);
+      throw error;
+    }
   }
-
 };

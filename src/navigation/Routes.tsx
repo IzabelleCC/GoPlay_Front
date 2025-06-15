@@ -18,6 +18,7 @@ import CategoryRegister from "../pages/CategoryRegister";
 import PaymentPage from "../pages/PaymentPage";
 import CategoryDetails from "../pages/CategoryDetails";
 import MatchGroup from "../pages/MatchGroup";
+import QuarterFinal from "../pages/QuarterFinal";
 
 export type RootStackParamList = {
     Inicial: undefined;
@@ -35,6 +36,7 @@ export type RootStackParamList = {
     PaymentPage: { categoryPlayerId: number };
     CategoryDetails: undefined;
     MatchGroup: undefined;
+    QuarterFinal: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -58,6 +60,7 @@ const linking = {
             PaymentPage: "paymentpage/:categoryPlayerId",
             CategoryDetails: "categorydetails",
             MatchGroup: "matchgroup",
+            QuarterFinal: "quarterfinal",
         },
     },
 };
@@ -81,6 +84,7 @@ export default function Routes() {
                 <Stack.Screen name="PaymentPage" component={PaymentPage} /> 
                 <Stack.Screen name="CategoryDetails" component={CategoryDetails} />
                 <Stack.Screen name="MatchGroup" component={MatchGroup} />
+                <Stack.Screen name="QuarterFinal" component={QuarterFinal} />
             </Stack.Navigator>
         </NavigationContainer>
     );

@@ -10,6 +10,7 @@ import { TournamentMatchesResultDto, GroupResultDto } from "../api/categoryPlaye
 import { MaterialIcons } from "@expo/vector-icons";
 import { TournamentService } from "../api/tournament/tournamentService";
 import GenericModal from "../components/modals/GenericModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function MatchGroup() {
     const { colors, fontSizes } = useTheme();
@@ -204,8 +205,23 @@ export default function MatchGroup() {
                             Fase de Grupos
                         </Text>
                         <VStack position="absolute" right={0} top={0} alignItems="center">
-                            <Icon as={MaterialIcons} name="arrow-forward" size={6} color="black" />
-                            <Text fontSize="xs" fontWeight="bold">QF</Text>
+                            <Button
+                                variant="ghost"
+                                p={0}
+                                onPress={async () => {
+                                    if (matchGroupData?.groups?.[0]) {
+                                        await AsyncStorage.setItem("categoryId", String(matchGroupData.groups[0].categoryId));
+                                        await AsyncStorage.setItem("categoryName", matchGroupData.groups[0].categoryName);
+                                        await AsyncStorage.setItem("tournamentName", matchGroupData.tournamentName);
+                                    }
+                                    navigation.navigate("QuarterFinal");
+                                }}
+                            >
+                                <VStack alignItems="center">
+                                    <Icon as={MaterialIcons} name="arrow-forward" size={6} color="black" />
+                                    <Text fontSize="xs" fontWeight="bold">QF</Text>
+                                </VStack>
+                            </Button>
                         </VStack>
                     </Box>
 
