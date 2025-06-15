@@ -82,7 +82,7 @@ export interface InsertGroupResultsItem {
 export type InsertGroupResultsPayload = InsertGroupResultsItem[];
 
 export interface InsertEliminationResultsPayload {
-    gameEliminationId: number;
+    categoryId: number;
     competitorId1: number;
     competitorId2: number;
     game1: number;

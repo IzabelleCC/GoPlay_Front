@@ -22,7 +22,7 @@ import { TournamentService } from "../api/tournament/tournamentService";
 import { EliminationGameDto, InsertEliminationResultsPayload, CompetitorInfo } from "../api/tournament/tournamentTypes";
 import GenericModal from "../components/modals/GenericModal";
 
-export default function QuarterFinal() {
+export default function RoundOf16() {
   const { colors, fontSizes } = useTheme();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
