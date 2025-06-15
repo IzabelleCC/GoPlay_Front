@@ -213,16 +213,36 @@ export default function MatchGroup() {
                                         await AsyncStorage.setItem("categoryId", String(matchGroupData.groups[0].categoryId));
                                         await AsyncStorage.setItem("categoryName", matchGroupData.groups[0].categoryName);
                                         await AsyncStorage.setItem("tournamentName", matchGroupData.tournamentName);
+
+                                        const totalGroups = matchGroupData.groups[0].groups.length;
+                                        let nextPage = "QuarterFinal";
+
+                                        if (totalGroups === 1) nextPage = "Final";
+                                        else if (totalGroups === 2) nextPage = "SemiFinal";
+                                        else if (totalGroups > 2 && totalGroups <= 4) nextPage = "QuarterFinal";
+                                        else if (totalGroups > 4 && totalGroups <= 8) nextPage = "RoundOf16";
+                                        else if (totalGroups > 8 && totalGroups <= 16) nextPage = "RoundOf32";
+
+                                        navigation.navigate(nextPage);
                                     }
-                                    navigation.navigate("QuarterFinal");
                                 }}
                             >
                                 <VStack alignItems="center">
                                     <Icon as={MaterialIcons} name="arrow-forward" size={6} color="black" />
-                                    <Text fontSize="xs" fontWeight="bold">QF</Text>
+                                    <Text fontSize="xs" fontWeight="bold">
+                                        {(() => {
+                                            const groupCount = matchGroupData?.groups?.[0]?.groups?.length ?? 0;
+                                            if (groupCount === 1) return "Final";
+                                            if (groupCount === 2) return "SF";
+                                            if (groupCount <= 4) return "QF";
+                                            if (groupCount <= 8) return "R16";
+                                            return "R32";
+                                        })()}
+                                    </Text>
                                 </VStack>
                             </Button>
                         </VStack>
+
                     </Box>
 
                     {matchGroupData?.groups.flatMap(groupItem =>

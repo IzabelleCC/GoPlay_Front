@@ -18,7 +18,11 @@ import CategoryRegister from "../pages/CategoryRegister";
 import PaymentPage from "../pages/PaymentPage";
 import CategoryDetails from "../pages/CategoryDetails";
 import MatchGroup from "../pages/MatchGroup";
+import RoundOf32 from "../pages/RoundOf32 ";
+import RoundOf16 from "../pages/RoundOf16";
 import QuarterFinal from "../pages/QuarterFinal";
+import SemiFinal from "../pages/SemiFinal";
+import Final from "../pages/Final"; 
 
 export type RootStackParamList = {
     Inicial: undefined;
@@ -36,7 +40,11 @@ export type RootStackParamList = {
     PaymentPage: { categoryPlayerId: number };
     CategoryDetails: undefined;
     MatchGroup: undefined;
+    RoundOf32: undefined;
+    RoundOf16: undefined;
     QuarterFinal: undefined;
+    SemiFinal: undefined;
+    Final: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -60,7 +68,11 @@ const linking = {
             PaymentPage: "paymentpage/:categoryPlayerId",
             CategoryDetails: "categorydetails",
             MatchGroup: "matchgroup",
+            RoundOf32: "roundof32",
+            RoundOf16: "roundof16",
             QuarterFinal: "quarterfinal",
+            SemiFinal: "semifinal",
+            Final: "final",
         },
     },
 };
@@ -84,7 +96,11 @@ export default function Routes() {
                 <Stack.Screen name="PaymentPage" component={PaymentPage} /> 
                 <Stack.Screen name="CategoryDetails" component={CategoryDetails} />
                 <Stack.Screen name="MatchGroup" component={MatchGroup} />
+                <Stack.Screen name="RoundOf32" component={RoundOf32} />
+                <Stack.Screen name="RoundOf16" component={RoundOf16} />
                 <Stack.Screen name="QuarterFinal" component={QuarterFinal} />
+                <Stack.Screen name="SemiFinal" component={SemiFinal} />
+                <Stack.Screen name="Final" component={Final} />
             </Stack.Navigator>
         </NavigationContainer>
     );

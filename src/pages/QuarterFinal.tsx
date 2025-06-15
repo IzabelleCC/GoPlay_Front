@@ -65,26 +65,8 @@ export default function QuarterFinal() {
 
   const renderDoubleAvatar = () => (
     <ZStack width={10} height={10} mr={3}>
-      <Image
-        source={{ uri: "https://www.hhcc.co.in/wp-content/plugins/business_reviews/photos/5dd3d47d719e11574163581.png" }}
-        alt="Avatar 1"
-        borderRadius={50}
-        width={10}
-        height={10}
-        position="absolute"
-        left={0}
-        zIndex={1}
-      />
-      <Image
-        source={{ uri: "https://www.hhcc.co.in/wp-content/plugins/business_reviews/photos/5dd3d47d719e11574163581.png" }}
-        alt="Avatar 2"
-        borderRadius={50}
-        width={10}
-        height={10}
-        position="absolute"
-        left={8}
-        zIndex={0}
-      />
+      <Image source={{ uri: "https://www.hhcc.co.in/wp-content/plugins/business_reviews/photos/5dd3d47d719e11574163581.png" }} alt="Avatar 1" borderRadius={50} width={10} height={10} position="absolute" left={0} zIndex={1} />
+      <Image source={{ uri: "https://www.hhcc.co.in/wp-content/plugins/business_reviews/photos/5dd3d47d719e11574163581.png" }} alt="Avatar 2" borderRadius={50} width={10} height={10} position="absolute" left={8} zIndex={0} />
     </ZStack>
   );
 
@@ -102,30 +84,14 @@ export default function QuarterFinal() {
       <HStack alignItems="center" space={3} flex={1}>
         {renderDoubleAvatar()}
         <VStack ml={3}>
-          <Text
-            fontWeight="bold"
-            color={isBye ? colors.gray[500] : isWinner ? "green.700" : "red.600"}
-          >
-            {competitor?.firstUserName || "BYE"}
-          </Text>
-          <Text
-            fontWeight="bold"
-            color={isBye ? colors.gray[500] : isWinner ? "green.700" : "red.600"}
-          >
-            {competitor?.secondUserName || ""}
-          </Text>
+          <Text fontWeight="bold" color={isBye ? colors.gray[500] : isWinner ? "green.700" : "red.600"}>{competitor?.firstUserName || "BYE"}</Text>
+          <Text fontWeight="bold" color={isBye ? colors.gray[500] : isWinner ? "green.700" : "red.600"}>{competitor?.secondUserName || ""}</Text>
         </VStack>
       </HStack>
 
       {!isBye && !opponentIsBye && (
         isSubmitted ? (
-          <Text
-            fontWeight={isWinner ? "bold" : "normal"}
-            fontSize="md"
-            color={isWinner ? "green.700" : "red.600"}
-          >
-            {score}
-          </Text>
+          <Text fontWeight={isWinner ? "bold" : "normal"} fontSize="md" color={isWinner ? "green.700" : "red.600"}>{score}</Text>
         ) : (
           <Input
             placeholder=""
@@ -147,7 +113,6 @@ export default function QuarterFinal() {
       )}
     </HStack>
   );
-
 
   const handleSendResults = async (game: EliminationGameDto) => {
     try {
@@ -189,21 +154,10 @@ export default function QuarterFinal() {
       />
 
       <HStack alignItems="center" mb={4}>
-        <Image
-          source={{ uri: "https://img.favpng.com/4/19/3/beach-tennis-tennis-t-shirt-serve-png-favpng-dsZSu0xit617YDdkPWYfyUuxR.jpg" }}
-          alt="Logo"
-          borderRadius={6}
-          width={75}
-          height={75}
-          mr={3}
-        />
+        <Image source={{ uri: "https://img.favpng.com/4/19/3/beach-tennis-tennis-t-shirt-serve-png-favpng-dsZSu0xit617YDdkPWYfyUuxR.jpg" }} alt="Logo" borderRadius={6} width={75} height={75} mr={3} />
         <VStack maxW="80%">
-          <Text fontSize={fontSizes.xl} fontWeight="bold" color={colors.blue[800]}>
-            {tournamentName}
-          </Text>
-          <Text fontSize={fontSizes.md} color={colors.gray[800]} fontWeight="bold">
-            {categoryName.toUpperCase()}
-          </Text>
+          <Text fontSize={fontSizes.xl} fontWeight="bold" color={colors.blue[800]}>{tournamentName}</Text>
+          <Text fontSize={fontSizes.md} color={colors.gray[800]} fontWeight="bold">{categoryName.toUpperCase()}</Text>
         </VStack>
       </HStack>
 
@@ -212,9 +166,7 @@ export default function QuarterFinal() {
           <Icon as={MaterialIcons} name="arrow-back" size={6} color="black" />
           <Text fontSize="xs" fontWeight="bold">Voltar</Text>
         </Pressable>
-        <Text fontSize={fontSizes.lg} fontWeight="bold" textAlign="center">
-          Quartas de Finais
-        </Text>
+        <Text fontSize={fontSizes.lg} fontWeight="bold" textAlign="center">Quartas de Finais</Text>
         <VStack position="absolute" right={0} top={0} alignItems="center">
           <Icon as={MaterialIcons} name="arrow-forward" size={6} color="black" />
           <Text fontSize="xs" fontWeight="bold">SF</Text>
@@ -233,44 +185,31 @@ export default function QuarterFinal() {
           const isWinner2 = isBye1 || (isSubmitted && score2 > score1);
           const bothNull = !game.competitor1 && !game.competitor2;
 
-
           return (
-            <Box
-              key={game.numberGame}
-              p={4}
-              borderWidth={1}
-              borderColor={colors.gray[300]}
-              borderRadius={10}
-              bg="white"
-            >
+            <Box key={game.numberGame} p={4} borderWidth={1} borderColor={colors.gray[300]} borderRadius={10} bg="white">
               <Text fontSize="xs" fontWeight="bold" mb={2}>#{game.numberGame} • QF</Text>
 
-              {bothNull ? (
-                <Text color={colors.gray[500]} italic>Aguardando resultados da fase anterior.</Text>
+              {bothNull && !game.competitor1Id && !game.competitor2Id ? (
+                <>
+                  {[1, 2].map((_, i) => (
+                    <HStack alignItems="center" space={3} mb={2} justifyContent="space-between" key={i}>
+                      <HStack alignItems="center" space={3} flex={1}>
+                        <ZStack width={10} height={10} mr={3}>
+                          <Image source={{ uri: "https://cdn-icons-png.flaticon.com/512/25/25410.png" }} alt="?" borderRadius={50} width={10} height={10} position="absolute" left={0} zIndex={1} />
+                          <Image source={{ uri: "https://cdn-icons-png.flaticon.com/512/25/25410.png" }} alt="?" borderRadius={50} width={10} height={10} position="absolute" left={8} zIndex={0} />
+                        </ZStack>
+                        <VStack>
+                          <Text fontWeight="bold" color={colors.gray[500]}>Aguardando resultados da fase anterior.</Text>
+                        </VStack>
+                      </HStack>
+                    </HStack>
+                  ))}
+                </>
               ) : (
                 <>
-                  {renderPlayer(
-                    game.competitor1 ?? null,
-                    isWinner1,
-                    isBye1,
-                    scoreInputs[game.numberGame]?.game1 || game.qtdGames1?.toString() || "",
-                    isSubmitted,
-                    isBye2,
-                    game.numberGame,
-                    game.competitor1Id!
-                  )}
+                  {renderPlayer(game.competitor1 ?? null, isWinner1, isBye1, scoreInputs[game.numberGame]?.game1 || game.qtdGames1?.toString() || "", isSubmitted, isBye2, game.numberGame, game.competitor1Id!)}
 
-                  {renderPlayer(
-                    game.competitor2 ?? null,
-                    isWinner2,
-                    isBye2,
-                    scoreInputs[game.numberGame]?.game2 || game.qtdGames2?.toString() || "",
-                    isSubmitted,
-                    isBye1,
-                    game.numberGame,
-                    game.competitor1Id!
-                  )}
-
+                  {renderPlayer(game.competitor2 ?? null, isWinner2, isBye2, scoreInputs[game.numberGame]?.game2 || game.qtdGames2?.toString() || "", isSubmitted, isBye1, game.numberGame, game.competitor1Id!)}
 
                   {!isBye1 && !isBye2 && !isSubmitted && game.competitor1 && game.competitor2 && (
                     <Button
