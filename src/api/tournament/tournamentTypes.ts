@@ -72,6 +72,11 @@ export interface InsertGroupResultsItem {
     game3: number | null;
     game4: number | null;
     game5: number | null;
+    game6: number | null;
+    game7: number | null;
+    game8: number | null;
+    game9: number | null;
+    game10: number | null;
 }
 
 export type InsertGroupResultsPayload = InsertGroupResultsItem[];

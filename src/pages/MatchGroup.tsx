@@ -264,28 +264,24 @@ export default function MatchGroup() {
 
                                     <Divider bg={colors.gray[300]} my={3} />
 
-                                    {isFinished && (
-                                        <Text
-                                            fontSize="xs"
-                                            color="blue.700"
-                                            underline
-                                            mb={2}
-                                            onPress={() => toggleGroupExpand(groupDto.groupNumber)}
-                                        >
-                                            {`Os jogos do Grupo ${groupDto.groupNumber} estão concluídos.`} {isExpanded ? "Ocultar" : "Visualizar"}
-                                        </Text>
-                                    )}
+                                    <Text
+                                        fontSize="xs"
+                                        color="blue.700"
+                                        underline
+                                        mb={2}
+                                        onPress={() => toggleGroupExpand(groupDto.groupNumber)}
+                                    >
+                                        {isFinished
+                                            ? `Os jogos do Grupo ${groupDto.groupNumber} estão concluídos.`
+                                            : `Os jogos do Grupo ${groupDto.groupNumber} ainda não foram finalizados.`}{" "}
+                                        {isExpanded ? "Ocultar" : "Visualizar"}
+                                    </Text>
 
                                     {isExpanded && (
                                         <>
                                             {generateMatches(groupDto.players).map((match, matchIndex) => {
-                                                const team1Score = Number(groupMatchScores[groupDto.groupNumber]?.[matchIndex]?.team1Score);
-                                                const team2Score = Number(groupMatchScores[groupDto.groupNumber]?.[matchIndex]?.team2Score);
-                                                let vencedor = "";
-                                                if (!isNaN(team1Score) && !isNaN(team2Score)) {
-                                                    if (team1Score > team2Score) vencedor = match[0].firstUserName;
-                                                    else if (team2Score > team1Score) vencedor = match[1].firstUserName;
-                                                }
+                                                const team1Score = groupMatchScores[groupDto.groupNumber]?.[matchIndex]?.team1Score;
+                                                const team2Score = groupMatchScores[groupDto.groupNumber]?.[matchIndex]?.team2Score;
 
                                                 return (
                                                     <Box key={matchIndex} mb={3}>
@@ -303,9 +299,21 @@ export default function MatchGroup() {
                                                                     <Text>{match[0].secondUserName}</Text>
                                                                 </VStack>
                                                             </HStack>
-                                                            <Text fontWeight="bold" fontSize="md">
-                                                                {team1Score || "-"}
-                                                            </Text>
+
+                                                            {submittedGroups.includes(groupDto.groupNumber) ? (
+                                                                <Text fontWeight="bold" fontSize="md">{team1Score || "-"}</Text>
+                                                            ) : (
+                                                                <Input
+                                                                    placeholder=""
+                                                                    width="15%"
+                                                                    keyboardType="numeric"
+                                                                    backgroundColor={colors.gray[50]}
+                                                                    value={team1Score}
+                                                                    onChangeText={(value) =>
+                                                                        handleScoreChange(groupDto.groupNumber, matchIndex, "team1Score", value)
+                                                                    }
+                                                                />
+                                                            )}
                                                         </HStack>
 
                                                         {/* Equipe 2 */}
@@ -317,21 +325,63 @@ export default function MatchGroup() {
                                                                     <Text>{match[1].secondUserName}</Text>
                                                                 </VStack>
                                                             </HStack>
-                                                            <Text fontWeight="bold" fontSize="md">
-                                                                {team2Score || "-"}
-                                                            </Text>
+
+                                                            {submittedGroups.includes(groupDto.groupNumber) ? (
+                                                                <Text fontWeight="bold" fontSize="md">{team2Score || "-"}</Text>
+                                                            ) : (
+                                                                <Input
+                                                                    placeholder=""
+                                                                    width="15%"
+                                                                    keyboardType="numeric"
+                                                                    backgroundColor={colors.gray[50]}
+                                                                    value={team2Score}
+                                                                    onChangeText={(value) =>
+                                                                        handleScoreChange(groupDto.groupNumber, matchIndex, "team2Score", value)
+                                                                    }
+                                                                />
+                                                            )}
                                                         </HStack>
 
                                                         <Center mt={2}>
-                                                            <Text color={vencedor ? "green.700" : "red.500"} fontWeight="bold">
-                                                                {vencedor ? `Venc.: ${vencedor}` : "Placar Pendente"}
+                                                            <Text
+                                                                color={
+                                                                    submittedGroups.includes(groupDto.groupNumber)
+                                                                        ? parseInt(team1Score) > parseInt(team2Score)
+                                                                            ? "green.700"
+                                                                            : parseInt(team2Score) > parseInt(team1Score)
+                                                                                ? "green.700"
+                                                                                : "red.500"
+                                                                        : "red.500"
+                                                                }
+                                                                fontWeight="bold"
+                                                            >
+                                                                {submittedGroups.includes(groupDto.groupNumber)
+                                                                    ? parseInt(team1Score) > parseInt(team2Score)
+                                                                        ? `Venc.: ${match[0].firstUserName}`
+                                                                        : parseInt(team2Score) > parseInt(team1Score)
+                                                                            ? `Venc.: ${match[1].firstUserName}`
+                                                                            : "Empate"
+                                                                    : "Placar Pendente"}
                                                             </Text>
                                                         </Center>
                                                     </Box>
                                                 );
                                             })}
+
+                                            {!submittedGroups.includes(groupDto.groupNumber) && (
+                                                <Button
+                                                    mt={2}
+                                                    bg="green.500"
+                                                    borderRadius={20}
+                                                    onPress={() => handleSubmitGroupResults(groupDto)}
+                                                    isLoading={isSubmitting}
+                                                >
+                                                    <Text color="white" fontWeight="bold">Enviar Resultado do Grupo</Text>
+                                                </Button>
+                                            )}
                                         </>
                                     )}
+
 
                                 </Box>
                             );
