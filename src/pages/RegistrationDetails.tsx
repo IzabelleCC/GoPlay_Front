@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     VStack,
     Image,
@@ -15,9 +15,12 @@ import {
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import { CategoryPlayerService } from "../api/categoryPlayer/categoryPlayerService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import dayjs from "dayjs";
+import * as Location from 'expo-location';
+
+import { CategoryPlayerService } from "../api/categoryPlayer/categoryPlayerService";
+import { TournamentService } from "../api/tournament/tournamentService";
 import GenericModal from "../components/modals/GenericModal";
 
 export default function RegistrationDetails() {
@@ -30,6 +33,8 @@ export default function RegistrationDetails() {
     const [loading, setLoading] = useState(true);
     const [userType, setUserType] = useState<number | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
+    const [modalResult, setModalResult] = useState({ isOpen: false, title: '', body: '', type: 'info' });
+    const [confirmedAt, setConfirmedAt] = useState<string | null>(null);
     const toast = useToast();
 
     useEffect(() => {
@@ -76,6 +81,54 @@ export default function RegistrationDetails() {
         }
     };
 
+    const handleConfirmAttendance = async () => {
+        try {
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                setModalResult({
+                    isOpen: true,
+                    title: "Permissão negada",
+                    body: "É necessário permitir o acesso à localização para confirmar presença.",
+                    type: "error",
+                });
+                return;
+            }
+
+            const location = await Location.getCurrentPositionAsync({});
+            if (!location || !location.coords) throw new Error("Localização não encontrada");
+
+            const payload = {
+                registrationCategoryId: registrationId,
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+            };
+
+            console.log("Confirmando presença com os dados:", payload.latitude, payload.longitude, registrationId);
+            await TournamentService.confirmAttendance(payload);
+
+            const now = dayjs().format("DD/MM/YYYY [às] HH:mm");
+            setConfirmedAt(now);
+
+            setModalResult({
+                isOpen: true,
+                title: "Presença confirmada",
+                body: "Sua presença foi registrada com sucesso!",
+                type: "success",
+            });
+        } catch (err: any) {
+            console.error("Erro ao confirmar presença:", err);
+
+            const apiMessage = err?.response?.data?.message || "Erro ao confirmar presença. Tente novamente.";
+
+            setModalResult({
+                isOpen: true,
+                title: "Erro",
+                body: apiMessage,
+                type: "error",
+            });
+        }
+    };
+
     if (loading) {
         return (
             <Center flex={1}>
@@ -88,15 +141,14 @@ export default function RegistrationDetails() {
     if (!details) return <Text>Inscrição não encontrada</Text>;
 
     const showCancelButton = !details.firstUserPaymentConfirmed && !details.secondUserPaymentConfirmed;
+    const canConfirmPresence = details.firstUserPaymentConfirmed && details.secondUserPaymentConfirmed;
 
     return (
         <Box flex={1} bg={colors.white}>
             <ScrollView flex={1} p={4}>
                 <VStack alignItems="center" mb={6}>
                     <Image
-                        source={{
-                            uri: "https://itaguara.com/wp-content/uploads/2022/04/2-beach-soccer-thumb.jpg",
-                        }}
+                        source={{ uri: "https://itaguara.com/wp-content/uploads/2022/04/2-beach-soccer-thumb.jpg" }}
                         alt="Imagem do Torneio"
                         width={500}
                         height={100}
@@ -160,7 +212,28 @@ export default function RegistrationDetails() {
                     </Box>
                 )}
 
-                {/* Botão Cancelar Inscrição (visível somente se nenhum pagamento foi feito) */}
+                {/* Botão ou texto de confirmação de presença */}
+                {canConfirmPresence && (
+                    <Box mb={6} p={4}>
+                        {confirmedAt ? (
+                            <Text fontWeight="bold" color="green.700" textAlign="center">
+                                A presença da dupla foi confirmada no dia {confirmedAt}
+                            </Text>
+                        ) : (
+                            <Button
+                                bg={colors.blue[500]}
+                                borderRadius={12}
+                                w="100%"
+                                onPress={handleConfirmAttendance}
+                                leftIcon={<MaterialIcons name="location-on" size={20} color="white" />}
+                            >
+                                <Text color="white" fontWeight="bold">Confirmar Presença</Text>
+                            </Button>
+                        )}
+                    </Box>
+                )}
+
+                {/* Botão Cancelar Inscrição */}
                 {showCancelButton && (
                     <Box mt={2} p={4} borderRadius={12}>
                         <Button
@@ -208,7 +281,7 @@ export default function RegistrationDetails() {
                 </HStack>
             </Box>
 
-            {/* Modal de confirmação */}
+            {/* Modal de confirmação de cancelamento */}
             <GenericModal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
@@ -218,6 +291,15 @@ export default function RegistrationDetails() {
                 variant="confirm-delete"
                 confirmText="Sim, cancelar"
                 type="info"
+            />
+
+            {/* Modal de retorno da presença */}
+            <GenericModal
+                isOpen={modalResult.isOpen}
+                onClose={() => setModalResult({ ...modalResult, isOpen: false })}
+                title={modalResult.title}
+                body={<Text textAlign="center">{modalResult.body}</Text>}
+                type={modalResult.type as any}
             />
         </Box>
     );
