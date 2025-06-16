@@ -330,7 +330,7 @@ export default function MatchGroup() {
 
                                                                 {submittedGroups.includes(groupDto.groupNumber) ? (
                                                                     <Text fontWeight="bold" fontSize="md">{team1Score || "-"}</Text>
-                                                                ) : (
+                                                                ) : userType !== 1 ? (
                                                                     <Input
                                                                         placeholder=""
                                                                         width="15%"
@@ -341,6 +341,8 @@ export default function MatchGroup() {
                                                                             handleScoreChange(groupDto.groupNumber, matchIndex, "team1Score", value)
                                                                         }
                                                                     />
+                                                                ) : (
+                                                                    <Text fontWeight="bold" fontSize="md">-</Text>
                                                                 )}
                                                             </HStack>
 
@@ -355,18 +357,20 @@ export default function MatchGroup() {
                                                                 </HStack>
 
                                                                 {submittedGroups.includes(groupDto.groupNumber) ? (
-                                                                    <Text fontWeight="bold" fontSize="md">{team2Score || "-"}</Text>
-                                                                ) : (
+                                                                    <Text fontWeight="bold" fontSize="md">{team1Score || "-"}</Text>
+                                                                ) : userType !== 1 ? (
                                                                     <Input
                                                                         placeholder=""
                                                                         width="15%"
                                                                         keyboardType="numeric"
                                                                         backgroundColor={colors.gray[50]}
-                                                                        value={team2Score}
+                                                                        value={team1Score}
                                                                         onChangeText={(value) =>
-                                                                            handleScoreChange(groupDto.groupNumber, matchIndex, "team2Score", value)
+                                                                            handleScoreChange(groupDto.groupNumber, matchIndex, "team1Score", value)
                                                                         }
                                                                     />
+                                                                ) : (
+                                                                    <Text fontWeight="bold" fontSize="md">-</Text>
                                                                 )}
                                                             </HStack>
 
@@ -396,7 +400,7 @@ export default function MatchGroup() {
                                                     );
                                                 })}
 
-                                                {!submittedGroups.includes(groupDto.groupNumber) && (
+                                                {userType !== 1 && !submittedGroups.includes(groupDto.groupNumber) && (
                                                     <Button
                                                         mt={2}
                                                         bg="green.500"
@@ -449,7 +453,10 @@ export default function MatchGroup() {
                     <Button
                         borderRadius="full"
                         bg={colors.blue[500]}
-                        onPress={() => navigation.goBack()}
+                        onPress={() => {
+                            if (userType === 1) navigation.navigate("HomePlayer" as never);
+                            if (userType === 2) navigation.navigate("HomeAdm" as never);
+                        }}
                         p={3}
                     >
                         <MaterialIcons name="home" size={28} color="white" />

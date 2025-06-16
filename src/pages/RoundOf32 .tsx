@@ -155,155 +155,155 @@ export default function RoundOf32() {
 
   return (
     <Box flex={1} bg={colors.white}>
-    <ScrollView px={4} py={4} mb={8}>
-      <GenericModal
-        isOpen={modal.isOpen}
-        onClose={() => setModal({ ...modal, isOpen: false })}
-        title={modal.title}
-        body={<Text>{modal.body}</Text>}
-        type={modal.type as any}
-      />
+      <ScrollView px={4} py={4} mb={8}>
+        <GenericModal
+          isOpen={modal.isOpen}
+          onClose={() => setModal({ ...modal, isOpen: false })}
+          title={modal.title}
+          body={<Text>{modal.body}</Text>}
+          type={modal.type as any}
+        />
 
-      <HStack alignItems="center" mb={4}>
-        <Image source={{ uri: "https://img.favpng.com/4/19/3/beach-tennis-tennis-t-shirt-serve-png-favpng-dsZSu0xit617YDdkPWYfyUuxR.jpg" }} alt="Logo" borderRadius={6} width={75} height={75} mr={3} />
-        <VStack maxW="80%">
-          <Text fontSize={fontSizes.xl} fontWeight="bold" color={colors.blue[800]}>{tournamentName}</Text>
-          <Text fontSize={fontSizes.md} color={colors.gray[800]} fontWeight="bold">{categoryName.toUpperCase()}</Text>
-        </VStack>
-      </HStack>
+        <HStack alignItems="center" mb={4}>
+          <Image source={{ uri: "https://img.favpng.com/4/19/3/beach-tennis-tennis-t-shirt-serve-png-favpng-dsZSu0xit617YDdkPWYfyUuxR.jpg" }} alt="Logo" borderRadius={6} width={75} height={75} mr={3} />
+          <VStack maxW="80%">
+            <Text fontSize={fontSizes.xl} fontWeight="bold" color={colors.blue[800]}>{tournamentName}</Text>
+            <Text fontSize={fontSizes.md} color={colors.gray[800]} fontWeight="bold">{categoryName.toUpperCase()}</Text>
+          </VStack>
+        </HStack>
 
-      <Box position="relative" mb={4}>
-        <Pressable position="absolute" left={0} top={0} alignItems="center" onPress={() => navigation.goBack()}>
-          <Icon as={MaterialIcons} name="arrow-back" size={6} color="black" />
-          <Text fontSize="xs" fontWeight="bold">Voltar</Text>
-        </Pressable>
-        <Text fontSize={fontSizes.lg} fontWeight="bold" textAlign="center">Quartas de Finais</Text>
-        <VStack position="absolute" right={0} top={0} alignItems="center">
-          <Icon as={MaterialIcons} name="arrow-forward" size={6} color="black" />
-          <Text fontSize="xs" fontWeight="bold">SF</Text>
-        </VStack>
-      </Box>
-
-      <VStack space={4}>
-        {games.length === 0 ? (
-          <EmptyStateCard
-            title="Quartas de Finais"
-            message="Aguardando resultados da fase anterior."
-            count={4}
-          />
-        ) : (
-          games.map((game) => {
-            const score1 = game.qtdGames1 ?? 0;
-            const score2 = game.qtdGames2 ?? 0;
-
-            const isBye1 = !game.competitor1?.firstUserName;
-            const isBye2 = !game.competitor2?.firstUserName;
-            const isSubmitted = score1 > 0 || score2 > 0;
-            const isWinner1 = isBye2 || (isSubmitted && score1 > score2);
-            const isWinner2 = isBye1 || (isSubmitted && score2 > score1);
-            const bothNull = !game.competitor1 && !game.competitor2;
-
-            return (
-              <Box key={game.numberGame} p={4} borderWidth={1} borderColor={colors.gray[300]} borderRadius={10} bg="white">
-                <Text fontSize="xs" fontWeight="bold" mb={2}>#{game.numberGame} • QF</Text>
-
-                {bothNull && !game.competitor1Id && !game.competitor2Id ? (
-                  <EmptyStateCard
-                    title="Quartas de Finais"
-                    message="Aguardando resultados da fase anterior."
-                    count={4}
-                  />
-                ) : (
-                  <>
-                    {renderPlayer(game.competitor1 ?? null, isWinner1, isBye1, scoreInputs[game.numberGame]?.game1 || game.qtdGames1?.toString() || "", isSubmitted, isBye2, game.numberGame, game.competitor1Id!)}
-
-                    {renderPlayer(game.competitor2 ?? null, isWinner2, isBye2, scoreInputs[game.numberGame]?.game2 || game.qtdGames2?.toString() || "", isSubmitted, isBye1, game.numberGame, game.competitor1Id!)}
-
-                    {!isBye1 && !isBye2 && !isSubmitted && game.competitor1 && game.competitor2 && (
-                      <Button
-                        mt={3}
-                        bg={colors.green[500]}
-                        borderRadius={20}
-                        px={6}
-                        py={3}
-                        onPress={() => handleSendResults(game)}
-                        _pressed={{ opacity: 0.9 }}
-                      >
-                        <Text color="white" fontWeight="bold">Enviar Resultado</Text>
-                      </Button>
-                    )}
-                  </>
-                )}
-              </Box>
-            );
-          })
-        )}
-      </VStack>
-
-
-      <Center mt={8} mb={4}>
-        <Button
-          bg={colors.blue[500]}
-          borderRadius={20}
-          px={6}
-          py={3}
-          onPress={() => navigation.goBack()}
-          _pressed={{ opacity: 0.9 }}
-        >
-          <Text color="white" fontWeight="bold">Voltar</Text>
-        </Button>
-      </Center>
-    </ScrollView>
-    <Box
-                marginBottom={3}
-                marginTop={3}
-                px={4}
-                alignItems="center">
-                {/* Floating buttons */}
-                <HStack space={4} justifyContent="center">
-                    {/* Botão Voltar */}
-                    <Button
-                        borderRadius="full"
-                        bg={colors.blue[500]}
-                        onPress={() => navigation.goBack()}
-                        p={3}
-                    >
-                        <MaterialIcons name="chevron-left" size={28} color="white" />
-                    </Button>
-                    {/* Botão Home (casinha) */}
-                    <Button
-                        borderRadius="full"
-                        bg={colors.blue[500]}
-                        onPress={() => {
-                          if (userType === 1) navigation.navigate("HomePlayer" as never);
-                          if (userType === 2) navigation.navigate("HomeAdm" as never);
-                        }}
-                        p={3}
-                    >
-                        <MaterialIcons name="home" size={28} color="white" />
-                    </Button>
-
-                    {/* Botão Criar Torneio */}
-                    <Button
-                        borderRadius="full"
-                        bg={colors.blue[500]}
-                        onPress={() => navigation.navigate("CreateTournament" as never)}
-                        p={3}
-                    >
-                        <MaterialIcons name="emoji-events" size={28} color="white" />
-                    </Button>
-
-                    {/* Botão Meu Perfil */}
-                    <Button
-                        borderRadius="full"
-                        bg={colors.blue[500]}
-                        onPress={() => navigation.navigate("MyProfile" as never)}
-                        p={3}
-                    >
-                        <MaterialIcons name="person" size={28} color="white" />
-                    </Button>
-                </HStack>
-            </Box>
+        <Box position="relative" mb={4}>
+          <Pressable position="absolute" left={0} top={0} alignItems="center" onPress={() => navigation.goBack()}>
+            <Icon as={MaterialIcons} name="arrow-back" size={6} color="black" />
+            <Text fontSize="xs" fontWeight="bold">Voltar</Text>
+          </Pressable>
+          <Text fontSize={fontSizes.lg} fontWeight="bold" textAlign="center">Quartas de Finais</Text>
+          <VStack position="absolute" right={0} top={0} alignItems="center">
+            <Icon as={MaterialIcons} name="arrow-forward" size={6} color="black" />
+            <Text fontSize="xs" fontWeight="bold">SF</Text>
+          </VStack>
         </Box>
+
+        <VStack space={4}>
+          {games.length === 0 ? (
+            <EmptyStateCard
+              title="Quartas de Finais"
+              message="Aguardando resultados da fase anterior."
+              count={4}
+            />
+          ) : (
+            games.map((game) => {
+              const score1 = game.qtdGames1 ?? 0;
+              const score2 = game.qtdGames2 ?? 0;
+
+              const isBye1 = !game.competitor1?.firstUserName;
+              const isBye2 = !game.competitor2?.firstUserName;
+              const isSubmitted = score1 > 0 || score2 > 0;
+              const isWinner1 = isBye2 || (isSubmitted && score1 > score2);
+              const isWinner2 = isBye1 || (isSubmitted && score2 > score1);
+              const bothNull = !game.competitor1 && !game.competitor2;
+
+              return (
+                <Box key={game.numberGame} p={4} borderWidth={1} borderColor={colors.gray[300]} borderRadius={10} bg="white">
+                  <Text fontSize="xs" fontWeight="bold" mb={2}>#{game.numberGame} • QF</Text>
+
+                  {bothNull && !game.competitor1Id && !game.competitor2Id ? (
+                    <EmptyStateCard
+                      title="Quartas de Finais"
+                      message="Aguardando resultados da fase anterior."
+                      count={4}
+                    />
+                  ) : (
+                    <>
+                      {renderPlayer(game.competitor1 ?? null, isWinner1, isBye1, scoreInputs[game.numberGame]?.game1 || game.qtdGames1?.toString() || "", isSubmitted, isBye2, game.numberGame, game.competitor1Id!)}
+
+                      {renderPlayer(game.competitor2 ?? null, isWinner2, isBye2, scoreInputs[game.numberGame]?.game2 || game.qtdGames2?.toString() || "", isSubmitted, isBye1, game.numberGame, game.competitor1Id!)}
+
+                      {!isBye1 && !isBye2 && !isSubmitted && game.competitor1 && game.competitor2 && (
+                        <Button
+                          mt={3}
+                          bg={colors.green[500]}
+                          borderRadius={20}
+                          px={6}
+                          py={3}
+                          onPress={() => handleSendResults(game)}
+                          _pressed={{ opacity: 0.9 }}
+                        >
+                          <Text color="white" fontWeight="bold">Enviar Resultado</Text>
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </Box>
+              );
+            })
+          )}
+        </VStack>
+
+
+        <Center mt={8} mb={4}>
+          <Button
+            bg={colors.blue[500]}
+            borderRadius={20}
+            px={6}
+            py={3}
+            onPress={() => navigation.goBack()}
+            _pressed={{ opacity: 0.9 }}
+          >
+            <Text color="white" fontWeight="bold">Voltar</Text>
+          </Button>
+        </Center>
+      </ScrollView>
+      <Box
+        marginBottom={3}
+        marginTop={3}
+        px={4}
+        alignItems="center">
+        {/* Floating buttons */}
+        <HStack space={4} justifyContent="center">
+          {/* Botão Voltar */}
+          <Button
+            borderRadius="full"
+            bg={colors.blue[500]}
+            onPress={() => navigation.goBack()}
+            p={3}
+          >
+            <MaterialIcons name="chevron-left" size={28} color="white" />
+          </Button>
+          {/* Botão Home (casinha) */}
+          <Button
+            borderRadius="full"
+            bg={colors.blue[500]}
+            onPress={() => {
+              if (userType === 1) navigation.navigate("HomePlayer" as never);
+              if (userType === 2) navigation.navigate("HomeAdm" as never);
+            }}
+            p={3}
+          >
+            <MaterialIcons name="home" size={28} color="white" />
+          </Button>
+
+          {/* Botão Criar Torneio */}
+          <Button
+            borderRadius="full"
+            bg={colors.blue[500]}
+            onPress={() => navigation.navigate("CreateTournament" as never)}
+            p={3}
+          >
+            <MaterialIcons name="emoji-events" size={28} color="white" />
+          </Button>
+
+          {/* Botão Meu Perfil */}
+          <Button
+            borderRadius="full"
+            bg={colors.blue[500]}
+            onPress={() => navigation.navigate("MyProfile" as never)}
+            p={3}
+          >
+            <MaterialIcons name="person" size={28} color="white" />
+          </Button>
+        </HStack>
+      </Box>
+    </Box>
   );
 }
