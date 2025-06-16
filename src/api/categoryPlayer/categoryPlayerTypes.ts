@@ -153,7 +153,11 @@ export interface RegistrationDetailsDto {
   firstUserPaymentConfirmed: boolean;
   secondUserPaymentConfirmed: boolean;
   registerStatus: number;
+  attendanceConfirmed: boolean;
+  attendanceTime: string;
+  attendanceConfirmedUserId: string;
 }
+
 
 
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
     VStack,
     Image,
@@ -14,7 +14,7 @@ import {
     useToast,
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import { useRoute, useNavigation, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import dayjs from "dayjs";
 import * as Location from 'expo-location';
@@ -33,27 +33,33 @@ export default function RegistrationDetails() {
     const [loading, setLoading] = useState(true);
     const [userType, setUserType] = useState<number | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
-    const [modalResult, setModalResult] = useState({ isOpen: false, title: '', body: '', type: 'info' });
-    const [confirmedAt, setConfirmedAt] = useState<string | null>(null);
+    const [modalResult, setModalResult] = useState({
+        isOpen: false,
+        title: '',
+        body: '',
+        type: 'info'
+    });
     const toast = useToast();
 
-    useEffect(() => {
-        const fetch = async () => {
-            const type = await AsyncStorage.getItem("userType");
-            if (type) setUserType(Number(type));
+    const loadDetails = async () => {
+        setLoading(true);
+        const type = await AsyncStorage.getItem("userType");
+        if (type) setUserType(Number(type));
 
-            try {
-                const data = await CategoryPlayerService.getRegistrationDetails(registrationId);
-                setDetails(data);
-            } catch (error) {
-                console.error("Erro ao carregar detalhes da inscrição:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+        try {
+            const data = await CategoryPlayerService.getRegistrationDetails(registrationId);
+            setDetails(data);
+            console.log("Detalhes da inscrição:", data);
+        } catch (error) {
+            console.error("Erro ao carregar detalhes da inscrição:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        fetch();
-    }, [registrationId]);
+    useFocusEffect(useCallback(() => {
+        loadDetails();
+    }, [registrationId]));
 
     const formatDate = (date: string) => dayjs(date).format("DD/MM/YYYY");
 
@@ -97,17 +103,17 @@ export default function RegistrationDetails() {
             const location = await Location.getCurrentPositionAsync({});
             if (!location || !location.coords) throw new Error("Localização não encontrada");
 
+            const userId = await AsyncStorage.getItem("userId");
             const payload = {
                 registrationCategoryId: registrationId,
+                userId: userId || "",
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
             };
 
-            console.log("Confirmando presença com os dados:", payload.latitude, payload.longitude, registrationId);
+            console.log("Presença confirmada com sucesso", payload);
             await TournamentService.confirmAttendance(payload);
-
-            const now = dayjs().format("DD/MM/YYYY [às] HH:mm");
-            setConfirmedAt(now);
+            await loadDetails();
 
             setModalResult({
                 isOpen: true,
@@ -117,9 +123,7 @@ export default function RegistrationDetails() {
             });
         } catch (err: any) {
             console.error("Erro ao confirmar presença:", err);
-
             const apiMessage = err?.response?.data?.message || "Erro ao confirmar presença. Tente novamente.";
-
             setModalResult({
                 isOpen: true,
                 title: "Erro",
@@ -142,6 +146,12 @@ export default function RegistrationDetails() {
 
     const showCancelButton = !details.firstUserPaymentConfirmed && !details.secondUserPaymentConfirmed;
     const canConfirmPresence = details.firstUserPaymentConfirmed && details.secondUserPaymentConfirmed;
+
+    const confirmedByName = details.attendanceConfirmedUserId === details.firstUserId
+        ? details.firstUserName
+        : details.attendanceConfirmedUserId === details.secondUserId
+            ? details.secondUserName
+            : "um administrador";
 
     return (
         <Box flex={1} bg={colors.white}>
@@ -212,12 +222,12 @@ export default function RegistrationDetails() {
                     </Box>
                 )}
 
-                {/* Botão ou texto de confirmação de presença */}
+                {/* Presença */}
                 {canConfirmPresence && (
                     <Box mb={6} p={4}>
-                        {confirmedAt ? (
+                        {details.attendanceConfirmed ? (
                             <Text fontWeight="bold" color="green.700" textAlign="center">
-                                A presença da dupla foi confirmada no dia {confirmedAt}
+                                A presença da dupla foi confirmada no dia {dayjs(details.attendanceTime).format("DD/MM/YYYY [às] HH:mm")} por {confirmedByName}.
                             </Text>
                         ) : (
                             <Button
@@ -233,7 +243,7 @@ export default function RegistrationDetails() {
                     </Box>
                 )}
 
-                {/* Botão Cancelar Inscrição */}
+                {/* Cancelar inscrição */}
                 {showCancelButton && (
                     <Box mt={2} p={4} borderRadius={12}>
                         <Button
@@ -281,7 +291,7 @@ export default function RegistrationDetails() {
                 </HStack>
             </Box>
 
-            {/* Modal de confirmação de cancelamento */}
+            {/* Modal Cancelar */}
             <GenericModal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
@@ -293,7 +303,7 @@ export default function RegistrationDetails() {
                 type="info"
             />
 
-            {/* Modal de retorno da presença */}
+            {/* Modal Retorno */}
             <GenericModal
                 isOpen={modalResult.isOpen}
                 onClose={() => setModalResult({ ...modalResult, isOpen: false })}

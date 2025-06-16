@@ -58,6 +58,7 @@ export interface UpdateTournamentPayload {
 
 export interface ConfirmAttendancePayload {
     registrationCategoryId: number;
+    userId: string;
     latitude: number;
     longitude: number;
 }
