@@ -271,7 +271,10 @@ export default function SemiFinal() {
           <Button
             borderRadius="full"
             bg={colors.blue[500]}
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+              if (userType === 1) navigation.navigate("HomePlayer" as never);
+              if (userType === 2) navigation.navigate("HomeAdm" as never);
+            }}
             p={3}
           >
             <MaterialIcons name="home" size={28} color="white" />

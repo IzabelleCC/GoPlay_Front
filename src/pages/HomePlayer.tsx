@@ -127,7 +127,7 @@ export default function HomePlayer({ navigation }: any) {
         <VStack alignItems="center" mb={6}>
           <Image source={Logo} alt="Logo" width={90} height={90} resizeMode="contain" />
           <Text fontSize={fontSizes.lg} fontWeight="bold" mt={2}>
-            Meus Torneios
+            Minhas Inscrições
           </Text>
         </VStack>
 
@@ -241,12 +241,32 @@ export default function HomePlayer({ navigation }: any) {
                   >
                     Ver Inscrição
                   </Button>
+                  {[5].includes(inscricao.tournament.status) && (
+                    <VStack alignItems="center">
+                      <Button
+                        variant="ghost"
+                        p={2}
+                        onPress={() =>
+                          navigation.navigate("MatchGroup", {
+                            categoryId: inscricao.category.id,
+                            tournamentId: inscricao.tournament.id,
+                            categoryName: inscricao.category.categoryType,
+                          })
+                        }
+                      >
+                        <MaterialIcons name="emoji-events" size={30} color="black" />
+                      </Button>
+                      <Text fontSize="xs" color={colors.black}>
+                        Chaves
+                      </Text>
+                    </VStack>
+                  )}
+
                 </HStack>
               </Box>
             ))}
           </VStack>
         )}
-
       </ScrollView>
       <Box
         marginBottom={3}

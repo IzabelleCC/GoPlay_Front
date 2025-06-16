@@ -281,6 +281,7 @@ export default function CategoryDetails() {
                                             </Text>
                                         </VStack>
                                     </HStack>
+                                    
                                 </HStack>
                             </Box>
                         ))}
