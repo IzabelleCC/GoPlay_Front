@@ -8,6 +8,7 @@ import {
   CategoryPlayerFullInfoResponse,
   TournamentMatchesResultDto,
   GroupResultDto,
+  RegistrationDetailsDto,
 } from "./categoryPlayerTypes";
 
 export const CategoryPlayerService = {
@@ -130,4 +131,15 @@ export const CategoryPlayerService = {
       throw error;
     }
   },
+  
+  async getRegistrationDetails(registrationId: number): Promise<RegistrationDetailsDto> {
+    try {
+      const response = await axios.get(`${Endpoints.CategoryPlayer.GetRegistrationDetails}/${registrationId}`);
+      return response.data;
+    } catch (error: any) {
+      console.error("Erro ao buscar detalhes da inscrição:", error);
+      throw error;
+    }
+  },
+  
 };

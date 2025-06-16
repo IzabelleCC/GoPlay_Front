@@ -22,7 +22,8 @@ import RoundOf32 from "../pages/RoundOf32 ";
 import RoundOf16 from "../pages/RoundOf16";
 import QuarterFinal from "../pages/QuarterFinal";
 import SemiFinal from "../pages/SemiFinal";
-import Final from "../pages/Final"; 
+import Final from "../pages/Final";
+import RegistrationDetails from "../pages/RegistrationDetails";
 
 export type RootStackParamList = {
     Inicial: undefined;
@@ -45,6 +46,7 @@ export type RootStackParamList = {
     QuarterFinal: undefined;
     SemiFinal: undefined;
     Final: undefined;
+    RegistrationDetails: { registrationId: number };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -73,6 +75,7 @@ const linking = {
             QuarterFinal: "quarterfinal",
             SemiFinal: "semifinal",
             Final: "final",
+            RegistrationDetails: "registrationdetails/:registrationId",
         },
     },
 };
@@ -101,6 +104,7 @@ export default function Routes() {
                 <Stack.Screen name="QuarterFinal" component={QuarterFinal} />
                 <Stack.Screen name="SemiFinal" component={SemiFinal} />
                 <Stack.Screen name="Final" component={Final} />
+                <Stack.Screen name="RegistrationDetails" component={RegistrationDetails} />
             </Stack.Navigator>
         </NavigationContainer>
     );

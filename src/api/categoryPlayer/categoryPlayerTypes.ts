@@ -138,4 +138,22 @@ export interface GroupResultDto {
   matchStage: number;
 }
 
+export interface RegistrationDetailsDto {
+  id: number;
+  tournamentId: number;
+  tournamentName: string;
+  registrationFee: number;
+  paymentDeadline: string; 
+  categoryId: number;
+  categoryName: string;
+  firstUserId: string;
+  secondUserId: string;
+  firstUserName: string;
+  secondUserName: string;
+  firstUserPaymentConfirmed: boolean;
+  secondUserPaymentConfirmed: boolean;
+  registerStatus: number;
+}
+
+
 

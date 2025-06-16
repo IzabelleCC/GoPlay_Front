@@ -57,5 +57,6 @@ export const Endpoints = Object.freeze({
     ByUserIdReturnsFullInfo: "GetByUserIdReturnsFullInfo",
     GetMatchGroupByCategoryId: "GetMatchGroupByCategoryId",
     GetGroupResultByCategoryIdAndGroupNumber: "GetGroupResultByCategoryId",
+    GetRegistrationDetails: "GetRegistrationDetails",
   }),
 });
