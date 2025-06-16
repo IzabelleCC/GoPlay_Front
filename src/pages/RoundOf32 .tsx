@@ -100,7 +100,7 @@ export default function RoundOf32() {
       </HStack>
 
       {!isBye && !opponentIsBye && (
-        isSubmitted ? (
+        isSubmitted || userType === 1 ? (
           <Text fontWeight={isWinner ? "bold" : "normal"} fontSize="md" color={isWinner ? "green.700" : "red.600"}>{score}</Text>
         ) : (
           <Input
@@ -219,7 +219,7 @@ export default function RoundOf32() {
 
                       {renderPlayer(game.competitor2 ?? null, isWinner2, isBye2, scoreInputs[game.numberGame]?.game2 || game.qtdGames2?.toString() || "", isSubmitted, isBye1, game.numberGame, game.competitor1Id!)}
 
-                      {!isBye1 && !isBye2 && !isSubmitted && game.competitor1 && game.competitor2 && (
+                      {!isBye1 && !isBye2 && !isSubmitted && game.competitor1 && game.competitor2 && userType !== 1  && (
                         <Button
                           mt={3}
                           bg={colors.green[500]}
