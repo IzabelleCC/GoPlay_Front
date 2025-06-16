@@ -70,6 +70,16 @@ export const TournamentService = {
     }
   },
 
+  async getFullInformationById(id: number) {
+    try {
+      const response = await axios.get(`${Endpoints.TournamentManager.GetFullInformationById}/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error("Erro ao buscar torneio por ID:", error);
+      throw error;
+    }
+  },
+
   async deleteTournament(id: number) {
     try {
       const response = await axios.delete(`${Endpoints.TournamentManager.Base}/${id}`);

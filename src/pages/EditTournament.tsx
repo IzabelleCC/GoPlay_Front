@@ -9,19 +9,23 @@ import {
   IconButton,
   FormControl,
   HStack,
+  Switch,
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRoute, useNavigation, NavigationProp } from "@react-navigation/native";
 import { TournamentService } from "../api/tournament/tournamentService";
+import { UpdateTournamentPayload } from "../api/tournament/tournamentTypes";
 import DatePicker from "../components/form/DatePicker";
 import GenericModal from "../components/modals/GenericModal";
 import { RootStackParamList } from "../navigation/Routes";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import LocationInput from "../components/form/LocationInput";
 
-interface Category {
+type LocalCategory = {
   categoryType: string;
   playerLimit: string;
-}
+  isDoubles: boolean;
+};
 
 export default function EditTournament() {
   const { colors, fontSizes } = useTheme();
@@ -40,7 +44,7 @@ export default function EditTournament() {
   const [registrationDeadline, setRegistrationDeadline] = useState(new Date());
   const [paymentDeadline, setPaymentDeadline] = useState(new Date());
 
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<LocalCategory[]>([]);
   const [editedCategoryIndex, setEditedCategoryIndex] = useState<number | null>(null);
 
   const [showModalSuccess, setShowModalSuccess] = useState(false);
@@ -48,39 +52,46 @@ export default function EditTournament() {
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<number | null>(null);
 
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+
   useEffect(() => {
-    const loadTournament = async () => {
-      try {
-        const data = await TournamentService.getTournamentById(id);
-        setName(data.name);
-        setDescription(data.description);
-        setLocation(data.location);
-        setFee(data.registrationFee.toString());
-        setCourtQty(data.courtQuantity.toString());
-        setStartDate(new Date(data.gamesStartDate));
-        setEndDate(new Date(data.gamesEndDate));
-        setRegistrationDeadline(new Date(data.registrationDeadline));
-        setPaymentDeadline(new Date(data.paymentDeadline));
-        setCategories(
-          data.categories.map((c: any) => ({
-            categoryType: c.categoryType,
-            playerLimit: c.playerLimit.toString(),
-          }))
-        );
-      } catch (err) {
-        console.error("Erro ao carregar torneio", err);
-      }
-    };
     loadTournament();
   }, [id]);
 
+  const loadTournament = async () => {
+    try {
+      const data = await TournamentService.getFullInformationById(id);
+      setName(data.name);
+      setDescription(data.description);
+      setLocation(data.location);
+      setLatitude(data.latitude ?? null);
+      setLongitude(data.longitude ?? null);
+      setFee(data.registrationFee.toString());
+      setCourtQty(data.courtQuantity.toString());
+      setStartDate(new Date(data.gamesStartDate));
+      setEndDate(new Date(data.gamesEndDate));
+      setRegistrationDeadline(new Date(data.registrationDeadline));
+      setPaymentDeadline(new Date(data.paymentDeadline));
+      setCategories(
+        data.categories.map((c: any) => ({
+          categoryType: c.categoryType,
+          playerLimit: c.playerLimit.toString(),
+          isDoubles: c.isDoubles ?? true,
+        }))
+      );
+    } catch (err) {
+      console.error("Erro ao carregar torneio", err);
+    }
+  };
+
   const handleChangeCategory = (
     index: number,
-    key: "categoryType" | "playerLimit",
-    value: string
+    key: keyof LocalCategory,
+    value: string | boolean
   ) => {
     const updated = [...categories];
-    updated[index][key] = value;
+    (updated[index][key] as any) = value;
     setCategories(updated);
   };
 
@@ -92,7 +103,9 @@ export default function EditTournament() {
 
   const handleSaveCategory = (index: number) => {
     const categoryName = categories[index].categoryType.trim().toLowerCase();
-    const duplicate = categories.some((c, i) => i !== index && c.categoryType.trim().toLowerCase() === categoryName);
+    const duplicate = categories.some(
+      (c, i) => i !== index && c.categoryType.trim().toLowerCase() === categoryName
+    );
     if (duplicate) {
       setShowDuplicateModal(true);
     } else {
@@ -103,14 +116,12 @@ export default function EditTournament() {
   const handleSubmit = async () => {
     try {
       const userId = await AsyncStorage.getItem("userId");
-
       if (!userId) {
-        console.error("Usuário não encontrado no armazenamento.");
         setShowModalError(true);
         return;
       }
 
-      const payload = {
+      const payload: UpdateTournamentPayload = {
         data: {
           id,
           name,
@@ -120,12 +131,15 @@ export default function EditTournament() {
           registrationDeadline: registrationDeadline.toISOString(),
           paymentDeadline: paymentDeadline.toISOString(),
           location,
+          latitude: latitude!,
+          longitude: longitude!,
           registrationFee: Number(fee),
           courtQuantity: Number(courtQty),
           admUserId: userId,
           categories: categories.map((c) => ({
             categoryType: c.categoryType,
             playerLimit: Number(c.playerLimit),
+            isDoubles: c.isDoubles,
           })),
         },
       };
@@ -145,7 +159,15 @@ export default function EditTournament() {
           Editar {name}
         </Text>
 
-        <Input placeholder="Local" value={location} onChangeText={setLocation} bg={colors.gray[100]} borderRadius={10} />
+        <LocationInput
+          value={location}
+          onChange={(address, lat, lng) => {
+            setLocation(address);
+            setLatitude(lat);
+            setLongitude(lng);
+          }}
+        />
+
         <Input placeholder="Endereço" value={description} onChangeText={setDescription} bg={colors.gray[100]} borderRadius={10} />
         <Input placeholder="Valor da inscrição" value={fee} onChangeText={setFee} keyboardType="numeric" bg={colors.gray[100]} borderRadius={10} />
         <Input placeholder="Quantidade de quadras" value={courtQty} onChangeText={setCourtQty} keyboardType="numeric" bg={colors.gray[100]} borderRadius={10} />
@@ -178,21 +200,29 @@ export default function EditTournament() {
                   bg={colors.gray[100]}
                   borderRadius={10}
                 />
-
                 <IconButton
                   icon={<MaterialIcons name="delete" size={24} color="black" />}
                   variant="ghost"
                   onPress={() => setCategoryToDelete(index)}
                 />
-
                 {index === categories.length - 1 && (
                   <IconButton
                     icon={<MaterialIcons name="add" size={24} color="black" />}
                     variant="ghost"
-                    onPress={() => setCategories([...categories, { categoryType: "", playerLimit: "" }])}
+                    onPress={() =>
+                      setCategories([...categories, { categoryType: "", playerLimit: "", isDoubles: true }])
+                    }
                   />
                 )}
               </HStack>
+            </FormControl>
+
+            <FormControl>
+              <FormControl.Label>É dupla?</FormControl.Label>
+              <Switch
+                isChecked={category.isDoubles}
+                onToggle={() => handleChangeCategory(index, "isDoubles", !category.isDoubles)}
+              />
             </FormControl>
           </VStack>
         ))}

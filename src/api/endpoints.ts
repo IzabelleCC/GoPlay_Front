@@ -30,6 +30,7 @@ export const Endpoints = Object.freeze({
   TournamentManager: buildControllerEndpoints("TournamentManager", {
     Base: null,
     GetById: "GetById",
+    GetFullInformationById: "GetFullInformationById",
     GetAll: null,
     GetByName: "GetByTournamentName",
     GetByAdmUserId: "GetByAdmUserId",

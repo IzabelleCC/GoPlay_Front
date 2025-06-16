@@ -21,6 +21,10 @@ export default function LocationInput({ value, onChange }: LocationInputProps) {
   const [selected, setSelected] = useState(false);
 
   useEffect(() => {
+    setInputValue(value);
+  }, [value]);
+  
+  useEffect(() => {
     if (inputValue.length > 2 && !selected) {
       fetchSuggestions(inputValue);
     } else {
@@ -85,7 +89,7 @@ export default function LocationInput({ value, onChange }: LocationInputProps) {
         onChangeText={(text) => {
           setInputValue(text);
           setSelected(false);
-          onChange("", 0, 0); // Resetar até selecionar novamente
+          onChange("", 0, 0);
         }}
         bg={colors.gray[100]}
         borderRadius={10}

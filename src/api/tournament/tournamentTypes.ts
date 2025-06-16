@@ -12,14 +12,9 @@ export interface CategoryPlayer {
 }
 
 export interface TournamentCategory {
-    id: number;
     categoryType: string;
     playerLimit: number;
-    tournamentId: number;
     isDoubles: boolean;
-    categoryPlayers: CategoryPlayer[];
-    matchGroups: any[];
-    gameMatches: any[];
 }
 
 export interface Tournament {
@@ -52,6 +47,8 @@ export interface UpdateTournamentPayload {
         registrationDeadline: string; // ISO date
         paymentDeadline: string;      // ISO date
         location: string;
+        latitude: number;
+        longitude: number;
         registrationFee: number;
         courtQuantity: number;
         admUserId: string;
