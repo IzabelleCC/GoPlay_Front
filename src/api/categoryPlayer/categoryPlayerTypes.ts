@@ -126,11 +126,38 @@ export interface GroupResultDto {
   game3: number | null;
   game4: number | null;
   game5: number | null;
+  game6: number | null;
+  game7: number | null;
+  game8: number | null;
+  game9: number | null;
+  game10: number | null;
   sumOfGamesWon: number;
   sumOfGamesLost: number;
   gamesBalance: number;
   tiebreaks: number;
   matchStage: number;
 }
+
+export interface RegistrationDetailsDto {
+  id: number;
+  tournamentId: number;
+  tournamentName: string;
+  registrationFee: number;
+  paymentDeadline: string; 
+  categoryId: number;
+  categoryName: string;
+  firstUserId: string;
+  secondUserId: string;
+  firstUserName: string;
+  secondUserName: string;
+  firstUserPaymentConfirmed: boolean;
+  secondUserPaymentConfirmed: boolean;
+  registerStatus: number;
+  attendanceConfirmed: boolean;
+  attendanceTime: string;
+  attendanceConfirmedUserId: string;
+}
+
+
 
 

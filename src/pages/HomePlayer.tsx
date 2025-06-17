@@ -48,6 +48,18 @@ export default function HomePlayer({ navigation }: any) {
   const { colors, fontSizes } = useTheme();
   const [loading, setLoading] = useState(true);
   const [inscricoes, setInscricoes] = useState<CategoryPlayerFullInfoResponse[]>([]);
+  const [userType, setUserType] = useState<number | null>(null);
+
+  const fetchUserType = async () => {
+    const storedType = await AsyncStorage.getItem("userType");
+    if (storedType) {
+      setUserType(Number(storedType));
+    }
+  };
+
+  useEffect(() => {
+    fetchUserType();
+  }, []);
 
   const loadInscricoes = useCallback(async () => {
     try {
@@ -78,15 +90,16 @@ export default function HomePlayer({ navigation }: any) {
   const getTournamentBadgeLabel = (status: number) => {
     switch (status) {
       case 0:
-        return "Criado";
       case 1:
-        return "Inscrição Aberta";
+        return "Inscrições Abertas";
       case 2:
-        return "Inscrição Encerrada";
+        return "Inscrições Encerradas";
       case 3:
         return "Em Andamento";
       case 4:
         return "Concluído";
+      case 5:
+        return "Chaves Geradas";
       default:
         return "Status Desconhecido";
     }
@@ -94,13 +107,14 @@ export default function HomePlayer({ navigation }: any) {
 
   const getTournamentBadgeColor = (status: number) => {
     switch (status) {
-      case 0: // Criado
-      case 4: // Concluído
+      case 4:
         return colors.gray[200];
-      case 1: // Inscrição Aberta
-      case 3: // Em Andamento
+      case 0:
+      case 1:
+      case 3:
+      case 5:
         return "green.500";
-      case 2: // Inscrição Encerrada
+      case 2:
         return "red.500";
       default:
         return colors.gray[300];
@@ -108,150 +122,193 @@ export default function HomePlayer({ navigation }: any) {
   };
 
   return (
-    <ScrollView flex={1} bg={colors.white} p={4}>
-      <VStack alignItems="center" mb={6}>
-        <Image source={Logo} alt="Logo" width={90} height={90} resizeMode="contain" />
-        <Text fontSize={fontSizes.lg} fontWeight="bold" mt={2}>
-          Meus Torneios
-        </Text>
-      </VStack>
-
-      {loading ? (
-        <Center flex={1}>
-          <Spinner size="lg" color={colors.blue[500]} />
-          <Text mt={4} color={colors.black}>
-            Carregando inscrições...
+    <Box flex={1} bg={colors.white}>
+      <ScrollView flex={1} bg={colors.white} p={4}>
+        <VStack alignItems="center" mb={6}>
+          <Image source={Logo} alt="Logo" width={90} height={90} resizeMode="contain" />
+          <Text fontSize={fontSizes.lg} fontWeight="bold" mt={2}>
+            Minhas Inscrições
           </Text>
-        </Center>
-      ) : inscricoes.length === 0 ? (
-        <Text textAlign="center" color={colors.black}>
-          Nenhuma inscrição encontrada.
-        </Text>
-      ) : (
-        <VStack space={4}>
-          {inscricoes.map((inscricao) => (
-            <Box
-              key={inscricao.categoryPlayer.id}
-              p={4}
-              bg={colors.white}
-              borderRadius={10}
-              shadow={1}
-              borderWidth={1}
-              borderColor={colors.gray[200]}
-            >
-              {/* Imagem pequena e espaço abaixo */}
-              <Center mb={3}>
-                <Image
-                  source={{
-                    uri: "https://via.placeholder.com/80.png?text=Torneio",
-                  }}
-                  alt="Imagem do Torneio"
-                  borderRadius={50}
-                  width={50}
-                  height={50}
-                />
-              </Center>
+        </VStack>
 
-              {/* Nome do Torneio */}
-              <Text fontWeight="bold" fontSize={fontSizes.md} mb={1} color={colors.blue[800]}>
-                {inscricao.tournament.name}
-              </Text>
+        {loading ? (
+          <Center flex={1}>
+            <Spinner size="lg" color={colors.blue[500]} />
+            <Text mt={4} color={colors.black}>
+              Carregando inscrições...
+            </Text>
+          </Center>
+        ) : inscricoes.length === 0 ? (
+          <Text textAlign="center" color={colors.black}>
+            Nenhuma inscrição encontrada.
+          </Text>
+        ) : (
+          <VStack space={4}>
+            {inscricoes.map((inscricao) => (
+              <Box
+                key={inscricao.categoryPlayer.id}
+                p={4}
+                bg={colors.white}
+                borderRadius={10}
+                shadow={1}
+                borderWidth={1}
+                borderColor={colors.gray[200]}
+              >
+                {/* Imagem pequena e espaço abaixo */}
+                <Center mb={3}>
+                  <Image
+                    source={{
+                      uri: "https://via.placeholder.com/80.png?text=Torneio",
+                    }}
+                    alt="Imagem do Torneio"
+                    borderRadius={50}
+                    width={50}
+                    height={50}
+                  />
+                </Center>
 
-              {/* Nome da Categoria */}
-              <Text fontWeight="bold" fontSize={fontSizes.sm} mb={1} color={colors.blue[800]}>
-                {inscricao.category.categoryType}
-              </Text>
+                {/* Nome do Torneio */}
+                <Text fontWeight="bold" fontSize={fontSizes.md} mb={1} color={colors.blue[800]}>
+                  {inscricao.tournament.name}
+                </Text>
 
-              {/* Data do fim do torneio */}
-              <Text color={colors.black} fontSize={fontSizes.sm} mb={2}>
-                Termina em {formatDate(inscricao.tournament.gamesEndDate)}
-              </Text>
+                {/* Nome da Categoria */}
+                <Text fontWeight="bold" fontSize={fontSizes.sm} mb={1} color={colors.blue[800]}>
+                  {inscricao.category.categoryType}
+                </Text>
 
-              {/* Badge do status do torneio + parceiro */}
-              <HStack space={2} mb={2} flexWrap="wrap" alignItems="center">
-                <BadgeStatus
-                  label={getTournamentBadgeLabel(inscricao.tournament.status)}
-                  bgColor={getTournamentBadgeColor(inscricao.tournament.status)}
-                  textColor={colors.black}
-                  fontWeight="bold" // para deixar negrito igual seu exemplo
-                />
+                {/* Data do fim do torneio */}
+                <Text color={colors.black} fontSize={fontSizes.sm} mb={2}>
+                  Termina em {formatDate(inscricao.tournament.gamesEndDate)}
+                </Text>
 
-                {/* Parceiro se existir */}
-                {inscricao.category.isDoubles && inscricao.secondUserName && (
-                  <HStack alignItems="center" space={1}>
-                    <MaterialIcons name="person" size={20} color={colors.black} />
-                    <Text fontWeight="bold" fontSize="14" color={colors.black}>
-                      {inscricao.secondUserName}
-                    </Text>
-                  </HStack>
-                )}
-              </HStack>
+                {/* Badge do status do torneio + parceiro */}
+                <HStack space={2} mb={2} flexWrap="wrap" alignItems="center">
+                  <BadgeStatus
+                    label={getTournamentBadgeLabel(inscricao.tournament.status)}
+                    bgColor={getTournamentBadgeColor(inscricao.tournament.status)}
+                    textColor={colors.black}
+                    fontWeight="bold" // para deixar negrito igual seu exemplo
+                  />
 
-              <Divider bg={colors.gray[200]} my={2} />
-
-              {/* Quantidade de duplas/inscritos, jogos e botão Ver Inscrição */}
-              <HStack justifyContent="space-between" alignItems="center" mt={2}>
-                <HStack space={8} alignItems="center">
-                  {/* Quantidade de duplas ou inscritos */}
-                  <VStack alignItems="center">
-                    <Text fontSize="lg" fontWeight="bold" color={colors.black}>
-                      {inscricao.registerCount}
-                    </Text>
-                    <Text fontSize="xs" color={colors.black}>
-                      {inscricao.category.isDoubles ? "Duplas" : "Inscritos"}
-                    </Text>
-                  </VStack>
-
-                  {/* Quantidade de jogos */}
-                  <VStack alignItems="center">
-                    <Text fontSize="lg" fontWeight="bold" color={colors.black}>
-                      0
-                    </Text>
-                    <Text fontSize="xs" color={colors.black}>
-                      Jogos
-                    </Text>
-                  </VStack>
+                  {/* Parceiro se existir */}
+                  {inscricao.category.isDoubles && inscricao.secondUserName && (
+                    <HStack alignItems="center" space={1}>
+                      <MaterialIcons name="person" size={20} color={colors.black} />
+                      <Text fontWeight="bold" fontSize="14" color={colors.black}>
+                        {inscricao.secondUserName}
+                      </Text>
+                    </HStack>
+                  )}
                 </HStack>
 
-                {/* Botão Ver Inscrição */}
-                <Button
-                  variant="outline"
-                  borderColor={colors.blue[500]}
-                  _text={{ color: colors.blue[500], fontWeight: "bold" }}
-                  onPress={() =>
-                    navigation.navigate("RegistrationDetails", {
-                      registrationId: inscricao.categoryPlayer.id,
-                    })
-                  }
-                >
-                  Ver Inscrição
-                </Button>
-              </HStack>
-            </Box>
-          ))}
-        </VStack>
-      )}
+                <Divider bg={colors.gray[200]} my={2} />
 
-      {/* Footer buttons */}
-      <HStack space={4} mt={6} mb={4} alignSelf="center">
-        <Button
-          borderRadius="full"
-          bg={colors.blue[500]}
-          onPress={() => navigation.navigate("PlayerTournaments")}
-          p={3}
-        >
-          <MaterialIcons name="emoji-events" size={28} color="white" />
-        </Button>
+                {/* Quantidade de duplas/inscritos, jogos e botão Ver Inscrição */}
+                <HStack justifyContent="space-between" alignItems="center" mt={2}>
+                  <HStack space={8} alignItems="center">
+                    {/* Quantidade de duplas ou inscritos */}
+                    <VStack alignItems="center">
+                      <Text fontSize="lg" fontWeight="bold" color={colors.black}>
+                        {inscricao.registerCount}
+                      </Text>
+                      <Text fontSize="xs" color={colors.black}>
+                        {inscricao.category.isDoubles ? "Duplas" : "Inscritos"}
+                      </Text>
+                    </VStack>
 
-        <Button
-          borderRadius="full"
-          bg={colors.blue[500]}
-          onPress={() => navigation.navigate("MyProfile")}
-          p={3}
-        >
-          <MaterialIcons name="person" size={28} color="white" />
-        </Button>
-      </HStack>
-    </ScrollView>
+                    {/* Quantidade de jogos */}
+                    <VStack alignItems="center">
+                      <Text fontSize="lg" fontWeight="bold" color={colors.black}>
+                        0
+                      </Text>
+                      <Text fontSize="xs" color={colors.black}>
+                        Jogos
+                      </Text>
+                    </VStack>
+                  </HStack>
+
+                  {/* Botão Ver Inscrição */}
+                  <Button
+                    variant="outline"
+                    borderColor={colors.blue[500]}
+                    _text={{ color: colors.blue[500], fontWeight: "bold" }}
+                    onPress={() =>
+                      navigation.navigate("RegistrationDetails", {
+                        registrationId: inscricao.categoryPlayer.id,
+                      })
+                    }
+                  >
+                    Ver Inscrição
+                  </Button>
+                  {[5].includes(inscricao.tournament.status) && (
+                    <VStack alignItems="center">
+                      <Button
+                        variant="ghost"
+                        p={2}
+                        onPress={() =>
+                          navigation.navigate("MatchGroup", {
+                            categoryId: inscricao.category.id,
+                            tournamentId: inscricao.tournament.id,
+                            categoryName: inscricao.category.categoryType,
+                          })
+                        }
+                      >
+                        <MaterialIcons name="emoji-events" size={30} color="black" />
+                      </Button>
+                      <Text fontSize="xs" color={colors.black}>
+                        Chaves
+                      </Text>
+                    </VStack>
+                  )}
+
+                </HStack>
+              </Box>
+            ))}
+          </VStack>
+        )}
+      </ScrollView>
+      <Box
+        marginBottom={3}
+        marginTop={3}
+        px={4}
+        alignItems="center">
+        {/* Floating buttons */}
+        <HStack space={4} justifyContent="center">
+          {/* Botão Home (casinha) */}
+          <Button
+            borderRadius="full"
+            bg={colors.blue[500]}
+            onPress={() => {
+              if (userType === 1) navigation.navigate("HomePlayer" as never);
+              if (userType === 2) navigation.navigate("HomeAdm" as never);
+            }}
+            p={3}
+          >
+            <MaterialIcons name="home" size={28} color="white" />
+          </Button>
+
+          {/* Botão Criar Torneio */}
+          <Button
+            borderRadius="full"
+            bg={colors.blue[500]}
+            onPress={() => navigation.navigate("PlayerTournaments")}
+            p={3}
+          >
+            <MaterialIcons name="emoji-events" size={28} color="white" />
+          </Button>
+
+          {/* Botão Meu Perfil */}
+          <Button
+            borderRadius="full"
+            bg={colors.blue[500]}
+            onPress={() => navigation.navigate("MyProfile")}
+            p={3}
+          >
+            <MaterialIcons name="person" size={28} color="white" />
+          </Button>
+        </HStack>
+      </Box>
+    </Box>
   );
 }

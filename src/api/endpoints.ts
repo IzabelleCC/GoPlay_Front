@@ -30,6 +30,7 @@ export const Endpoints = Object.freeze({
   TournamentManager: buildControllerEndpoints("TournamentManager", {
     Base: null,
     GetById: "GetById",
+    GetFullInformationById: "GetFullInformationById",
     GetAll: null,
     GetByName: "GetByTournamentName",
     GetByAdmUserId: "GetByAdmUserId",
@@ -41,6 +42,7 @@ export const Endpoints = Object.freeze({
     InsertGroupResults: "InsertGroupResults",
     InsertEliminationResults: "InsertEliminationResults",
     GetCategoriesByTournamentId: "GetCategoryByTournamentId",
+    GetEliminationGamesByCategory: "GetEliminationGamesByCategory",
   }),
 
   CategoryPlayer: buildControllerEndpoints("CategoryPlayer", {
@@ -55,5 +57,6 @@ export const Endpoints = Object.freeze({
     ByUserIdReturnsFullInfo: "GetByUserIdReturnsFullInfo",
     GetMatchGroupByCategoryId: "GetMatchGroupByCategoryId",
     GetGroupResultByCategoryIdAndGroupNumber: "GetGroupResultByCategoryId",
+    GetRegistrationDetails: "GetRegistrationDetails",
   }),
 });

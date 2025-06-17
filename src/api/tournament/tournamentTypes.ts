@@ -12,14 +12,9 @@ export interface CategoryPlayer {
 }
 
 export interface TournamentCategory {
-    id: number;
     categoryType: string;
     playerLimit: number;
-    tournamentId: number;
     isDoubles: boolean;
-    categoryPlayers: CategoryPlayer[];
-    matchGroups: any[];
-    gameMatches: any[];
 }
 
 export interface Tournament {
@@ -52,6 +47,8 @@ export interface UpdateTournamentPayload {
         registrationDeadline: string; // ISO date
         paymentDeadline: string;      // ISO date
         location: string;
+        latitude: number;
+        longitude: number;
         registrationFee: number;
         courtQuantity: number;
         admUserId: string;
@@ -61,6 +58,7 @@ export interface UpdateTournamentPayload {
 
 export interface ConfirmAttendancePayload {
     registrationCategoryId: number;
+    userId: string;
     latitude: number;
     longitude: number;
 }
@@ -72,6 +70,11 @@ export interface InsertGroupResultsItem {
     game3: number | null;
     game4: number | null;
     game5: number | null;
+    game6: number | null;
+    game7: number | null;
+    game8: number | null;
+    game9: number | null;
+    game10: number | null;
 }
 
 export type InsertGroupResultsPayload = InsertGroupResultsItem[];
@@ -103,4 +106,28 @@ export interface CreateTournamentPayload {
             playerLimit: number;
         }[];
     };
+}
+
+export interface CompetitorInfo {
+    id: number;
+    firstUserId: string;
+    firstUserName: string;
+    secondUserId: string | null;
+    secondUserName: string;
+}
+
+export interface EliminationGameDto {
+    gameEliminationId: number | null;
+    competitor1Id: number | null;
+    competitor2Id: number | null;
+    matchStage: number;
+    matchTime: string | null;
+    courtNumber: number | null;
+    qtdGames1: number | null;
+    qtdGames2: number | null;
+    result: number;
+    numberGame: number;
+    categoryId: number;
+    competitor1: CompetitorInfo;
+    competitor2: CompetitorInfo;
 }
