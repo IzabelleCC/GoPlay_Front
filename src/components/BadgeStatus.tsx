@@ -15,11 +15,13 @@ export default function BadgeStatus({ label, bgColor, textColor, fontWeight }: B
       bg={bgColor || colors.gray[100]}
       px={2}
       py={1}
+      marginBottom={1}
+      marginTop={1}
       borderRadius={5}
       alignSelf="flex-start"
     >
       <Text
-        fontSize="xs"
+        fontSize="10"
         color={textColor || colors.black}
         fontWeight={fontWeight || "normal"}
       >

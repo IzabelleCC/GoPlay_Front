@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserService } from "../api/user/userService";
 import GenericModal from "../components/modals/GenericModal";
+import ProfilePictureUploader from "../components/ProfilePictureUploader";
 
 export default function MyProfile() {
     const { colors, fontSizes } = useTheme();
@@ -24,7 +25,6 @@ export default function MyProfile() {
     const fetchUserData = async () => {
         const storedUserName = await AsyncStorage.getItem("userName");
         const storedUserType = await AsyncStorage.getItem("userType");
-        console.log("storedUserType", storedUserType);
         if (storedUserType) setUserType(Number(storedUserType));
         if (storedUserName) {
             const data = await UserService.getUserByUserName(storedUserName);
@@ -44,6 +44,15 @@ export default function MyProfile() {
     return (
         <ScrollView flex={1} bg={colors.white} p={5}>
             <VStack space={5} alignItems="center">
+                {/* Avatar com upload */}
+                {userData && (
+                    <ProfilePictureUploader
+                        userId={userData.id}
+                        name={userData.name}
+                        initialProfileUrl={userData.profilePictureUrl}
+                    />
+                )}
+
                 <Text fontSize={fontSizes.xl} fontWeight="bold">Meus Dados</Text>
 
                 {userData && (

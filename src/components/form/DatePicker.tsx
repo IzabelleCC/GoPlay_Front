@@ -7,7 +7,7 @@ import { Calendar as CalendarIcon } from 'lucide-react-native';
 interface Props {
     date: Date;
     onChange: (date: Date) => void;
-    label: string; // novo campo para personalizar o título
+    label: string;
 }
 
 export default function DatePicker({ date, onChange, label }: Props) {

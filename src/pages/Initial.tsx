@@ -27,7 +27,7 @@ export default function Initial() {
                     text="ENTRAR"
                     bgColor={colors.blue[500]}
                     textColor={colors.white}
-                    fontSize={fontSizes.lg}
+                    fontSize={fontSizes.md}
                     fontFamily="Montserrat"
                     height={12}
                     onPress={() => navigation.navigate("Login" as never)}

@@ -49,7 +49,7 @@ export default function QuarterFinal() {
 
   const fetchGames = async (categoryId: number) => {
     const data = await TournamentService.getEliminationGamesByCategory(categoryId, 4);
-    setGames(data.sort((a, b) => a.numberGame - b.numberGame));
+    setGames(data.sort((a, b) => b.numberGame - a.numberGame));
   };
 
   const fetchData = async () => {

@@ -89,6 +89,27 @@ export const UserService = {
             console.error("Erro ao buscar usuários por nome:", error);
             throw error;
         }
+    },
+
+    async uploadProfilePicture(userId: string, formData: FormData): Promise<string> {
+        try {
+            const response = await axios.post(
+                `${Endpoints.UserManager.Base}/uploadProfilePicture/${userId}`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+    
+            return response.data.imageUrl;
+        } catch (error: any) {
+            console.error("Erro ao fazer upload da imagem de perfil:", error);
+            throw error;
+        }
     }
+    
+    
     
 };

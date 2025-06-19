@@ -30,6 +30,7 @@ export default function MatchGroup() {
     const [expandedGroups, setExpandedGroups] = useState<number[]>([]);
     const [userType, setUserType] = useState<number | null>(null);
 
+
     useEffect(() => {
         fetchGroups();
         fetchUserType();
@@ -110,18 +111,80 @@ export default function MatchGroup() {
         return matches;
     };
 
-    const renderDoubleAvatar = () => (
-        <ZStack width={10} height={10} mr={3}>
-            <Image
-                source={{ uri: "https://www.hhcc.co.in/wp-content/plugins/business_reviews/photos/5dd3d47d719e11574163581.png" }}
-                alt="Avatar 1" borderRadius={50} width={10} height={10} position="absolute" left={0} zIndex={1}
-            />
-            <Image
-                source={{ uri: "https://www.hhcc.co.in/wp-content/plugins/business_reviews/photos/5dd3d47d719e11574163581.png" }}
-                alt="Avatar 2" borderRadius={50} width={10} height={10} position="absolute" left={8} zIndex={0}
-            />
-        </ZStack>
-    );
+    const renderDoubleAvatar = (
+        firstUrl: string | null,
+        secondUrl: string | null,
+        firstName1: string,
+        firstName2: string
+    ) => {
+        const getInitials = (name: string) => {
+            return name
+                .split(" ")
+                .map(n => n[0])
+                .join("")
+                .substring(0, 2)
+                .toUpperCase();
+        };
+
+        return (
+            <ZStack width={10} height={10} mr={3}>
+                {firstUrl ? (
+                    <Image
+                        source={{ uri: firstUrl }}
+                        alt="Avatar 1"
+                        borderRadius={50}
+                        width={10}
+                        height={10}
+                        position="absolute"
+                        left={0}
+                        zIndex={1}
+                    />
+                ) : (
+                    <Center
+                        position="absolute"
+                        left={0}
+                        zIndex={1}
+                        bg="blue.500"
+                        borderRadius={50}
+                        width={10}
+                        height={10}
+                    >
+                        <Text color="white" fontSize="xs" fontWeight="bold">
+                            {getInitials(firstName1)}
+                        </Text>
+                    </Center>
+                )}
+
+                {secondUrl ? (
+                    <Image
+                        source={{ uri: secondUrl }}
+                        alt="Avatar 2"
+                        borderRadius={50}
+                        width={10}
+                        height={10}
+                        position="absolute"
+                        left={8}
+                        zIndex={0}
+                    />
+                ) : (
+                    <Center
+                        position="absolute"
+                        left={8}
+                        zIndex={0}
+                        bg="gray.500"
+                        borderRadius={50}
+                        width={10}
+                        height={10}
+                    >
+                        <Text color="white" fontSize="xs" fontWeight="bold">
+                            {getInitials(firstName2)}
+                        </Text>
+                    </Center>
+                )}
+            </ZStack>
+        );
+    };
+
 
     const handleScoreChange = (
         groupNumber: number,
@@ -196,7 +259,7 @@ export default function MatchGroup() {
                 ) : (
                     <>
                         <HStack alignItems="center" mb={4}>
-                            <Image source={{ uri: "https://img.favpng.com/4/19/3/beach-tennis-tennis-t-shirt-serve-png-favpng-dsZSu0xit617YDdkPWYfyUuxR.jpg" }}
+                            <Image source={{ uri: matchGroupData?.tournamentPictureUrl || "https://res.cloudinary.com/dqj6qbp0s/image/upload/v1750301894/goplay/users/zuxqmczwestyzzn0t6xp.png" }}
                                 alt="Logo" borderRadius={6} width={75} height={75} mr={3}
                             />
                             <VStack maxW="80%">
@@ -280,7 +343,12 @@ export default function MatchGroup() {
                                             .map((player: any, index: number) => (
                                                 <HStack key={player.id} justifyContent="space-between" mb={2}>
                                                     <HStack space={8} alignItems="center" flex={1}>
-                                                        {renderDoubleAvatar()}
+                                                        {renderDoubleAvatar(
+                                                            player.firstUserPictureUrl,
+                                                            player.secondUserPictureUrl,
+                                                            player.firstUserName,
+                                                            player.secondUserName
+                                                        )}
                                                         <VStack>
                                                             <Text>{player.firstUserName}</Text>
                                                             <Text>{player.secondUserName}</Text>
@@ -310,6 +378,10 @@ export default function MatchGroup() {
                                                 {generateMatches(groupDto.players).map((match, matchIndex) => {
                                                     const team1Score = groupMatchScores[groupDto.groupNumber]?.[matchIndex]?.team1Score;
                                                     const team2Score = groupMatchScores[groupDto.groupNumber]?.[matchIndex]?.team2Score;
+                                                    const score1 = parseInt(team1Score);
+                                                    const score2 = parseInt(team2Score);
+                                                    const placarValido = !isNaN(score1) && !isNaN(score2);
+
 
                                                     return (
                                                         <Box key={matchIndex} mb={3}>
@@ -321,7 +393,12 @@ export default function MatchGroup() {
                                                             {/* Equipe 1 */}
                                                             <HStack justifyContent="space-between" mt={2}>
                                                                 <HStack space={8} flex={1} alignItems="center">
-                                                                    {renderDoubleAvatar()}
+                                                                    {renderDoubleAvatar(
+                                                                        match[0].firstUserPictureUrl,
+                                                                        match[0].secondUserPictureUrl,
+                                                                        match[0].firstUserName,
+                                                                        match[0].secondUserName
+                                                                    )}
                                                                     <VStack>
                                                                         <Text>{match[0].firstUserName}</Text>
                                                                         <Text>{match[0].secondUserName}</Text>
@@ -349,7 +426,12 @@ export default function MatchGroup() {
                                                             {/* Equipe 2 */}
                                                             <HStack justifyContent="space-between" mt={2}>
                                                                 <HStack space={8} flex={1} alignItems="center">
-                                                                    {renderDoubleAvatar()}
+                                                                    {renderDoubleAvatar(
+                                                                        match[1].firstUserPictureUrl,
+                                                                        match[1].secondUserPictureUrl,
+                                                                        match[1].firstUserName,
+                                                                        match[1].secondUserName
+                                                                    )}
                                                                     <VStack>
                                                                         <Text>{match[1].firstUserName}</Text>
                                                                         <Text>{match[1].secondUserName}</Text>
@@ -357,16 +439,16 @@ export default function MatchGroup() {
                                                                 </HStack>
 
                                                                 {submittedGroups.includes(groupDto.groupNumber) ? (
-                                                                    <Text fontWeight="bold" fontSize="md">{team1Score || "-"}</Text>
+                                                                    <Text fontWeight="bold" fontSize="md">{team2Score || "-"}</Text>
                                                                 ) : userType !== 1 ? (
                                                                     <Input
                                                                         placeholder=""
                                                                         width="15%"
                                                                         keyboardType="numeric"
                                                                         backgroundColor={colors.gray[50]}
-                                                                        value={team1Score}
+                                                                        value={team2Score}
                                                                         onChangeText={(value) =>
-                                                                            handleScoreChange(groupDto.groupNumber, matchIndex, "team1Score", value)
+                                                                            handleScoreChange(groupDto.groupNumber, matchIndex, "team2Score", value)
                                                                         }
                                                                     />
                                                                 ) : (
@@ -374,23 +456,25 @@ export default function MatchGroup() {
                                                                 )}
                                                             </HStack>
 
+
                                                             <Center mt={2}>
+
                                                                 <Text
                                                                     color={
-                                                                        submittedGroups.includes(groupDto.groupNumber)
-                                                                            ? parseInt(team1Score) > parseInt(team2Score)
+                                                                        placarValido
+                                                                            ? score1 > score2
                                                                                 ? "green.700"
-                                                                                : parseInt(team2Score) > parseInt(team1Score)
+                                                                                : score2 > score1
                                                                                     ? "green.700"
                                                                                     : "red.500"
                                                                             : "red.500"
                                                                     }
                                                                     fontWeight="bold"
                                                                 >
-                                                                    {submittedGroups.includes(groupDto.groupNumber)
-                                                                        ? parseInt(team1Score) > parseInt(team2Score)
+                                                                    {placarValido
+                                                                        ? score1 > score2
                                                                             ? `Venc.: ${match[0].firstUserName}`
-                                                                            : parseInt(team2Score) > parseInt(team1Score)
+                                                                            : score2 > score1
                                                                                 ? `Venc.: ${match[1].firstUserName}`
                                                                                 : "Empate"
                                                                         : "Placar Pendente"}

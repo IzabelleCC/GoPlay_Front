@@ -21,6 +21,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import dayjs from "dayjs";
 import BadgeStatus from "../components/BadgeStatus";
 import GenericModal from "../components/modals/GenericModal";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
 export default function HomeAdm() {
   const { colors, fontSizes } = useTheme();
@@ -142,10 +144,12 @@ export default function HomeAdm() {
     }
   };
 
-  useEffect(() => {
-    fetchTournaments();
-    fetchUserType();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchTournaments();
+      fetchUserType();
+    }, [])
+  );
 
   return (
     <Box flex={1} bg={colors.white}>
@@ -209,25 +213,37 @@ export default function HomeAdm() {
                 borderWidth={1}
                 borderColor={colors.gray[200]}
               >
-                <Center mb={3}>
-                  <Image
-                    source={{
-                      uri: "https://via.placeholder.com/80.png?text=Torneio",
-                    }}
-                    alt="Imagem do Torneio"
-                    borderRadius={50}
-                    width={50}
-                    height={50}
-                  />
-                </Center>
+                <HStack>
+                  <Center mb={3}>
+                    <Image
+                      source={{
+                        uri: t.profilePictureUrl || "https://res.cloudinary.com/dqj6qbp0s/image/upload/v1750298193/goplay/users/h6bclcczqpsze0h0vy3j.png",
+                      }}
+                      alt="Imagem do Torneio"
+                      borderRadius={70}
+                      width={70}
+                      height={70}
+                    />
+                  </Center>
+                  <VStack flex={1} ml={3}>
 
-                <Text fontWeight="bold" fontSize={fontSizes.md} mb={1} color={colors.blue[800]}>
-                  {t.name}
-                </Text>
+                    <Text
+                      fontWeight="bold"
+                      fontSize={fontSizes.md}
+                      color={colors.blue[800]}
+                      flexShrink={1}
+                      flexWrap="wrap"
+                      ml={2}
+                    >
+                      {t.name}
+                    </Text>
 
-                <Text color={colors.black} fontSize={fontSizes.sm} mb={1}>
-                  Termina em {formatDate(t.gamesEndDate)}
-                </Text>
+                    <Text color={colors.black} fontSize={fontSizes.xs} mb={1} ml={2}>
+                      Termina em {formatDate(t.gamesEndDate)}
+                    </Text>
+                  </VStack>
+
+                </HStack>
 
                 <HStack space={2} mb={2} flexWrap="wrap" alignItems="center">
                   <BadgeStatus

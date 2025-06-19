@@ -22,10 +22,8 @@ export function GoPlayButton({
     return (
         <Button
             w="100%"
-            h={height}
+
             bg={bgColor}
-            justifyContent="center"
-            alignItems="center"
             borderRadius={20}
             _pressed={{ opacity: 0.8 }}
             onPress={onPress}
@@ -34,7 +32,6 @@ export function GoPlayButton({
                 color={textColor}
                 fontSize={fontSize}
                 fontFamily={fontFamily}
-                textAlign="center"
             >
                 {text}
             </Text>

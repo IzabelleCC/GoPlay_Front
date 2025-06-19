@@ -89,6 +89,7 @@ export interface CategoryPlayerFullInfoResponse {
 export interface TournamentMatchesResultDto {
   tournamentId: number;
   tournamentName: string;
+  tournamentPictureUrl: string | null;
   groups: CategoryGroupsDto[];
 }
 
@@ -107,8 +108,10 @@ export interface GroupPlayerDto {
   id: number;
   firstUserId: string;
   firstUserName: string;
+  firstUserPictureUrl: string | null;
   secondUserId: string;
   secondUserName: string;
+  secondUserPictureUrl: string | null;
 }
 
 export interface GroupResultDto {

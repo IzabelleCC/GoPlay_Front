@@ -147,9 +147,28 @@ export const TournamentService = {
       const response = await axios.get(
         `${Endpoints.TournamentManager.GetEliminationGamesByCategory}/${categoryId}/${matchStage}`
       );
+      console.log("Elimination games response:", response.data);
       return response.data as EliminationGameDto[];
     } catch (error: any) {
       console.error("Erro ao buscar jogos de eliminação:", error);
+      throw error;
+    }
+  },
+
+  async uploadTournamentPicture(tournamentId: number, formData: FormData) {
+    try {
+      const response = await axios.post(
+        `${Endpoints.TournamentManager.UploadTournamentPicture}/${tournamentId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data.imageUrl;
+    } catch (error: any) {
+      console.error("Erro ao enviar imagem do torneio:", error);
       throw error;
     }
   }

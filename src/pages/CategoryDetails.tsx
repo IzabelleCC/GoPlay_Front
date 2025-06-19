@@ -18,6 +18,8 @@ import { TournamentService } from "../api/tournament/tournamentService";
 import dayjs from "dayjs";
 import BadgeStatus from "../components/BadgeStatus";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { UserService } from "../api/user/userService";
+import GenericModal from "../components/modals/GenericModal";
 
 export default function CategoryDetails() {
     const { colors, fontSizes } = useTheme();
@@ -29,6 +31,13 @@ export default function CategoryDetails() {
     const [tournamentEndDate, setTournamentEndDate] = useState<string>("");
     const [tournamentStatus, setTournamentStatus] = useState<number>(0);
     const [userType, setUserType] = useState<number | null>(null);
+    const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(null);
+    const [tournamentPictureUrl, setTournamentPictureUrl] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalTitle, setModalTitle] = useState("");
+    const [modalBody, setModalBody] = useState<React.ReactNode>(null);
+    const [modalType, setModalType] = useState<"success" | "error">("success");
+
 
     const fetchCategories = async () => {
         try {
@@ -38,6 +47,8 @@ export default function CategoryDetails() {
             setCategories(data.categories || []);
             setTournamentEndDate(data.gamesEndDate || "");
             setTournamentStatus(data.status || 0);
+            setTournamentPictureUrl(data.tournamentPictureUrl || null);
+            console.log("url da imagem do torneio:", data.tournamentPictureUrl);
         } catch (err) {
             console.error("Erro ao buscar categorias do torneio", err);
         } finally {
@@ -90,10 +101,20 @@ export default function CategoryDetails() {
     const handleGenerateMatches = async () => {
         try {
             await TournamentService.generateGroupMatches(tournamentId);
-            alert("Chaves geradas com sucesso!");
+
+            setModalTitle("Sucesso");
+            setModalBody(<Text>Chaves geradas com sucesso!</Text>);
+            setModalType("success");
+            setIsModalOpen(true);
+
+            // Atualizar status após gerar
+            await fetchCategories();
         } catch (err) {
             console.error("Erro ao gerar chaves", err);
-            alert("Erro ao gerar chaves. Tente novamente.");
+            setModalTitle("Erro");
+            setModalBody(<Text>Erro ao gerar chaves. Tente novamente.</Text>);
+            setModalType("error");
+            setIsModalOpen(true);
         }
     };
 
@@ -104,9 +125,22 @@ export default function CategoryDetails() {
         }
     };
 
+    const loadUserProfilePicture = async () => {
+        try {
+            const userName = await AsyncStorage.getItem("userName");
+            if (userName) {
+                const user = await UserService.getUserByUserName(userName);
+                setProfilePictureUrl(user.profilePictureUrl);
+            }
+        } catch (err) {
+            console.error("Erro ao carregar imagem do usuário:", err);
+        }
+    };
+
     useEffect(() => {
         fetchCategories();
         fetchUserType();
+        loadUserProfilePicture();
     }, []);
 
     return (
@@ -116,12 +150,12 @@ export default function CategoryDetails() {
                 <VStack alignItems="center" mb={6}>
                     <Image
                         source={{
-                            uri: "https://itaguara.com/wp-content/uploads/2022/04/2-beach-soccer-thumb.jpg",
+                            uri: profilePictureUrl || "https://th.bing.com/th/id/R.8d14cc1312617df21d21e59fc9fe28c9?rik=UZHtrtuEClfMtw&pid=ImgRaw&r=0",
                         }}
-                        alt="Imagem do Torneio"
+                        alt="Imagem Adm Torneio"
                         borderRadius={6}
                         width={500}
-                        height={100}
+                        height={150}
                         mb={3}
                     />
                     <Text fontSize={fontSizes.lg} fontWeight="bold" textAlign="center">
@@ -134,19 +168,21 @@ export default function CategoryDetails() {
                     )}
 
                     {/* Botão Gerar Chaves */}
-                    <Button
-                        mt={4}
-                        bg={colors.green[500]}
-                        borderRadius={20}
-                        px={6}
-                        py={3}
-                        onPress={handleGenerateMatches}
-                        _pressed={{ opacity: 0.9 }}
-                    >
-                        <Text color="white" fontWeight="bold">
-                            Gerar Chaves
-                        </Text>
-                    </Button>
+                    {tournamentStatus === 2 && (
+                        <Button
+                            mt={4}
+                            bg={colors.green[500]}
+                            borderRadius={20}
+                            px={6}
+                            py={3}
+                            onPress={handleGenerateMatches}
+                            _pressed={{ opacity: 0.9 }}
+                        >
+                            <Text color="white" fontWeight="bold">
+                                Gerar Chaves
+                            </Text>
+                        </Button>
+                    )}
                 </VStack>
 
                 {loading ? (
@@ -175,10 +211,10 @@ export default function CategoryDetails() {
                                 <HStack space={3} alignItems="center" mb={2}>
                                     <Image
                                         source={{
-                                            uri: "https://img.favpng.com/4/19/3/beach-tennis-tennis-t-shirt-serve-png-favpng-dsZSu0xit617YDdkPWYfyUuxR.jpg",
+                                            uri: tournamentPictureUrl || "https://res.cloudinary.com/dqj6qbp0s/image/upload/v1750301894/goplay/users/zuxqmczwestyzzn0t6xp.png",
                                         }}
-                                        alt="Imagem Categoria"
-                                        borderRadius={30}
+                                        alt="Imagem Torneio"
+                                        borderRadius={70}
                                         width={70}
                                         height={70}
                                     />
@@ -187,12 +223,11 @@ export default function CategoryDetails() {
                                             fontWeight="bold"
                                             fontSize={fontSizes.md}
                                             color={colors.blue[800]}
-                                            numberOfLines={1}
-                                            ellipsizeMode="tail"
+
                                         >
                                             {cat.categoryType}
                                         </Text>
-                                        <Text color={colors.gray[600]} fontSize={fontSizes.sm}>
+                                        <Text color={colors.gray[600]} fontSize={fontSizes.xs}>
                                             Termina em {formatDate(tournamentEndDate)}
                                         </Text>
                                     </VStack>
@@ -226,7 +261,7 @@ export default function CategoryDetails() {
 
                                 <Divider bg={colors.gray[200]} my={2} />
 
-                                <HStack justifyContent="space-between" alignItems="center" mt={2}>
+                                <HStack justifyContent="space-between" alignItems="center">
                                     <HStack space={8} alignItems="center">
                                         {/* Duplas/Inscritos */}
                                         <VStack alignItems="center">
@@ -281,13 +316,21 @@ export default function CategoryDetails() {
                                             </Text>
                                         </VStack>
                                     </HStack>
-                                    
+
                                 </HStack>
                             </Box>
                         ))}
                     </VStack>
                 )}
+                <GenericModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    title={modalTitle}
+                    body={modalBody}
+                    type={modalType}
+                />
             </ScrollView>
+
 
             <Box
                 marginBottom={3}
@@ -337,5 +380,7 @@ export default function CategoryDetails() {
                 </HStack>
             </Box>
         </Box>
+
+
     );
 }

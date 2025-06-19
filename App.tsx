@@ -1,14 +1,11 @@
-// App.tsx
 import { NativeBaseProvider, StatusBar } from 'native-base';
 import { THEMES } from './src/styles/theme';
 import Routes from './src/navigation/Routes';
-
 import {
   useFonts,
   Montserrat_400Regular,
   Montserrat_700Bold
 } from '@expo-google-fonts/montserrat';
-
 import { Text, View, Platform, SafeAreaView } from 'react-native';
 
 export default function App() {
@@ -36,4 +33,5 @@ export default function App() {
       </SafeAreaView>
     </NativeBaseProvider>
   );
+
 }

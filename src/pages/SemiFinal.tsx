@@ -49,7 +49,8 @@ export default function SemiFinal() {
 
   const fetchGames = async (categoryId: number) => {
     const data = await TournamentService.getEliminationGamesByCategory(categoryId, 5);
-    setGames(data.sort((a, b) => a.numberGame - b.numberGame));
+    console.log("Dados da semifinal:", data);
+    setGames(data.sort((a, b) => b.numberGame - a.numberGame));
   };
 
   const fetchData = async () => {

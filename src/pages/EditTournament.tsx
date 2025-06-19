@@ -10,6 +10,7 @@ import {
   FormControl,
   HStack,
   Switch,
+  Box
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRoute, useNavigation, NavigationProp } from "@react-navigation/native";
@@ -20,6 +21,7 @@ import GenericModal from "../components/modals/GenericModal";
 import { RootStackParamList } from "../navigation/Routes";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LocationInput from "../components/form/LocationInput";
+import TournamentPictureUploader from "../components/TournamentPictureUploader";
 
 type LocalCategory = {
   categoryType: string;
@@ -55,6 +57,8 @@ export default function EditTournament() {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
 
+  const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
+
   useEffect(() => {
     loadTournament();
   }, [id]);
@@ -73,6 +77,7 @@ export default function EditTournament() {
       setEndDate(new Date(data.gamesEndDate));
       setRegistrationDeadline(new Date(data.registrationDeadline));
       setPaymentDeadline(new Date(data.paymentDeadline));
+      setImageUrl(data.imageUrl);
       setCategories(
         data.categories.map((c: any) => ({
           categoryType: c.categoryType,
@@ -158,6 +163,11 @@ export default function EditTournament() {
         <Text fontSize={fontSizes.lg} fontWeight="bold" textAlign="center">
           Editar {name}
         </Text>
+
+        <TournamentPictureUploader
+          tournamentId={id}
+          initialImageUrl={imageUrl}
+        />
 
         <LocationInput
           value={location}
