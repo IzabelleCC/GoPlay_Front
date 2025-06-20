@@ -60,5 +60,7 @@ export const Endpoints = Object.freeze({
     GetMatchGroupByCategoryId: "GetMatchGroupByCategoryId",
     GetGroupResultByCategoryIdAndGroupNumber: "GetGroupResultByCategoryId",
     GetRegistrationDetails: "GetRegistrationDetails",
+    InsertCourtNumberMatchGroup: "InsertCourtNumberMatchGroup",
+    InsertCourtNumberElimination: "InsertCourtNumberElimination",
   }),
 });

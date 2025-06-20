@@ -127,9 +127,7 @@ export default function CategoryRegister({ route, navigation }: any) {
     <ScrollView flex={1} bg={colors.white} p={4}>
       <VStack alignItems="center" mb={4}>
         <Image source={Logo} alt="Logo" width={50} height={50} resizeMode="contain" />
-        <Text fontSize={fontSizes.lg} fontWeight="bold" mt={2}>
-          TORNEIO A
-        </Text>
+
       </VStack>
 
       <Divider mb={3} />

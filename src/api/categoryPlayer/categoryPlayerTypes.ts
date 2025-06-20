@@ -79,6 +79,7 @@ export interface CategoryPlayerFullInfoResponse {
   tournament: {
     id: number;
     name: string;
+    profilePictureUrl: string | null;
     gamesStartDate: string;
     gamesEndDate: string;
     registrationDeadline: string;
@@ -101,6 +102,7 @@ export interface CategoryGroupsDto {
 
 export interface GroupDto {
   groupNumber: number;
+  courtNumber: number | null;
   players: GroupPlayerDto[];
 }
 

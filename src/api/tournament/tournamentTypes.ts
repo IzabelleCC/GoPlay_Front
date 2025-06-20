@@ -112,8 +112,10 @@ export interface CompetitorInfo {
     id: number;
     firstUserId: string;
     firstUserName: string;
+    firstUserPictureUrl: string | null;
     secondUserId: string | null;
     secondUserName: string;
+    secondUserPictureUrl: string | null;
 }
 
 export interface EliminationGameDto {

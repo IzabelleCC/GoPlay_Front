@@ -141,5 +141,27 @@ export const CategoryPlayerService = {
       throw error;
     }
   },
-  
+
+  async insertCourtNumberMatchGroup(categoryId: number, groupNumber: number, courtNumber: number) {
+    try {
+      const url = `${Endpoints.CategoryPlayer.InsertCourtNumberMatchGroup}/${categoryId}/${groupNumber}/${courtNumber}`;
+      const response = await axios.post(url);
+      return response.data;
+    } catch (error: any) {
+      console.error("Erro ao inserir número da quadra para jogo em grupo:", error);
+      throw error;
+    }
+  },
+
+  async insertCourtNumberElimination(categoryId: number, numberGame: number, courtNumber: number) {
+    try {
+      const url = `${Endpoints.CategoryPlayer.InsertCourtNumberElimination}/${categoryId}/${numberGame}/${courtNumber}`;
+      const response = await axios.post(url);
+      return response.data;
+    } catch (error: any) {
+      console.error("Erro ao inserir número da quadra para jogo de eliminação:", error);
+      throw error;
+    }
+  },
+
 };

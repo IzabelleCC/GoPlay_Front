@@ -179,7 +179,7 @@ export default function Login() {
                         onPress={handleSignIn}
                     >
                         <Text fontSize={fontSizes.md} color={colors.white} fontFamily="Montserrat">
-                            Entrar no GoPlay
+                            ENTRAR
                         </Text>
                     </Button>
 

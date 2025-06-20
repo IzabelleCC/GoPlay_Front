@@ -1,10 +1,12 @@
-import { Box, Button, HStack, Text, VStack, useTheme } from "native-base";
+import { Box, Button, HStack, Text, VStack, useTheme, Image } from "native-base";
 
 interface CategoryCardPlayerProps {
   categoryId: number;
   categoryType: string;
   inscritos: number;
   limite: number;
+  imageUrl: string;
+
   onRegister: (categoryId: number) => void;
 }
 
@@ -13,6 +15,7 @@ export default function CategoryCardPlayer({
   categoryType,
   inscritos,
   limite,
+  imageUrl,
   onRegister,
 }: CategoryCardPlayerProps) {
   const { colors, fontSizes } = useTheme();
@@ -30,23 +33,37 @@ export default function CategoryCardPlayer({
       borderWidth={1}
       borderColor={colors.gray[200]}
     >
-      {/* Nome da Categoria */}
-      <Text
-        fontWeight="bold"
-        fontSize={fontSizes.md}
-        color={colors.blue[800]}
-        mb={2}
-      >
-        {categoryType}
-      </Text>
+      <HStack alignItems="center" space={3} mb={2}>
+        <Image
+          source={{
+            uri: imageUrl
+              ? imageUrl
+              : "https://res.cloudinary.com/dqj6qbp0s/image/upload/v1750298193/goplay/users/h6bclcczqpsze0h0vy3j.png",
+          }}
+          alt="Imagem do Torneio"
+          borderRadius={50}
+          width={50}
+          height={50}
+        />
+        <VStack flex={1}>
+          {/* Nome da Categoria */}
+          <Text
+            fontWeight="bold"
+            fontSize={fontSizes.md}
+            color={colors.blue[800]}
+          >
+            {categoryType}
+          </Text>
+        </VStack>
 
+      </HStack>
       {/* Inscritos */}
-      <HStack justifyContent="space-between" alignItems="center" mb={3}>
+      <HStack justifyContent="space-between" alignItems="center" >
         <VStack>
-          <Text fontWeight="bold" fontSize={fontSizes.sm} color={colors.black}>
+          <Text fontWeight="bold" fontSize={fontSizes.xs} color={colors.black}>
             {inscritos} / {limite} Inscritos
           </Text>
-          <Text fontSize="xs" color={colors.gray[300]}>
+          <Text fontSize="10" color={colors.gray[300]}>
             {isFull
               ? "Categoria completa"
               : `${vagasRestantes} vaga${vagasRestantes > 1 ? "s" : ""} restante${vagasRestantes > 1 ? "s" : ""}`}

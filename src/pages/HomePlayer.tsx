@@ -37,6 +37,7 @@ interface CategoryPlayerFullInfoResponse {
   tournament: {
     id: number;
     name: string;
+    profilePictureUrl: string | null;
     gamesStartDate: string;
     gamesEndDate: string;
     registrationDeadline: string;
@@ -154,33 +155,43 @@ export default function HomePlayer({ navigation }: any) {
                 borderWidth={1}
                 borderColor={colors.gray[200]}
               >
-                {/* Imagem pequena e espaço abaixo */}
-                <Center mb={3}>
-                  <Image
-                    source={{
-                      uri: "https://via.placeholder.com/80.png?text=Torneio",
-                    }}
-                    alt="Imagem do Torneio"
-                    borderRadius={50}
-                    width={50}
-                    height={50}
-                  />
-                </Center>
+                <HStack>
+                  <Center mb={3}>
+                    <Image
+                      source={{
+                        uri: inscricao.tournament.profilePictureUrl || "https://res.cloudinary.com/dqj6qbp0s/image/upload/v1750298193/goplay/users/h6bclcczqpsze0h0vy3j.png",
+                      }}
+                      alt="Imagem do Torneio"
+                      borderRadius={50}
+                      width={50}
+                      height={50}
+                    />
+                  </Center>
 
-                {/* Nome do Torneio */}
-                <Text fontWeight="bold" fontSize={fontSizes.md} mb={1} color={colors.blue[800]}>
-                  {inscricao.tournament.name}
-                </Text>
+                  <VStack flex={1} ml={3}>
+                    {/* Nome do Torneio */}
+                    <Text
+                      fontWeight="bold"
+                      fontSize={fontSizes.md}
+                      color={colors.blue[800]}
+                      flexShrink={1}
+                      flexWrap="wrap"
+                      ml={2}
+                    >
+                      {inscricao.tournament.name}
+                    </Text>
 
-                {/* Nome da Categoria */}
-                <Text fontWeight="bold" fontSize={fontSizes.sm} mb={1} color={colors.blue[800]}>
-                  {inscricao.category.categoryType}
-                </Text>
+                    {/* Nome da Categoria */}
+                    <Text fontWeight="bold" fontSize={fontSizes.sm} mb={1} color={colors.blue[800]} ml={2}>
+                      {inscricao.category.categoryType}
+                    </Text>
 
-                {/* Data do fim do torneio */}
-                <Text color={colors.black} fontSize={fontSizes.sm} mb={2}>
-                  Termina em {formatDate(inscricao.tournament.gamesEndDate)}
-                </Text>
+                    {/* Data do fim do torneio */}
+                    <Text color={colors.black} fontSize={fontSizes.xs} mb={1} ml={2} >
+                      Termina em {formatDate(inscricao.tournament.gamesEndDate)}
+                    </Text>
+                  </VStack>
+                </HStack>
 
                 {/* Badge do status do torneio + parceiro */}
                 <HStack space={2} mb={2} flexWrap="wrap" alignItems="center">
@@ -188,14 +199,14 @@ export default function HomePlayer({ navigation }: any) {
                     label={getTournamentBadgeLabel(inscricao.tournament.status)}
                     bgColor={getTournamentBadgeColor(inscricao.tournament.status)}
                     textColor={colors.black}
-                    fontWeight="bold" // para deixar negrito igual seu exemplo
+                    fontWeight="bold"
                   />
 
                   {/* Parceiro se existir */}
                   {inscricao.category.isDoubles && inscricao.secondUserName && (
                     <HStack alignItems="center" space={1}>
-                      <MaterialIcons name="person" size={20} color={colors.black} />
-                      <Text fontWeight="bold" fontSize="14" color={colors.black}>
+                      <MaterialIcons name="person" size={18} color={colors.black} />
+                      <Text fontWeight="bold" fontSize="12" color={colors.black}>
                         {inscricao.secondUserName}
                       </Text>
                     </HStack>
@@ -205,24 +216,24 @@ export default function HomePlayer({ navigation }: any) {
                 <Divider bg={colors.gray[200]} my={2} />
 
                 {/* Quantidade de duplas/inscritos, jogos e botão Ver Inscrição */}
-                <HStack justifyContent="space-between" alignItems="center" mt={2}>
+                <HStack justifyContent="space-between" alignItems="center" mt={0}>
                   <HStack space={8} alignItems="center">
                     {/* Quantidade de duplas ou inscritos */}
                     <VStack alignItems="center">
-                      <Text fontSize="lg" fontWeight="bold" color={colors.black}>
+                      <Text fontSize="md" fontWeight="bold" color={colors.black}>
                         {inscricao.registerCount}
                       </Text>
-                      <Text fontSize="xs" color={colors.black}>
+                      <Text fontSize="10" color={colors.black}>
                         {inscricao.category.isDoubles ? "Duplas" : "Inscritos"}
                       </Text>
                     </VStack>
 
                     {/* Quantidade de jogos */}
                     <VStack alignItems="center">
-                      <Text fontSize="lg" fontWeight="bold" color={colors.black}>
+                      <Text fontSize="md" fontWeight="bold" color={colors.black}>
                         0
                       </Text>
-                      <Text fontSize="xs" color={colors.black}>
+                      <Text fontSize="10" color={colors.black}>
                         Jogos
                       </Text>
                     </VStack>
@@ -254,9 +265,9 @@ export default function HomePlayer({ navigation }: any) {
                           })
                         }
                       >
-                        <MaterialIcons name="emoji-events" size={30} color="black" />
+                        <MaterialIcons name="emoji-events" size={25} color="black" />
                       </Button>
-                      <Text fontSize="xs" color={colors.black}>
+                      <Text fontSize="10" color={colors.black}>
                         Chaves
                       </Text>
                     </VStack>

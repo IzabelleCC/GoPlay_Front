@@ -1,4 +1,3 @@
-// IMPORTS
 import {
     VStack, Image, Text, useTheme, ScrollView, Center, Box,
     HStack, Divider, Button, Spinner, ZStack, Icon, Input
@@ -29,7 +28,7 @@ export default function MatchGroup() {
     const [groupResults, setGroupResults] = useState<{ [key: number]: GroupResultDto[] }>({});
     const [expandedGroups, setExpandedGroups] = useState<number[]>([]);
     const [userType, setUserType] = useState<number | null>(null);
-
+    const [courtInputs, setCourtInputs] = useState<{ [key: number]: string }>({});
 
     useEffect(() => {
         fetchGroups();
@@ -49,9 +48,18 @@ export default function MatchGroup() {
             const data = await CategoryPlayerService.getMatchGroupsByCategoryId(categoryId);
             setMatchGroupData(data);
 
+            console.log("Dados do grupo:", data.groups[0]);
+
             const initialScores: any = {};
             const allGroupResults: { [key: number]: GroupResultDto[] } = {};
             const groupsWithResult: number[] = [];
+
+            const initialCourtInputs: { [key: number]: string } = {};
+            for (const groupItem of data.groups) {
+                for (const groupDto of groupItem.groups) {
+                    initialCourtInputs[groupDto.groupNumber] = groupDto.courtNumber?.toString() || "";
+                }
+            }
 
             for (const groupItem of data.groups) {
                 for (const groupDto of groupItem.groups.sort((a, b) => a.groupNumber - b.groupNumber)) {
@@ -90,7 +98,7 @@ export default function MatchGroup() {
                     if (hasAnyResult) groupsWithResult.push(groupNumber);
                 }
             }
-
+            setCourtInputs(initialCourtInputs);
             setGroupMatchScores(initialScores);
             setGroupResults(allGroupResults);
             setSubmittedGroups(groupsWithResult);
@@ -100,6 +108,25 @@ export default function MatchGroup() {
             setLoading(false);
         }
     };
+
+    const handleSubmitCourtNumber = async (categoryId: number, groupNumber: number) => {
+        try {
+            const courtNumber = Number(courtInputs[groupNumber]);
+            if (isNaN(courtNumber)) throw new Error("Número inválido");
+
+            await CategoryPlayerService.insertCourtNumberMatchGroup(categoryId, groupNumber, courtNumber);
+            setModalTitle("Sucesso");
+            setModalBody(<Text>Número da quadra atualizado com sucesso!</Text>);
+            setModalType("success");
+            setIsModalOpen(true);
+        } catch (error) {
+            setModalTitle("Erro");
+            setModalBody(<Text>Erro ao atualizar número da quadra.</Text>);
+            setModalType("error");
+            setIsModalOpen(true);
+        }
+    };
+
 
     const generateMatches = (players: any[]) => {
         const matches = [];
@@ -260,20 +287,20 @@ export default function MatchGroup() {
                     <>
                         <HStack alignItems="center" mb={4}>
                             <Image source={{ uri: matchGroupData?.tournamentPictureUrl || "https://res.cloudinary.com/dqj6qbp0s/image/upload/v1750301894/goplay/users/zuxqmczwestyzzn0t6xp.png" }}
-                                alt="Logo" borderRadius={6} width={75} height={75} mr={3}
+                                alt="Logo" borderRadius={75} width={75} height={75} mr={3}
                             />
                             <VStack maxW="80%">
-                                <Text fontSize={fontSizes.xl} fontWeight="bold" color={colors.blue[800]}>
-                                    {matchGroupData?.tournamentName || "Nome do Torneio"}
+                                <Text fontSize={18} fontWeight="bold" color={colors.blue[800]}>
+                                    {matchGroupData?.tournamentName.toUpperCase() || "Nome do Torneio"}
                                 </Text>
-                                <Text fontSize={fontSizes.md} color={colors.gray[800]} fontWeight="bold">
+                                <Text fontSize={fontSizes.sm} color={colors.gray[800]} fontWeight="bold">
                                     {matchGroupData?.groups[0]?.categoryName?.toUpperCase() || "Categoria"}
                                 </Text>
                             </VStack>
                         </HStack>
 
                         <Box position="relative" mb={4}>
-                            <Text fontSize={fontSizes.lg} fontWeight="bold" textAlign="center">
+                            <Text fontSize={fontSizes.xs} fontWeight="bold" textAlign="center">
                                 Fase de Grupos
                             </Text>
                             <VStack position="absolute" right={0} top={0} alignItems="center">
@@ -285,6 +312,7 @@ export default function MatchGroup() {
                                             await AsyncStorage.setItem("categoryId", String(matchGroupData.groups[0].categoryId));
                                             await AsyncStorage.setItem("categoryName", matchGroupData.groups[0].categoryName);
                                             await AsyncStorage.setItem("tournamentName", matchGroupData.tournamentName);
+                                            await AsyncStorage.setItem("tournamentPictureUrl", matchGroupData.tournamentPictureUrl || "");
 
                                             const totalGroups = matchGroupData.groups[0].groups.length;
                                             let nextPage = "QuarterFinal";
@@ -299,9 +327,9 @@ export default function MatchGroup() {
                                         }
                                     }}
                                 >
-                                    <VStack alignItems="center">
-                                        <Icon as={MaterialIcons} name="arrow-forward" size={6} color="black" />
-                                        <Text fontSize="xs" fontWeight="bold">
+                                    <VStack alignItems="center" mb={2}>
+                                        <Icon as={MaterialIcons} name="arrow-forward" size={5} color="black" />
+                                        <Text fontSize="8" fontWeight="bold">
                                             {(() => {
                                                 const groupCount = matchGroupData?.groups?.[0]?.groups?.length ?? 0;
                                                 if (groupCount === 1) return "Final";
@@ -327,10 +355,40 @@ export default function MatchGroup() {
                                             <Text fontWeight="bold" color={colors.blue[800]}>
                                                 GRUPO {groupDto.groupNumber}
                                             </Text>
-                                            <HStack alignItems="center" space={2} backgroundColor={colors.gray[100]} p={2} borderRadius={8}>
-                                                <Text fontSize="xs" color={colors.black}>N° Quadra</Text>
-                                                <Icon as={MaterialIcons} name="arrow-forward" size={5} color="black" />
-                                            </HStack>
+                                            {groupDto.courtNumber ? (
+                                                <HStack alignItems="center" space={2} backgroundColor={colors.gray[100]}  p={1} px={2} borderRadius={15}>
+                                                    <Text fontSize="xs" color={colors.black}>Quadra: {groupDto.courtNumber}</Text>
+                                                </HStack>
+                                            ) : userType === 2 ? (
+                                                <HStack space={2} alignItems="center">
+                                                    <Input
+                                                        placeholder="Quadra"
+                                                        width="60px"
+                                                        value={courtInputs[groupDto.groupNumber]}
+                                                        onChangeText={(value) =>
+                                                            setCourtInputs((prev) => ({ ...prev, [groupDto.groupNumber]: value }))
+                                                        }
+                                                        keyboardType="numeric"
+                                                        backgroundColor={colors.gray[100]}
+                                                        fontSize="xs"
+                                                    />
+                                                    <Button
+                                                        variant="ghost"
+                                                        p={0}
+                                                        onPress={() =>
+                                                            handleSubmitCourtNumber(groupItem.categoryId, groupDto.groupNumber)
+                                                        }
+                                                    >
+                                                        <Icon as={MaterialIcons} name="arrow-forward" size={6} color="black" />
+                                                    </Button>
+                                                </HStack>
+                                            ) : (
+                                                <HStack alignItems="center" space={2} backgroundColor={colors.gray[100]} p={2} borderRadius={8}>
+                                                    <Text fontSize="xs" color={colors.black}>N° Quadra: -</Text>
+                                                </HStack>
+                                            )}
+
+
                                         </HStack>
 
                                         {[...groupDto.players]

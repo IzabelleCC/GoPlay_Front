@@ -8,8 +8,7 @@ interface Props {
   imageUrl?: string;
   organizerUserName: string;
   organizerName: string;
-  city: string;
-  state: string;
+  location: string;
   totalCategories: number;
   openCategories: number;
   registrationDeadline: string;
@@ -22,8 +21,7 @@ export default function TournamentCardPlayer({
   imageUrl,
   organizerUserName,
   organizerName,
-  city,
-  state,
+  location,
   totalCategories,
   openCategories,
   registrationDeadline,
@@ -55,7 +53,7 @@ export default function TournamentCardPlayer({
           source={{
             uri: imageUrl
               ? imageUrl
-              : "https://via.placeholder.com/60.png?text=Torneio",
+              :  "https://res.cloudinary.com/dqj6qbp0s/image/upload/v1750298193/goplay/users/h6bclcczqpsze0h0vy3j.png",
           }}
           alt="Imagem do Torneio"
           borderRadius={50}
@@ -67,13 +65,10 @@ export default function TournamentCardPlayer({
           <Text fontWeight="bold" fontSize={fontSizes.md} color={colors.blue[800]}>
             {name}
           </Text>
-          <Text fontSize="xs" color={colors.black}>
-            @{organizerUserName} • {organizerName}
-          </Text>
           <HStack alignItems="center" space={1}>
             <Icon as={MaterialIcons} name="place" size="xs" color={colors.gray[300]} />
             <Text fontSize="xs" color={colors.gray[300]}>
-              {city} - {state}
+              {location}
             </Text>
           </HStack>
         </VStack>
