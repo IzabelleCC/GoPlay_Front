@@ -47,9 +47,11 @@ export default function RegistrationDetails() {
         if (type) setUserType(Number(type));
 
         try {
+            console.log("RegistrationId:", registrationId);
             const data = await CategoryPlayerService.getRegistrationDetails(registrationId);
-            setDetails(data);
+
             console.log("Detalhes da inscrição:", data);
+            setDetails(data)
         } catch (error) {
             console.error("Erro ao carregar detalhes da inscrição:", error);
         } finally {

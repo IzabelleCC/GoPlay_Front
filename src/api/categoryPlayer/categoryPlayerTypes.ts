@@ -67,9 +67,13 @@ export interface CategoryPlayerFullInfoResponse {
     id: number;
     categoryId: number;
     registerStatus: number;
+    firstUserId: string;
+    secondUserId: string | null;
   };
   firstUserName: string;
+  firstUserPictureUrl: string | null;
   secondUserName: string;
+  secondUserPictureUrl: string | null;
   category: {
     id: number;
     categoryType: string;

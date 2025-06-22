@@ -25,9 +25,13 @@ interface CategoryPlayerFullInfoResponse {
     id: number;
     categoryId: number;
     registerStatus: number;
+    firstUserId: string;
+    secondUserId: string | null;
   };
   firstUserName: string;
+  firstUserPictureUrl: string | null;
   secondUserName: string;
+  secondUserPictureUrl: string | null;
   category: {
     id: number;
     categoryType: string;
@@ -50,27 +54,29 @@ export default function HomePlayer({ navigation }: any) {
   const [loading, setLoading] = useState(true);
   const [inscricoes, setInscricoes] = useState<CategoryPlayerFullInfoResponse[]>([]);
   const [userType, setUserType] = useState<number | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  const fetchUserType = async () => {
+
+  const fetchUserTypeAndUserID = async () => {
     const storedType = await AsyncStorage.getItem("userType");
     if (storedType) {
       setUserType(Number(storedType));
     }
+    const userId = await AsyncStorage.getItem("userId");
+    setUserId(userId);
   };
 
   useEffect(() => {
-    fetchUserType();
+    fetchUserTypeAndUserID();
   }, []);
 
   const loadInscricoes = useCallback(async () => {
     try {
       setLoading(true);
-      const userId = await AsyncStorage.getItem("userId");
-      if (!userId) throw new Error("Usuário não encontrado.");
-
-      const response = await CategoryPlayerService.getCategoryPlayersFullInfoByUser(userId);
-
+      console.log("Carregando inscrições do usuário:", userId);
+      const response = await CategoryPlayerService.getCategoryPlayersFullInfoByUser(userId!);
       setInscricoes(response);
+      console.log("Inscrições carregadas:", response[4]);
     } catch (error) {
       console.error("Erro ao carregar inscrições:", error);
     } finally {
@@ -207,7 +213,7 @@ export default function HomePlayer({ navigation }: any) {
                     <HStack alignItems="center" space={1}>
                       <MaterialIcons name="person" size={18} color={colors.black} />
                       <Text fontWeight="bold" fontSize="12" color={colors.black}>
-                        {inscricao.secondUserName}
+                        {inscricao.categoryPlayer.firstUserId === userId ? inscricao.secondUserName : inscricao.firstUserName}
                       </Text>
                     </HStack>
                   )}
