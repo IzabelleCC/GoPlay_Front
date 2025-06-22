@@ -158,16 +158,17 @@ export default function RegistrationDetails() {
     return (
         <Box flex={1} bg={colors.white}>
             <ScrollView flex={1} p={4}>
-                <VStack alignItems="center" mb={6}>
+                <HStack alignItems="center" space={4} mb={6}>
                     <Image
-                        source={{ uri: "https://itaguara.com/wp-content/uploads/2022/04/2-beach-soccer-thumb.jpg" }}
+                        source={{ uri: details.tournamentPictureUrl  || "https://res.cloudinary.com/dqj6qbp0s/image/upload/v1750298193/goplay/users/h6bclcczqpsze0h0vy3j.png" }}
                         alt="Imagem do Torneio"
-                        width={500}
-                        height={100}
-                        borderRadius={8}
+                        width={90}
+                        height={90}
+                        borderRadius={90}
                         mb={3}
                     />
-                    <Text fontSize={fontSizes.xl} fontWeight="bold" textAlign="center" color={colors.blue[800]}>
+                <VStack mb={6} flex={1}>
+                    <Text fontSize={fontSizes.xl} fontWeight="bold"color={colors.blue[800]}>
                         {details.tournamentName}
                     </Text>
                     <Text fontSize={fontSizes.lg} fontWeight="bold" color={colors.gray[600]}>
@@ -177,6 +178,7 @@ export default function RegistrationDetails() {
                         Pagamento até: {formatDate(details.paymentDeadline)}
                     </Text>
                 </VStack>
+                </HStack>
 
                 {/* Jogador 1 */}
                 <Box mb={6} p={4} bg={colors.gray[100]} borderRadius={12}>

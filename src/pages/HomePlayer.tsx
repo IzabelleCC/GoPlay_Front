@@ -82,7 +82,7 @@ export default function HomePlayer({ navigation }: any) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [userId]);
 
   useFocusEffect(
     useCallback(() => {
