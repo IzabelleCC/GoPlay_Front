@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { VStack, Input, FlatList, Text, Pressable, useTheme } from "native-base";
+import { VStack, FlatList, Text, Pressable, useTheme } from "native-base";
 import axios from "axios";
 import { GOOGLE_MAPS_API_KEY } from '@env';
+import AutoGrowingTextArea from "./AutoGrowingTextArea"; // ajuste o caminho se necessário
 
 interface LocationInputProps {
   value: string;
@@ -19,18 +20,20 @@ export default function LocationInput({ value, onChange }: LocationInputProps) {
   const [inputValue, setInputValue] = useState(value);
   const [suggestions, setSuggestions] = useState<Prediction[]>([]);
   const [selected, setSelected] = useState(false);
+  const [hasTyped, setHasTyped] = useState(false); 
 
   useEffect(() => {
     setInputValue(value);
   }, [value]);
   
   useEffect(() => {
-    if (inputValue.length > 2 && !selected) {
+    if (hasTyped && inputValue.length > 2 && !selected) {
       fetchSuggestions(inputValue);
     } else {
       setSuggestions([]);
     }
-  }, [inputValue]);
+  }, [inputValue, hasTyped]);
+  
 
   const fetchSuggestions = async (input: string) => {
     try {
@@ -60,7 +63,6 @@ export default function LocationInput({ value, onChange }: LocationInputProps) {
       setInputValue(prediction.description);
       setSuggestions([]);
 
-      // Buscar detalhes para pegar lat/lng
       const detailsResponse = await axios.get(
         `https://maps.googleapis.com/maps/api/place/details/json`,
         {
@@ -83,16 +85,18 @@ export default function LocationInput({ value, onChange }: LocationInputProps) {
 
   return (
     <VStack space={2}>
-      <Input
-        placeholder="Local"
+      <AutoGrowingTextArea
         value={inputValue}
-        onChangeText={(text) => {
+        onChange={(text) => {
           setInputValue(text);
           setSelected(false);
+          setHasTyped(true); 
           onChange("", 0, 0);
         }}
-        bg={colors.gray[100]}
-        borderRadius={10}
+        placeholder="Local"
+        label="Local"
+        minHeight={50}
+        maxHeight={150}
       />
 
       {suggestions.length > 0 && (
