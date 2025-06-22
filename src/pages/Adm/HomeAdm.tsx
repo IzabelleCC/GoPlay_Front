@@ -14,14 +14,14 @@ import {
 } from "native-base";
 import { RefreshControl } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import Logo from "../assets/logo.png";
+import Logo from "../../assets/logo.png";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { TournamentService } from "../api/tournament/tournamentService";
+import { TournamentService } from "../../api/tournament/tournamentService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import dayjs from "dayjs";
-import BadgeStatus from "../components/BadgeStatus";
-import GenericModal from "../components/modals/GenericModal";
+import BadgeStatus from "../../components/BadgeStatus";
+import GenericModal from "../../components/modals/GenericModal";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback } from "react";
 

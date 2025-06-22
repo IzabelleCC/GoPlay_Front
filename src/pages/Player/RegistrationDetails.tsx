@@ -18,10 +18,9 @@ import { useRoute, useNavigation, useFocusEffect } from "@react-navigation/nativ
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import dayjs from "dayjs";
 import * as Location from 'expo-location';
-
-import { CategoryPlayerService } from "../api/categoryPlayer/categoryPlayerService";
-import { TournamentService } from "../api/tournament/tournamentService";
-import GenericModal from "../components/modals/GenericModal";
+import { CategoryPlayerService } from "../../api/categoryPlayer/categoryPlayerService";
+import { TournamentService } from "../../api/tournament/tournamentService";
+import GenericModal from "../../components/modals/GenericModal";
 
 export default function RegistrationDetails() {
     const { colors, fontSizes } = useTheme();

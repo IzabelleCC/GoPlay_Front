@@ -14,12 +14,12 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import { TournamentService } from "../api/tournament/tournamentService";
+import { TournamentService } from "../../api/tournament/tournamentService";
 import dayjs from "dayjs";
-import BadgeStatus from "../components/BadgeStatus";
+import BadgeStatus from "../../components/BadgeStatus";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { UserService } from "../api/user/userService";
-import GenericModal from "../components/modals/GenericModal";
+import { UserService } from "../../api/user/userService";
+import GenericModal from "../../components/modals/GenericModal";
 
 export default function CategoryDetails() {
     const { colors, fontSizes } = useTheme();

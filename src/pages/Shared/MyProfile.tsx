@@ -11,9 +11,9 @@ import {
 } from "native-base";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { UserService } from "../api/user/userService";
-import GenericModal from "../components/modals/GenericModal";
-import ProfilePictureUploader from "../components/ProfilePictureUploader";
+import { UserService } from "../../api/user/userService";
+import GenericModal from "../../components/modals/GenericModal";
+import ProfilePictureUploader from "../../components/ProfilePictureUploader";
 import { MaterialIcons } from "@expo/vector-icons";
 
 export default function MyProfile() {

@@ -10,7 +10,7 @@ import {
   Center,
   useToast,
 } from "native-base";
-import { CategoryPlayerService } from "../api/categoryPlayer/categoryPlayerService";
+import { CategoryPlayerService } from "../../api/categoryPlayer/categoryPlayerService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Clipboard from "expo-clipboard";
 import QRCode from "react-native-qrcode-svg";

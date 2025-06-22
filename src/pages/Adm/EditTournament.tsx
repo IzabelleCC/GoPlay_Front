@@ -10,16 +10,16 @@ import {
   Box,
 } from "native-base";
 import { useRoute, useNavigation, NavigationProp } from "@react-navigation/native";
-import { TournamentService } from "../api/tournament/tournamentService";
-import { UpdateTournamentPayload } from "../api/tournament/tournamentTypes";
-import DatePicker from "../components/form/DatePicker";
-import GenericModal from "../components/modals/GenericModal";
-import { RootStackParamList } from "../navigation/Routes";
+import { TournamentService } from "../../api/tournament/tournamentService";
+import { UpdateTournamentPayload } from "../../api/tournament/tournamentTypes";
+import DatePicker from "../../components/form/DatePicker";
+import GenericModal from "../../components/modals/GenericModal";
+import { RootStackParamList } from "../../navigation/Routes";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import LocationInput from "../components/form/LocationInput";
-import TournamentPictureUploader from "../components/TournamentPictureUploader";
-import CategoryInput from "../components/CategoryInput";
-import AutoGrowingTextArea from "../components/form/AutoGrowingTextArea";
+import LocationInput from "../../components/form/LocationInput";
+import TournamentPictureUploader from "../../components/TournamentPictureUploader";
+import CategoryInput from "../../components/CategoryInput";
+import AutoGrowingTextArea from "../../components/form/AutoGrowingTextArea";
 import { MaterialIcons } from "@expo/vector-icons";
 
 type LocalCategory = {

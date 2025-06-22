@@ -17,11 +17,11 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TournamentService } from "../api/tournament/tournamentService";
-import { EliminationGameDto, InsertEliminationResultsPayload, CompetitorInfo } from "../api/tournament/tournamentTypes";
-import GenericModal from "../components/modals/GenericModal";
-import EmptyStateCard from "../components/EmptyStateCard";
-import { CategoryPlayerService } from "../api/categoryPlayer/categoryPlayerService";
+import { TournamentService } from "../../../api/tournament/tournamentService";
+import { EliminationGameDto, InsertEliminationResultsPayload, CompetitorInfo } from "../../../api/tournament/tournamentTypes";
+import GenericModal from "../../../components/modals/GenericModal";
+import EmptyStateCard from "../../../components/EmptyStateCard";
+import { CategoryPlayerService } from "../../../api/categoryPlayer/categoryPlayerService";
 
 export default function Round16() {
   const { colors, fontSizes } = useTheme();

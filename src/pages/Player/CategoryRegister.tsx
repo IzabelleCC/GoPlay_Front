@@ -14,14 +14,14 @@ import {
   Divider,
   HStack,
 } from "native-base";
-import { CategoryPlayerService } from "../api/categoryPlayer/categoryPlayerService";
-import { UserService } from "../api/user/userService";
+import { CategoryPlayerService } from "../../api/categoryPlayer/categoryPlayerService";
+import { UserService } from "../../api/user/userService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Logo from "../assets/logo.png";
-import { TournamentService } from "../api/tournament/tournamentService";
-import { UserBasicData } from "../api/user/userTypes";
+import Logo from "../../assets/logo.png";
+import { TournamentService } from "../../api/tournament/tournamentService";
+import { UserBasicData } from "../../api/user/userTypes";
 import { MaterialIcons } from "@expo/vector-icons";
-import GenericModal from "../components/modals/GenericModal";
+import GenericModal from "../../components/modals/GenericModal";
 
 export default function CategoryRegister({ route, navigation }: any) {
   const { tournamentId, categoryId } = route.params;

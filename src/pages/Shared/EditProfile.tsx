@@ -14,12 +14,12 @@ import {
 import { Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { UserService } from "../api/user/userService";
-import { UpdateUserPayload } from "../api/user/userTypes";
-import DatePicker from "../components/form/DatePicker";
-import SelectField from "../components/form/SelectField";
-import Logo from "../assets/logo.png";
-import GenericModal from "../components/modals/GenericModal";
+import { UserService } from "../../api/user/userService";
+import { UpdateUserPayload } from "../../api/user/userTypes";
+import DatePicker from "../../components/form/DatePicker";
+import SelectField from "../../components/form/SelectField";
+import Logo from "../../assets/logo.png";
+import GenericModal from "../../components/modals/GenericModal";
 
 export default function EditProfile() {
   const { colors, fontSizes } = useTheme();

@@ -17,11 +17,11 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AccessService } from "../api/access/accessService";
-import { UserService } from "../api/user/userService";
-import PasswordInput from "../components/form/PasswordInput";
-import Logo from "../assets/logo.png";
-import GenericModal from "../components/modals/GenericModal";
+import { AccessService } from "../../api/access/accessService";
+import { UserService } from "../../api/user/userService";
+import PasswordInput from "../../components/form/PasswordInput";
+import Logo from "../../assets/logo.png";
+import GenericModal from "../../components/modals/GenericModal";
 
 export default function Login() {
     const [userName, setUserName] = useState("");

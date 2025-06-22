@@ -17,13 +17,13 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TournamentService } from "../api/tournament/tournamentService";
-import { EliminationGameDto, InsertEliminationResultsPayload, CompetitorInfo } from "../api/tournament/tournamentTypes";
-import GenericModal from "../components/modals/GenericModal";
-import EmptyStateCard from "../components/EmptyStateCard";
-import { CategoryPlayerService } from "../api/categoryPlayer/categoryPlayerService";
+import { TournamentService } from "../../../api/tournament/tournamentService";
+import { EliminationGameDto, InsertEliminationResultsPayload, CompetitorInfo } from "../../../api/tournament/tournamentTypes";
+import GenericModal from "../../../components/modals/GenericModal";
+import EmptyStateCard from "../../../components/EmptyStateCard";
+import { CategoryPlayerService } from "../../../api/categoryPlayer/categoryPlayerService";
 
-export default function QuarterFinal() {
+export default function Round32() {
   const { colors, fontSizes } = useTheme();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
@@ -51,7 +51,7 @@ export default function QuarterFinal() {
   };
 
   const fetchGames = async (categoryId: number) => {
-    const data = await TournamentService.getEliminationGamesByCategory(categoryId, 4);
+    const data = await TournamentService.getEliminationGamesByCategory(categoryId, 2);
     const initialCourts: { [key: number]: string } = {};
     data.forEach(game => {
       if (game.courtNumber != null) {
@@ -288,14 +288,14 @@ const renderDoubleAvatar = (
 
           {/* Título centralizado */}
           <Text fontSize={fontSizes.xs} fontWeight="bold" textAlign="center">
-            Quartas de Finais
+            R32
           </Text>
 
           {/* Botão para a semifinal (seta para a direita) */}
-          <Button variant="ghost" p={0} onPress={() => navigation.navigate("SemiFinal" as never)}>
+          <Button variant="ghost" p={0} onPress={() => navigation.navigate("Round16" as never)}>
             <VStack alignItems="center">
               <Icon as={MaterialIcons} name="arrow-forward" size={5} color="black" />
-              <Text fontSize="8" fontWeight="bold">SF</Text>
+              <Text fontSize="8" fontWeight="bold">R16</Text>
             </VStack>
           </Button>
         </HStack>
@@ -304,7 +304,7 @@ const renderDoubleAvatar = (
         <VStack space={4}>
           {games.length === 0 ? (
             <EmptyStateCard
-              title="Quartas de Finais"
+              title="R32"
               message="Aguardando resultados da fase anterior."
               count={4}
             />
@@ -361,7 +361,7 @@ const renderDoubleAvatar = (
 
                   {bothNull && !game.competitor1Id && !game.competitor2Id ? (
                     <EmptyStateCard
-                      title="Quartas de Finais"
+                      title="R32"
                       message="Aguardando resultados da fase anterior."
                       count={4}
                     />

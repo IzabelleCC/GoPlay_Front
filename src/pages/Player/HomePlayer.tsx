@@ -14,12 +14,12 @@ import {
   Button,
   Divider,
 } from "native-base";
-import Logo from "../assets/logo.png";
-import { CategoryPlayerService } from "../api/categoryPlayer/categoryPlayerService";
+import Logo from "../../assets/logo.png";
+import { CategoryPlayerService } from "../../api/categoryPlayer/categoryPlayerService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import dayjs from "dayjs";
 import { useFocusEffect } from "@react-navigation/native";
-import BadgeStatus from "../components/BadgeStatus";
+import BadgeStatus from "../../components/BadgeStatus";
 
 interface CategoryPlayerFullInfoResponse {
   categoryPlayer: {

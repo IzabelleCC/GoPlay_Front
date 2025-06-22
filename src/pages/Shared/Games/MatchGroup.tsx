@@ -4,11 +4,11 @@ import {
 } from "native-base";
 import { useEffect, useState } from "react";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import { CategoryPlayerService } from "../api/categoryPlayer/categoryPlayerService";
-import { TournamentMatchesResultDto, GroupResultDto } from "../api/categoryPlayer/categoryPlayerTypes";
+import { CategoryPlayerService } from "../../../api/categoryPlayer/categoryPlayerService";
+import { TournamentMatchesResultDto, GroupResultDto } from "../../../api/categoryPlayer/categoryPlayerTypes";
 import { MaterialIcons } from "@expo/vector-icons";
-import { TournamentService } from "../api/tournament/tournamentService";
-import GenericModal from "../components/modals/GenericModal";
+import { TournamentService } from "../../../api/tournament/tournamentService";
+import GenericModal from "../../../components/modals/GenericModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function MatchGroup() {

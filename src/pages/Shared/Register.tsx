@@ -13,13 +13,13 @@ import {
 } from "native-base";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import type { RootStackParamList } from "../navigation/Routes";
+import type { RootStackParamList } from "../../navigation/Routes";
 import { useNavigation } from "@react-navigation/native";
-import Logo from "../assets/logo.png";
-import DatePicker from "../components/form/DatePicker";
-import SelectField from "../components/form/SelectField";
-import PasswordInput from "../components/form/PasswordInput";
-import { UserService } from "../api/user/userService";
+import Logo from "../../assets/logo.png";
+import DatePicker from "../../components/form/DatePicker";
+import SelectField from "../../components/form/SelectField";
+import PasswordInput from "../../components/form/PasswordInput";
+import { UserService } from "../../api/user/userService";
 
 export default function Register() {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();

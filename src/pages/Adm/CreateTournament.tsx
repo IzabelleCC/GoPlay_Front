@@ -9,14 +9,14 @@ import {
   HStack,
   Box
 } from "native-base";
-import { TournamentService } from "../api/tournament/tournamentService";
-import CategoryInput from "../components/CategoryInput";
-import DatePicker from "../components/form/DatePicker";
-import GenericModal from "../components/modals/GenericModal";
-import AutoGrowingTextArea from "../components/form/AutoGrowingTextArea";
+import { TournamentService } from "../../api/tournament/tournamentService";
+import CategoryInput from "../../components/CategoryInput";
+import DatePicker from "../../components/form/DatePicker";
+import GenericModal from "../../components/modals/GenericModal";
+import AutoGrowingTextArea from "../../components/form/AutoGrowingTextArea";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import LocationInput from "../components/form/LocationInput";
-import { CreateTournamentPayload } from "../api/tournament/tournamentTypes";
+import LocationInput from "../../components/form/LocationInput";
+import { CreateTournamentPayload } from "../../api/tournament/tournamentTypes";
 import { MaterialIcons } from "@expo/vector-icons";
 
 interface Category {

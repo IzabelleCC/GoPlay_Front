@@ -1,29 +1,27 @@
-// src/navigation/Routes.tsx
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
-import Initial from "../pages/Initial";
-import Login from "../pages/Login";
-import HomePlayer from "../pages/HomePlayer";
-import HomeAdm from "../pages/HomeAdm";
-import Register from "../pages/Register";
-import MyProfile from "../pages/MyProfile";
-import EditProfile from "../pages/EditProfile";
-import CreateTournament from "../pages/CreateTournament";
-import EditTournament from "../pages/EditTournament";
-import PlayerTournaments from "../pages/PlayerTournaments";
-import TournamentDetails from "../pages/TournamentDetails";
-import CategoryRegister from "../pages/CategoryRegister";
-import PaymentPage from "../pages/PaymentPage";
-import CategoryDetails from "../pages/CategoryDetails";
-import MatchGroup from "../pages/MatchGroup";
-import RoundOf32 from "../pages/RoundOf32 ";
-import RoundOf16 from "../pages/RoundOf16";
-import QuarterFinal from "../pages/QuarterFinal";
-import SemiFinal from "../pages/SemiFinal";
-import Final from "../pages/Final";
-import RegistrationDetails from "../pages/RegistrationDetails";
+import Initial from "../pages/Shared/Initial";
+import Login from "../pages/Shared/Login";
+import HomePlayer from "../pages/Player/HomePlayer";
+import HomeAdm from "../pages/Adm/HomeAdm";
+import Register from "../pages/Shared/Register";
+import MyProfile from "../pages/Shared/MyProfile";
+import EditProfile from "../pages/Shared/EditProfile";
+import CreateTournament from "../pages/Adm/CreateTournament";
+import EditTournament from "../pages/Adm/EditTournament";
+import PlayerTournaments from "../pages/Player/PlayerTournaments";
+import TournamentDetails from "../pages/Player/TournamentDetails";
+import CategoryRegister from "../pages/Player/CategoryRegister";
+import PaymentPage from "../pages/Player/PaymentPage";
+import CategoryDetails from "../pages/Adm/CategoryDetails";
+import MatchGroup from "../pages/Shared/Games/MatchGroup";
+import RoundOf32 from "../pages/Shared/Games/RoundOf32 ";
+import RoundOf16 from "../pages/Shared/Games/RoundOf16";
+import QuarterFinal from "../pages/Shared/Games/QuarterFinal";
+import SemiFinal from "../pages/Shared/Games/SemiFinal";
+import Final from "../pages/Shared/Games/Final";
+import RegistrationDetails from "../pages/Player/RegistrationDetails";
 
 export type RootStackParamList = {
     Inicial: undefined;
