@@ -167,10 +167,10 @@ export default function RegistrationDetails() {
                         borderRadius={8}
                         mb={3}
                     />
-                    <Text fontSize={fontSizes.lg} fontWeight="bold" textAlign="center">
+                    <Text fontSize={fontSizes.xl} fontWeight="bold" textAlign="center" color={colors.blue[800]}>
                         {details.tournamentName}
                     </Text>
-                    <Text fontSize={fontSizes.sm} color={colors.gray[600]}>
+                    <Text fontSize={fontSizes.lg} fontWeight="bold" color={colors.gray[600]}>
                         {details.categoryName}
                     </Text>
                     <Text color={colors.gray[700]}>
@@ -181,16 +181,31 @@ export default function RegistrationDetails() {
                 {/* Jogador 1 */}
                 <Box mb={6} p={4} bg={colors.gray[100]} borderRadius={12}>
                     <HStack alignItems="center" space={3} mb={2}>
-                        <Avatar bg="blue.500" size="md">
-                            {details.firstUserName[0]}
-                        </Avatar>
+                        {details.firstUserPictureUrl ? (
+                            <Image
+                                source={{ uri: details.firstUserPictureUrl }}
+                                alt={details.firstUserName}
+                                width={50}
+                                height={50}
+                                borderRadius={50}
+                            />
+                        ) : (
+                            <Avatar bg="blue.500" size="md">
+                                {details.firstUserName
+                                    .split(" ")
+                                    .map((n: string) => n[0])
+                                    .join("")
+                                    .toUpperCase()}
+                            </Avatar>
+                        )}
                         <VStack>
                             <Text fontWeight="bold">{details.firstUserName}</Text>
                             <Text>Valor: R$ {details.registrationFee.toFixed(2)}</Text>
                         </VStack>
                     </HStack>
+
                     {details.firstUserPaymentConfirmed ? (
-                        <Text color="green.600">
+                        <Text color="green.600" fontWeight="bold">
                             {details.firstUserName} não tem pendências de pagamento nesta categoria
                         </Text>
                     ) : (
@@ -203,17 +218,34 @@ export default function RegistrationDetails() {
                 {/* Jogador 2 */}
                 {details.secondUserName && (
                     <Box mb={6} p={4} bg={colors.gray[100]} borderRadius={12}>
-                        <HStack alignItems="center" space={3} mb={2}>
-                            <Avatar bg="green.500" size="md">
-                                {details.secondUserName[0]}
-                            </Avatar>
-                            <VStack>
-                                <Text fontWeight="bold">{details.secondUserName}</Text>
-                                <Text>Valor: R$ {details.registrationFee.toFixed(2)}</Text>
-                            </VStack>
-                        </HStack>
+                        {details.secondUserName && (
+                            <HStack alignItems="center" space={3} mb={2}>
+                                {details.secondUserPictureUrl ? (
+                                    <Image
+                                        source={{ uri: details.secondUserPictureUrl }}
+                                        alt={details.secondUserName}
+                                        width={50}
+                                        height={50}
+                                        borderRadius={50}
+                                    />
+                                ) : (
+                                    <Avatar bg="green.500" size="md">
+                                        {details.secondUserName
+                                            .split(" ")
+                                            .map((n: string) => n[0])
+                                            .join("")
+                                            .toUpperCase()}
+                                    </Avatar>
+                                )}
+                                <VStack>
+                                    <Text fontWeight="bold">{details.secondUserName}</Text>
+                                    <Text>Valor: R$ {details.registrationFee.toFixed(2)}</Text>
+                                </VStack>
+                            </HStack>
+                        )}
+
                         {details.secondUserPaymentConfirmed ? (
-                            <Text color="green.600">
+                            <Text color="green.600" fontWeight="bold">
                                 {details.secondUserName} não tem pendências de pagamento nesta categoria
                             </Text>
                         ) : (
