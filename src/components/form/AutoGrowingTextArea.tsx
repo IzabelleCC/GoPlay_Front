@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextArea, useTheme } from "native-base";
+import { TextArea, useTheme, VStack, Text } from "native-base";
 import { NativeSyntheticEvent, TextInputContentSizeChangeEventData } from "react-native";
 
 interface AutoGrowingTextAreaProps {
@@ -8,6 +8,7 @@ interface AutoGrowingTextAreaProps {
   onChange: (value: string) => void;
   maxHeight?: number;
   minHeight?: number;
+  label?: string;
 }
 
 export default function AutoGrowingTextArea({
@@ -16,6 +17,7 @@ export default function AutoGrowingTextArea({
   onChange,
   maxHeight = 200,
   minHeight = 100,
+  label = "Descrição",
 }: AutoGrowingTextAreaProps) {
   const { colors } = useTheme();
   const [height, setHeight] = useState(minHeight);
@@ -37,5 +39,12 @@ export default function AutoGrowingTextArea({
     overflow: "scroll",
   };
 
-  return <TextArea {...(textAreaProps as any)} />;
+  return (
+    <VStack space={1}>
+      <Text fontWeight="medium" fontSize="sm" color={colors.gray[600]}>
+        {label}
+      </Text>
+      <TextArea {...(textAreaProps as any)} />
+    </VStack>
+  );
 }

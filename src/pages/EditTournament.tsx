@@ -6,13 +6,9 @@ import {
   Button,
   useTheme,
   ScrollView,
-  IconButton,
-  FormControl,
   HStack,
-  Switch,
-  Box
+  Box,
 } from "native-base";
-import { MaterialIcons } from "@expo/vector-icons";
 import { useRoute, useNavigation, NavigationProp } from "@react-navigation/native";
 import { TournamentService } from "../api/tournament/tournamentService";
 import { UpdateTournamentPayload } from "../api/tournament/tournamentTypes";
@@ -22,6 +18,9 @@ import { RootStackParamList } from "../navigation/Routes";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LocationInput from "../components/form/LocationInput";
 import TournamentPictureUploader from "../components/TournamentPictureUploader";
+import CategoryInput from "../components/CategoryInput";
+import AutoGrowingTextArea from "../components/form/AutoGrowingTextArea";
+import { MaterialIcons } from "@expo/vector-icons";
 
 type LocalCategory = {
   categoryType: string;
@@ -35,6 +34,7 @@ export default function EditTournament() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { id } = route.params;
 
+  const [loaded, setLoaded] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
@@ -47,8 +47,6 @@ export default function EditTournament() {
   const [paymentDeadline, setPaymentDeadline] = useState(new Date());
 
   const [categories, setCategories] = useState<LocalCategory[]>([]);
-  const [editedCategoryIndex, setEditedCategoryIndex] = useState<number | null>(null);
-
   const [showModalSuccess, setShowModalSuccess] = useState(false);
   const [showModalError, setShowModalError] = useState(false);
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
@@ -56,12 +54,12 @@ export default function EditTournament() {
 
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
-
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     loadTournament();
   }, [id]);
+
 
   const loadTournament = async () => {
     try {
@@ -85,6 +83,7 @@ export default function EditTournament() {
           isDoubles: c.isDoubles ?? true,
         }))
       );
+      setLoaded(true);
     } catch (err) {
       console.error("Erro ao carregar torneio", err);
     }
@@ -104,18 +103,6 @@ export default function EditTournament() {
     const updated = [...categories];
     updated.splice(index, 1);
     setCategories(updated);
-  };
-
-  const handleSaveCategory = (index: number) => {
-    const categoryName = categories[index].categoryType.trim().toLowerCase();
-    const duplicate = categories.some(
-      (c, i) => i !== index && c.categoryType.trim().toLowerCase() === categoryName
-    );
-    if (duplicate) {
-      setShowDuplicateModal(true);
-    } else {
-      setEditedCategoryIndex(null);
-    }
   };
 
   const handleSubmit = async () => {
@@ -157,146 +144,188 @@ export default function EditTournament() {
     }
   };
 
+  if (!loaded) return <Text textAlign="center">Carregando...</Text>;
+  
   return (
-    <ScrollView flex={1} bg={colors.white} p={5}>
-      <VStack space={4} pb={8}>
-        <Text fontSize={fontSizes.lg} fontWeight="bold" textAlign="center">
-          Editar {name}
-        </Text>
+    <Box flex={1} bg={colors.white}>
+      <ScrollView flex={1} bg={colors.white} p={5}>
+        <VStack space={4} pb={8}>
+          <Text fontSize={fontSizes.xl} fontWeight="bold" textAlign="center" color={colors.blue[800]}>
+            {name}
+          </Text>
 
-        <TournamentPictureUploader
-          tournamentId={id}
-          initialImageUrl={imageUrl}
-        />
+          <TournamentPictureUploader tournamentId={id} initialImageUrl={imageUrl} />
 
-        <LocationInput
-          value={location}
-          onChange={(address, lat, lng) => {
-            setLocation(address);
-            setLatitude(lat);
-            setLongitude(lng);
-          }}
-        />
+          <LocationInput
+            value={location}
+            onChange={(address, lat, lng) => {
+              setLocation(address);
+              setLatitude(lat);
+              setLongitude(lng);
+            }}
+          />
 
-        <Input placeholder="Endereço" value={description} onChangeText={setDescription} bg={colors.gray[100]} borderRadius={10} />
-        <Input placeholder="Valor da inscrição" value={fee} onChangeText={setFee} keyboardType="numeric" bg={colors.gray[100]} borderRadius={10} />
-        <Input placeholder="Quantidade de quadras" value={courtQty} onChangeText={setCourtQty} keyboardType="numeric" bg={colors.gray[100]} borderRadius={10} />
+          <AutoGrowingTextArea
+            value={description}
+            onChange={setDescription}
+            placeholder="Descrição"
+          />
 
-        <DatePicker label="Data de Início" date={startDate} onChange={setStartDate} />
-        <DatePicker label="Data de Término" date={endDate} onChange={setEndDate} />
-        <DatePicker label="Prazo de Inscrição" date={registrationDeadline} onChange={setRegistrationDeadline} />
-        <DatePicker label="Prazo de Pagamento" date={paymentDeadline} onChange={setPaymentDeadline} />
-
-        {categories.map((category, index) => (
-          <VStack key={index} bg={colors.blue[300]} p={4} borderRadius={10} space={3}>
-            <FormControl>
-              <FormControl.Label>Categoria</FormControl.Label>
+          <HStack space={2} width="100%">
+            <VStack flex={1}>
+              <Text fontWeight="medium" fontSize="sm" color={colors.gray[600]}>
+                Valor da inscrição
+              </Text>
               <Input
-                value={category.categoryType}
-                onChangeText={(text) => handleChangeCategory(index, "categoryType", text)}
+                flex={1}
+                placeholder="0.00"
+                value={fee}
+                onChangeText={setFee}
+                keyboardType="numeric"
                 bg={colors.gray[100]}
                 borderRadius={10}
+                fontSize="md"
+                InputLeftElement={
+                  <Text ml={3} color="gray.500">
+                    R$
+                  </Text>
+                }
               />
-            </FormControl>
-
-            <FormControl>
-              <FormControl.Label>Quantidade de duplas</FormControl.Label>
-              <HStack alignItems="center" space={2}>
-                <Input
-                  flex={1}
-                  value={category.playerLimit}
-                  onChangeText={(text) => handleChangeCategory(index, "playerLimit", text)}
-                  keyboardType="numeric"
-                  bg={colors.gray[100]}
-                  borderRadius={10}
-                />
-                <IconButton
-                  icon={<MaterialIcons name="delete" size={24} color="black" />}
-                  variant="ghost"
-                  onPress={() => setCategoryToDelete(index)}
-                />
-                {index === categories.length - 1 && (
-                  <IconButton
-                    icon={<MaterialIcons name="add" size={24} color="black" />}
-                    variant="ghost"
-                    onPress={() =>
-                      setCategories([...categories, { categoryType: "", playerLimit: "", isDoubles: true }])
-                    }
-                  />
-                )}
-              </HStack>
-            </FormControl>
-
-            <FormControl>
-              <FormControl.Label>É dupla?</FormControl.Label>
-              <Switch
-                isChecked={category.isDoubles}
-                onToggle={() => handleChangeCategory(index, "isDoubles", !category.isDoubles)}
+            </VStack>
+            <VStack flex={1}>
+              <Text fontWeight="medium" fontSize="sm" color={colors.gray[600]}>
+                Quantidade de quadras
+              </Text>
+              <Input
+                flex={1}
+                placeholder="Quantidade de quadras"
+                value={courtQty}
+                onChangeText={setCourtQty}
+                keyboardType="numeric"
+                bg={colors.gray[100]}
+                borderRadius={10}
+                fontSize={"md"}
               />
-            </FormControl>
-          </VStack>
-        ))}
+            </VStack>
+          </HStack>
 
-        <Button bg={colors.blue[500]} borderRadius={20} mt={4} onPress={handleSubmit}>
-          <Text color={colors.white} fontWeight="bold">Atualizar dados</Text>
-        </Button>
 
-        <Button
-          mt={2}
-          variant="outline"
-          borderColor={colors.gray[400]}
-          borderRadius={20}
-          onPress={() => navigation.navigate("HomeAdm")}
-        >
-          <Text fontWeight="bold" color={colors.gray[600]}>Voltar</Text>
-        </Button>
-      </VStack>
+          <DatePicker label="Data de Início" date={startDate} onChange={setStartDate} />
+          <DatePicker label="Data de Término" date={endDate} onChange={setEndDate} />
+          <DatePicker label="Prazo de Inscrição" date={registrationDeadline} onChange={setRegistrationDeadline} />
+          <DatePicker label="Prazo de Pagamento" date={paymentDeadline} onChange={setPaymentDeadline} />
 
-      <GenericModal
-        isOpen={showModalSuccess}
-        onClose={() => {
-          setShowModalSuccess(false);
-          navigation.goBack();
-        }}
-        title="Sucesso"
-        body={<Text textAlign="center">Torneio atualizado com sucesso!</Text>}
-        type="success"
-        variant="info"
-      />
+          {categories.map((category, index) => (
+            <CategoryInput
+              key={index}
+              value={category}
+              onChange={(key, value) => handleChangeCategory(index, key, value)}
+              onAdd={index === categories.length - 1 ? () =>
+                setCategories([...categories, { categoryType: "", playerLimit: "", isDoubles: true }])
+                : undefined}
+              onRemove={() => setCategoryToDelete(index)}
+            />
+          ))}
 
-      <GenericModal
-        isOpen={showModalError}
-        onClose={() => setShowModalError(false)}
-        title="Erro"
-        body={<Text textAlign="center">Erro ao atualizar o torneio. Tente novamente.</Text>}
-        type="error"
-        variant="info"
-      />
+          <Button bg={colors.blue[500]} borderRadius={20} mt={4} onPress={handleSubmit}>
+            <Text color={colors.white} fontWeight="bold" fontSize={"md"}>Atualizar dados</Text>
+          </Button>
 
-      <GenericModal
-        isOpen={showDuplicateModal}
-        onClose={() => setShowDuplicateModal(false)}
-        title="Nome duplicado"
-        body={<Text textAlign="center">Não é permitido cadastrar duas categorias com o mesmo nome.</Text>}
-        type="error"
-        variant="info"
-      />
+        </VStack>
 
-      <GenericModal
-        isOpen={categoryToDelete !== null}
-        onClose={() => setCategoryToDelete(null)}
-        title="Confirmar exclusão"
-        body={<Text textAlign="center">Deseja excluir esta categoria?</Text>}
-        type="info"
-        variant="confirm-delete"
-        confirmText="Confirmar"
-        onConfirm={() => {
-          if (categoryToDelete !== null) {
-            handleRemoveCategory(categoryToDelete);
-            setCategoryToDelete(null);
-          }
-        }}
-      />
-    </ScrollView>
+        <GenericModal
+          isOpen={showModalSuccess}
+          onClose={() => {
+            setShowModalSuccess(false);
+            navigation.goBack();
+          }}
+          title="Sucesso"
+          body={<Text textAlign="center">Torneio atualizado com sucesso!</Text>}
+          type="success"
+          variant="info"
+        />
+
+        <GenericModal
+          isOpen={showModalError}
+          onClose={() => setShowModalError(false)}
+          title="Erro"
+          body={<Text textAlign="center">Erro ao atualizar o torneio. Tente novamente.</Text>}
+          type="error"
+          variant="info"
+        />
+
+        <GenericModal
+          isOpen={showDuplicateModal}
+          onClose={() => setShowDuplicateModal(false)}
+          title="Nome duplicado"
+          body={<Text textAlign="center">Não é permitido cadastrar duas categorias com o mesmo nome.</Text>}
+          type="error"
+          variant="info"
+        />
+
+        <GenericModal
+          isOpen={categoryToDelete !== null}
+          onClose={() => setCategoryToDelete(null)}
+          title="Confirmar exclusão"
+          body={<Text textAlign="center">Deseja excluir esta categoria?</Text>}
+          type="info"
+          variant="confirm-delete"
+          confirmText="Confirmar"
+          onConfirm={() => {
+            if (categoryToDelete !== null) {
+              handleRemoveCategory(categoryToDelete);
+              setCategoryToDelete(null);
+            }
+          }}
+        />
+      </ScrollView>
+      <Box
+        marginBottom={3}
+        marginTop={3}
+        px={4}
+        alignItems="center">
+        {/* Floating buttons */}
+        <HStack space={4} justifyContent="center">
+          {/* Botão Voltar */}
+          <Button
+            borderRadius="full"
+            bg={colors.blue[500]}
+            onPress={() => navigation.goBack()}
+            p={3}
+          >
+            <MaterialIcons name="chevron-left" size={28} color="white" />
+          </Button>
+          {/* Botão Home (casinha) */}
+          <Button
+            borderRadius="full"
+            bg={colors.blue[500]}
+            onPress={() => { navigation.navigate("HomeAdm" as never) }}
+            p={3}
+          >
+            <MaterialIcons name="home" size={28} color="white" />
+          </Button>
+
+          {/* Botão Criar Torneio */}
+          <Button
+            borderRadius="full"
+            bg={colors.blue[500]}
+            onPress={() => navigation.navigate("CreateTournament" as never)}
+            p={3}
+          >
+            <MaterialIcons name="emoji-events" size={28} color="white" />
+          </Button>
+
+          {/* Botão Meu Perfil */}
+          <Button
+            borderRadius="full"
+            bg={colors.blue[500]}
+            onPress={() => navigation.navigate("MyProfile" as never)}
+            p={3}
+          >
+            <MaterialIcons name="person" size={28} color="white" />
+          </Button>
+        </HStack>
+      </Box>
+    </Box>
   );
 }

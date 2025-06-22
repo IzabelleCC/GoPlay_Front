@@ -4,6 +4,7 @@ import { Input, FormControl, Modal, Button, Text, Icon } from 'native-base';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Calendar as CalendarIcon } from 'lucide-react-native';
 
+
 interface Props {
     date: Date;
     onChange: (date: Date) => void;
@@ -39,6 +40,7 @@ export default function DatePicker({ date, onChange, label }: Props) {
             <FormControl w="100%">
                 <FormControl.Label>{label}</FormControl.Label>
                 <TouchableOpacity onPress={openDatePicker}>
+
                     <Input
                         isReadOnly
                         value={formattedDate}
@@ -47,6 +49,7 @@ export default function DatePicker({ date, onChange, label }: Props) {
                         borderColor="blue.800"
                         borderWidth={1}
                         borderRadius={10}
+                        fontSize={'md'}
                         InputRightElement={
                             <TouchableOpacity onPress={openDatePicker}>
                                 <Icon as={CalendarIcon} size={5} mr="2" color="gray.300" />

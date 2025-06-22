@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "goPlay-app",
-    "slug": "goPlay",
+    "slug": "goplay",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -39,9 +39,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "3f1cf3f0-f159-484e-b0e7-4ea6cbc2e7a0"
+        "projectId": "a009997f-1ac6-4653-a3c9-6101b5139910"
       }
     },
-    "owner": "izabellecesario"
+    "owner": "izabellecunha"
   }
 }

@@ -19,6 +19,7 @@ import { CreateTournamentPayload } from "../api/tournament/tournamentTypes";
 interface Category {
   categoryType: string;
   playerLimit: string;
+  isDoubles: boolean;
 }
 
 export default function CreateTournament({ navigation }: any) {
@@ -38,7 +39,7 @@ export default function CreateTournament({ navigation }: any) {
   const [paymentDeadline, setPaymentDeadline] = useState(new Date());
 
   const [categories, setCategories] = useState<Category[]>([
-    { categoryType: "", playerLimit: "" },
+    { categoryType: "", playerLimit: "", isDoubles: true },
   ]);
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -47,7 +48,10 @@ export default function CreateTournament({ navigation }: any) {
   const [invalidFields, setInvalidFields] = useState<string[]>([]);
 
   const handleAddCategory = () => {
-    setCategories([...categories, { categoryType: "", playerLimit: "" }]);
+    setCategories([
+      ...categories,
+      { categoryType: "", playerLimit: "", isDoubles: true },
+    ]);
   };
 
   const handleRemoveCategory = (index: number) => {
@@ -58,11 +62,11 @@ export default function CreateTournament({ navigation }: any) {
 
   const handleChangeCategory = (
     index: number,
-    key: "categoryType" | "playerLimit",
-    value: string
+    key: "categoryType" | "playerLimit" | "isDoubles",
+    value: string | boolean
   ) => {
     const updated = [...categories];
-    updated[index][key] = value;
+    updated[index][key] = value as never;
     setCategories(updated);
   };
 
@@ -126,8 +130,8 @@ export default function CreateTournament({ navigation }: any) {
           registrationDeadline: registrationDeadline.toISOString(),
           paymentDeadline: paymentDeadline.toISOString(),
           location,
-          latitude: latitude!, // sabemos que não é null aqui
-          longitude: longitude!, // sabemos que não é null aqui
+          latitude: latitude!,
+          longitude: longitude!,
           registrationFee: Number(fee),
           courtQuantity: Number(courtQty),
           admUserId: userId,
@@ -136,6 +140,7 @@ export default function CreateTournament({ navigation }: any) {
             .map((c) => ({
               categoryType: c.categoryType,
               playerLimit: Number(c.playerLimit),
+              isDoubles: c.isDoubles,
             })),
         },
       };
@@ -209,6 +214,7 @@ export default function CreateTournament({ navigation }: any) {
             onRemove={categories.length > 1 ? () => handleRemoveCategory(index) : undefined}
           />
         ))}
+
 
         <Button bg={colors.blue[500]} borderRadius={20} mt={4} onPress={handleSubmit}>
           <Text color={colors.white} fontWeight="bold">

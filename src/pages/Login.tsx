@@ -132,7 +132,6 @@ export default function Login() {
                 keyboardShouldPersistTaps="handled"
             >
                 <Image source={Logo} alt="Logo" width={150} height={150} resizeMode="contain" alignSelf="center" />
-                <Text fontSize={fontSizes.lg} fontFamily="heading" mt={2} textAlign="center">GoPlay</Text>
 
                 <VStack space={4} mt={6}>
                     <FormControl>

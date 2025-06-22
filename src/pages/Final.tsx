@@ -305,7 +305,7 @@ const renderDoubleAvatar = (
             <EmptyStateCard
               title="Final"
               message="Aguardando resultados da fase anterior."
-              count={4}
+              count={2}
             />
           ) : (
             games.map((game) => {
