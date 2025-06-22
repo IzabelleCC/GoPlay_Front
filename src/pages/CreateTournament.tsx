@@ -6,6 +6,8 @@ import {
   Button,
   useTheme,
   ScrollView,
+  HStack,
+  Box
 } from "native-base";
 import { TournamentService } from "../api/tournament/tournamentService";
 import CategoryInput from "../components/CategoryInput";
@@ -15,6 +17,7 @@ import AutoGrowingTextArea from "../components/form/AutoGrowingTextArea";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LocationInput from "../components/form/LocationInput";
 import { CreateTournamentPayload } from "../api/tournament/tournamentTypes";
+import { MaterialIcons } from "@expo/vector-icons";
 
 interface Category {
   categoryType: string;
@@ -112,15 +115,12 @@ export default function CreateTournament({ navigation }: any) {
 
     try {
       const userId = await AsyncStorage.getItem("userId");
-      console.log("userId", userId);
-
       if (!userId) {
         console.error("Usuário não encontrado no armazenamento.");
         setShowErrorModal(true);
         return;
       }
 
-      // montar o payload com o tipo CreateTournamentPayload
       const payload: CreateTournamentPayload = {
         data: {
           name,
@@ -154,88 +154,104 @@ export default function CreateTournament({ navigation }: any) {
   };
 
   return (
-    <ScrollView flex={1} bg={colors.white} p={5}>
-      <VStack space={4}>
-        <Text fontSize={fontSizes.lg} fontWeight="bold" textAlign="center">
-          Cadastre um novo torneio
-        </Text>
+    <Box flex={1} bg={colors.white}>
+      <ScrollView flex={1} p={5}>
+        <VStack space={4} pb={8}>
+          <Text fontSize={fontSizes.xl} fontWeight="bold" textAlign="center" color={colors.blue[800]}>
+            Cadastre um novo torneio
+          </Text>
 
-        <Input
-          placeholder="Nome do Torneio"
-          value={name}
-          onChangeText={setName}
-          bg={colors.gray[100]}
-          borderRadius={10}
-        />
+          <VStack space={1}>
+            <Text fontWeight="medium" fontSize="sm" color={colors.gray[600]}>
+              Nome do Torneio
+            </Text>
+            <Input
+              placeholder="Nome do Torneio"
+              value={name}
+              onChangeText={setName}
+              bg={colors.gray[100]}
+              borderRadius={10}
+              fontSize="md"
+            />
+          </VStack>
 
-        <AutoGrowingTextArea
-          value={description}
-          onChange={setDescription}
-          placeholder="Descrição"
-        />
-
-        <LocationInput
-          value={location}
-          onChange={(address, lat, lng) => {
-            setLocation(address);
-            setLatitude(lat);
-            setLongitude(lng);
-          }}
-        />
-
-        <Input
-          placeholder="Valor da inscrição"
-          value={fee}
-          onChangeText={setFee}
-          keyboardType="numeric"
-          bg={colors.gray[100]}
-          borderRadius={10}
-        />
-        <Input
-          placeholder="Quantidade de quadras"
-          value={courtQty}
-          onChangeText={setCourtQty}
-          keyboardType="numeric"
-          bg={colors.gray[100]}
-          borderRadius={10}
-        />
-
-        <DatePicker label="Data de Início dos Jogos" date={startDate} onChange={setStartDate} />
-        <DatePicker label="Data de Término dos Jogos" date={endDate} onChange={setEndDate} />
-        <DatePicker label="Prazo de Inscrição" date={registrationDeadline} onChange={setRegistrationDeadline} />
-        <DatePicker label="Prazo de Pagamento" date={paymentDeadline} onChange={setPaymentDeadline} />
-
-        {categories.map((category, index) => (
-          <CategoryInput
-            key={index}
-            value={category}
-            onChange={(key, value) => handleChangeCategory(index, key, value)}
-            onAdd={index === categories.length - 1 ? handleAddCategory : undefined}
-            onRemove={categories.length > 1 ? () => handleRemoveCategory(index) : undefined}
+          <LocationInput
+            value={location}
+            onChange={(address, lat, lng) => {
+              setLocation(address);
+              setLatitude(lat);
+              setLongitude(lng);
+            }}
           />
-        ))}
 
+          <AutoGrowingTextArea
+            value={description}
+            onChange={setDescription}
+            placeholder="Descrição"
+            label="Descrição"
+          />
 
-        <Button bg={colors.blue[500]} borderRadius={20} mt={4} onPress={handleSubmit}>
-          <Text color={colors.white} fontWeight="bold">
-            Cadastrar torneio
-          </Text>
-        </Button>
+          <HStack space={2} width="100%">
+            <VStack flex={1}>
+              <Text fontWeight="medium" fontSize="sm" color={colors.gray[600]}>
+                Valor da inscrição
+              </Text>
+              <Input
+                placeholder="0.00"
+                value={fee}
+                onChangeText={setFee}
+                keyboardType="numeric"
+                bg={colors.gray[100]}
+                borderRadius={10}
+                fontSize="md"
+                InputLeftElement={
+                  <Text ml={3} color="gray.500">
+                    R$
+                  </Text>
+                }
+              />
+            </VStack>
+            <VStack flex={1}>
+              <Text fontWeight="medium" fontSize="sm" color={colors.gray[600]}>
+                Quantidade de quadras
+              </Text>
+              <Input
+                placeholder=""
+                value={courtQty}
+                onChangeText={setCourtQty}
+                keyboardType="numeric"
+                bg={colors.gray[100]}
+                borderRadius={10}
+                fontSize="md"
+              />
+            </VStack>
+          </HStack>
 
-        <Button
-          mt={2}
-          variant="outline"
-          borderColor={colors.gray[400]}
-          borderRadius={20}
-          onPress={() => navigation.navigate("HomeAdm")}
-        >
-          <Text fontWeight="bold" color={colors.gray[600]}>
-            Voltar
-          </Text>
-        </Button>
-      </VStack>
+          <DatePicker label="Data de Início" date={startDate} onChange={setStartDate} />
+          <DatePicker label="Data de Término" date={endDate} onChange={setEndDate} />
+          <DatePicker label="Prazo de Inscrição" date={registrationDeadline} onChange={setRegistrationDeadline} />
+          <DatePicker label="Prazo de Pagamento" date={paymentDeadline} onChange={setPaymentDeadline} />
 
-      <GenericModal
+          {categories.map((category, index) => (
+            <CategoryInput
+              key={index}
+              value={category}
+              onChange={(key, value) => handleChangeCategory(index, key, value)}
+              onAdd={index === categories.length - 1 ? handleAddCategory : undefined}
+              onRemove={categories.length > 1 ? () => handleRemoveCategory(index) : undefined}
+            />
+          ))}
+
+          <Button
+            borderRadius={20}
+            bg={colors.blue[500]}
+            onPress={handleSubmit}
+            px={6}
+          >
+            <Text color={colors.white} fontWeight="bold">Cadastrar torneio</Text>
+          </Button>
+        </VStack>
+        <GenericModal
         isOpen={showSuccessModal}
         onClose={() => {
           setShowSuccessModal(false);
@@ -262,9 +278,7 @@ export default function CreateTournament({ navigation }: any) {
               ))}
             </VStack>
           ) : (
-            <Text textAlign="center">
-              Preencha todos os campos obrigatórios corretamente.
-            </Text>
+            <Text textAlign="center">Preencha todos os campos obrigatórios corretamente.</Text>
           )
         }
         type="error"
@@ -275,14 +289,49 @@ export default function CreateTournament({ navigation }: any) {
         isOpen={showDuplicateCategoryModal}
         onClose={() => setShowDuplicateCategoryModal(false)}
         title="Categoria duplicada"
-        body={
-          <Text textAlign="center">
-            Não é permitido cadastrar duas categorias com o mesmo nome.
-          </Text>
-        }
+        body={<Text textAlign="center">Não é permitido cadastrar duas categorias com o mesmo nome.</Text>}
         type="error"
         variant="info"
       />
-    </ScrollView>
+      </ScrollView>
+      <Box
+        marginBottom={3}
+        marginTop={3}
+        px={4}
+        alignItems="center">
+        {/* Floating buttons */}
+        <HStack space={4} justifyContent="center">
+          {/* Botão Voltar */}
+          <Button
+            borderRadius="full"
+            bg={colors.blue[500]}
+            onPress={() => navigation.goBack()}
+            p={3}
+          >
+            <MaterialIcons name="chevron-left" size={28} color="white" />
+          </Button>
+          {/* Botão Home (casinha) */}
+          <Button
+            borderRadius="full"
+            bg={colors.blue[500]}
+            onPress={() => { navigation.navigate("HomeAdm" as never) }}
+            p={3}
+          >
+            <MaterialIcons name="home" size={28} color="white" />
+          </Button>
+
+          {/* Botão Meu Perfil */}
+          <Button
+            borderRadius="full"
+            bg={colors.blue[500]}
+            onPress={() => navigation.navigate("MyProfile" as never)}
+            p={3}
+          >
+            <MaterialIcons name="person" size={28} color="white" />
+          </Button>
+        </HStack>
+      </Box>
+
+    </Box>
   );
 }

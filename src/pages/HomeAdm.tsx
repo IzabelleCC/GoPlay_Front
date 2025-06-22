@@ -47,6 +47,7 @@ export default function HomeAdm() {
       if (storedUserId) {
         const data = await TournamentService.getTournamentsByAdmUserId(storedUserId);
         setTournaments(data);
+        console.log("Torneios encontrados:", data[0]);
       }
     } catch (err) {
       console.error("Erro ao carregar torneios", err);
@@ -65,24 +66,6 @@ export default function HomeAdm() {
     } catch (err) {
       console.error("Erro ao buscar torneio por nome", err);
       setTournaments([]);
-    }
-  };
-
-  const handleGenerateMatches = async (tournamentId: number) => {
-    try {
-      await TournamentService.generateGroupMatches(tournamentId);
-
-      setGenerateModalTitle("Chaves geradas com sucesso!");
-      setGenerateModalBody("As chaves do torneio foram geradas corretamente.");
-      setGenerateModalType("success");
-      setIsGenerateModalOpen(true);
-    } catch (err) {
-      console.error("Erro ao gerar chaves", err);
-
-      setGenerateModalTitle("Erro ao gerar chaves");
-      setGenerateModalBody("Ocorreu um erro ao tentar gerar as chaves. Tente novamente.");
-      setGenerateModalType("error");
-      setIsGenerateModalOpen(true);
     }
   };
 
@@ -150,6 +133,11 @@ export default function HomeAdm() {
       fetchUserType();
     }, [])
   );
+
+  useEffect(() => {
+    fetchUserType();
+    fetchTournaments();
+  }, []);
 
   return (
     <Box flex={1} bg={colors.white}>
@@ -225,11 +213,11 @@ export default function HomeAdm() {
                       height={70}
                     />
                   </Center>
-                  <VStack flex={1} ml={3}>
+                  <VStack flex={1} ml={3} justifyContent="space-between">
 
                     <Text
                       fontWeight="bold"
-                      fontSize={fontSizes.md}
+                      fontSize={fontSizes.lg}
                       color={colors.blue[800]}
                       flexShrink={1}
                       flexWrap="wrap"
@@ -237,10 +225,11 @@ export default function HomeAdm() {
                     >
                       {t.name}
                     </Text>
-
-                    <Text color={colors.black} fontSize={fontSizes.xs} mb={1} ml={2}>
-                      Termina em {formatDate(t.gamesEndDate)}
-                    </Text>
+                    <HStack>
+                      <Text color={colors.black} fontSize={fontSizes.xs} mb={1} ml={2}>
+                        Inscrições até: {formatDate(t.registrationDeadline)}
+                      </Text>
+                    </HStack>
                   </VStack>
 
                 </HStack>

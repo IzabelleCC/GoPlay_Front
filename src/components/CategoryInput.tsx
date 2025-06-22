@@ -67,7 +67,7 @@ export default function CategoryInput({ value, onChange, onAdd, onRemove }: Prop
         <HStack alignItems="center" space={1} ml="auto" mt={3} flex={0.4}>
           {onAdd && (
             <IconButton
-              icon={<MaterialIcons name="add-circle-outline" size={30} color="black" />}
+              icon={<MaterialIcons name="add-circle" size={30} color="black" />}
               onPress={onAdd}
               variant="ghost"
             />
@@ -75,7 +75,7 @@ export default function CategoryInput({ value, onChange, onAdd, onRemove }: Prop
 
           {onRemove && (
             <IconButton
-              icon={<MaterialIcons name="delete-outline" size={30} color="black" />}
+              icon={<MaterialIcons name="delete" size={30} color="black" />}
               onPress={onRemove}
               variant="ghost"
             />
