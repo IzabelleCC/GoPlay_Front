@@ -12,6 +12,7 @@ import {
   Center,
   Divider,
 } from "native-base";
+import { RefreshControl } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import Logo from "../assets/logo.png";
 import { useNavigation } from "@react-navigation/native";
@@ -38,6 +39,7 @@ export default function HomeAdm() {
   const [generateModalBody, setGenerateModalBody] = useState("");
   const [generateModalType, setGenerateModalType] = useState<"success" | "error">("success");
   const [userType, setUserType] = useState<number | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchTournaments = async () => {
     try {
@@ -54,6 +56,12 @@ export default function HomeAdm() {
     }
   };
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchTournaments();
+    setRefreshing(false);
+  }, [fetchTournaments]);
+  
   const searchTournament = async () => {
     if (!search.trim()) {
       fetchTournaments();
@@ -141,7 +149,15 @@ export default function HomeAdm() {
 
   return (
     <Box flex={1} bg={colors.white}>
-      <ScrollView flex={1} p={4} contentContainerStyle={{ paddingBottom: 100 }}>
+      <ScrollView flex={1} p={4} contentContainerStyle={{ paddingBottom: 100 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[colors.blue[500]]}
+            tintColor={colors.blue[500]}
+          />
+        }>
         <VStack alignItems="center" mb={6}>
           <Image source={Logo} alt="Logo" width={90} height={90} resizeMode="contain" />
           <Text fontSize={fontSizes.lg} fontWeight="bold" mt={2}>

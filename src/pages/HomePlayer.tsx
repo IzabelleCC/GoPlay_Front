@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { RefreshControl } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
   VStack,
@@ -55,7 +56,7 @@ export default function HomePlayer({ navigation }: any) {
   const [inscricoes, setInscricoes] = useState<CategoryPlayerFullInfoResponse[]>([]);
   const [userType, setUserType] = useState<number | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchUserTypeAndUserID = async () => {
     const storedType = await AsyncStorage.getItem("userType");
@@ -65,6 +66,7 @@ export default function HomePlayer({ navigation }: any) {
     const userId = await AsyncStorage.getItem("userId");
     setUserId(userId);
   };
+  
 
   useEffect(() => {
     fetchUserTypeAndUserID();
@@ -83,6 +85,13 @@ export default function HomePlayer({ navigation }: any) {
       setLoading(false);
     }
   }, [userId]);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await loadInscricoes();
+    setRefreshing(false);
+  }, [loadInscricoes]);
+  
 
   useFocusEffect(
     useCallback(() => {
@@ -130,7 +139,15 @@ export default function HomePlayer({ navigation }: any) {
 
   return (
     <Box flex={1} bg={colors.white}>
-      <ScrollView flex={1} bg={colors.white} p={4}>
+      <ScrollView flex={1} bg={colors.white} p={4}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[colors.blue[500]]} // cor do círculo no Android
+            tintColor={colors.blue[500]} // cor do spinner no iOS
+          />
+        }>
         <VStack alignItems="center" mb={6}>
           <Image source={Logo} alt="Logo" width={90} height={90} resizeMode="contain" />
           <Text fontSize={fontSizes.lg} fontWeight="bold" mt={2}>
@@ -296,10 +313,7 @@ export default function HomePlayer({ navigation }: any) {
           <Button
             borderRadius="full"
             bg={colors.blue[500]}
-            onPress={() => {
-              if (userType === 1) navigation.navigate("HomePlayer" as never);
-              if (userType === 2) navigation.navigate("HomeAdm" as never);
-            }}
+            onPress={() => {navigation.navigate("HomePlayer" as never)}}
             p={3}
           >
             <MaterialIcons name="home" size={28} color="white" />

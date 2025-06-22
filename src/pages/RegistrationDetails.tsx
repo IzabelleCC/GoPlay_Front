@@ -160,24 +160,24 @@ export default function RegistrationDetails() {
             <ScrollView flex={1} p={4}>
                 <HStack alignItems="center" space={4} mb={6}>
                     <Image
-                        source={{ uri: details.tournamentPictureUrl  || "https://res.cloudinary.com/dqj6qbp0s/image/upload/v1750298193/goplay/users/h6bclcczqpsze0h0vy3j.png" }}
+                        source={{ uri: details.tournamentPictureUrl || "https://res.cloudinary.com/dqj6qbp0s/image/upload/v1750298193/goplay/users/h6bclcczqpsze0h0vy3j.png" }}
                         alt="Imagem do Torneio"
                         width={90}
                         height={90}
                         borderRadius={90}
                         mb={3}
                     />
-                <VStack mb={6} flex={1}>
-                    <Text fontSize={fontSizes.xl} fontWeight="bold"color={colors.blue[800]}>
-                        {details.tournamentName}
-                    </Text>
-                    <Text fontSize={fontSizes.lg} fontWeight="bold" color={colors.gray[600]}>
-                        {details.categoryName}
-                    </Text>
-                    <Text color={colors.gray[700]}>
-                        Pagamento até: {formatDate(details.paymentDeadline)}
-                    </Text>
-                </VStack>
+                    <VStack mb={6} flex={1}>
+                        <Text fontSize={fontSizes.xl} fontWeight="bold" color={colors.blue[800]}>
+                            {details.tournamentName}
+                        </Text>
+                        <Text fontSize={fontSizes.lg} fontWeight="bold" color={colors.gray[600]}>
+                            {details.categoryName}
+                        </Text>
+                        <Text color={colors.gray[700]}>
+                            Pagamento até: {formatDate(details.paymentDeadline)}
+                        </Text>
+                    </VStack>
                 </HStack>
 
                 {/* Jogador 1 */}
@@ -292,6 +292,27 @@ export default function RegistrationDetails() {
                         </Button>
                     </Box>
                 )}
+
+                {/* Modal Cancelar */}
+                <GenericModal
+                    isOpen={modalOpen}
+                    onClose={() => setModalOpen(false)}
+                    onConfirm={handleDelete}
+                    title="Cancelar inscrição"
+                    body={<Text textAlign="center">Deseja realmente cancelar esta inscrição?</Text>}
+                    variant="confirm-delete"
+                    confirmText="Sim, cancelar"
+                    type="info"
+                />
+
+                {/* Modal Retorno */}
+                <GenericModal
+                    isOpen={modalResult.isOpen}
+                    onClose={() => setModalResult({ ...modalResult, isOpen: false })}
+                    title={modalResult.title}
+                    body={<Text textAlign="center">{modalResult.body}</Text>}
+                    type={modalResult.type as any}
+                />
             </ScrollView>
 
             {/* Rodapé */}
@@ -326,27 +347,6 @@ export default function RegistrationDetails() {
                     </Button>
                 </HStack>
             </Box>
-
-            {/* Modal Cancelar */}
-            <GenericModal
-                isOpen={modalOpen}
-                onClose={() => setModalOpen(false)}
-                onConfirm={handleDelete}
-                title="Cancelar inscrição"
-                body={<Text textAlign="center">Deseja realmente cancelar esta inscrição?</Text>}
-                variant="confirm-delete"
-                confirmText="Sim, cancelar"
-                type="info"
-            />
-
-            {/* Modal Retorno */}
-            <GenericModal
-                isOpen={modalResult.isOpen}
-                onClose={() => setModalResult({ ...modalResult, isOpen: false })}
-                title={modalResult.title}
-                body={<Text textAlign="center">{modalResult.body}</Text>}
-                type={modalResult.type as any}
-            />
         </Box>
     );
 }
