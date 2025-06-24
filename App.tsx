@@ -7,12 +7,19 @@ import {
   Montserrat_700Bold
 } from '@expo-google-fonts/montserrat';
 import { Text, View, Platform, SafeAreaView } from 'react-native';
+import { useEffect } from 'react';
+import { registerForPushNotificationsAsync } from './src/utils/notifications';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
     Montserrat_400Regular,
     Montserrat_700Bold,
   });
+
+  // Permissão e registro do token ao iniciar o app
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+  }, []);
 
   if (!fontsLoaded) {
     return (
@@ -29,9 +36,9 @@ export default function App() {
           backgroundColor={THEMES.colors.blue[800]}
           barStyle={Platform.OS === 'ios' ? 'light-content' : 'default'}
         />
+        {/* Routes agora será responsável por chamar o useNotificationHandlers no contexto correto */}
         <Routes />
       </SafeAreaView>
     </NativeBaseProvider>
   );
-
 }

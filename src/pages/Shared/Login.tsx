@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-    Box,
     Image,
     FormControl,
     Input,
@@ -22,6 +21,8 @@ import { UserService } from "../../api/user/userService";
 import PasswordInput from "../../components/form/PasswordInput";
 import Logo from "../../assets/logo.png";
 import GenericModal from "../../components/modals/GenericModal";
+import { registerForPushNotificationsAsync } from "../../utils/notifications";
+import { NotificationService } from "../../api/notifications/notificationService";
 
 export default function Login() {
     const [userName, setUserName] = useState("");
@@ -39,15 +40,35 @@ export default function Login() {
 
     const handleSignIn = async () => {
         try {
-            var response = await AccessService.login({ data: { userName, password } });
+            const response = await AccessService.login({ data: { userName, password } });
+
+            const userId = response.result.user.id;
             await AsyncStorage.setItem("userName", userName);
+            await AsyncStorage.setItem("userId", userId);
+            await AsyncStorage.setItem("userType", response.result.user.userType.toString());
+
+            console.log("Login com sucesso");
+
+            // Registra o push token no back
+            const pushToken = await registerForPushNotificationsAsync();
+            console.log("Push Token obtido:", pushToken);
+            if (pushToken) {
+                try {
+                    await NotificationService.registerToken(pushToken, userId);
+                    console.log("Token registrado no back-end com sucesso", pushToken);
+                } catch (err) {
+                    console.error("Erro ao registrar token no back-end:", err, pushToken);
+                }
+            }
+
             setUserName("");
             setPassword("");
-            console.log("login com sucesso");
-            await AsyncStorage.setItem("userId", response.result.user.id);
-            await AsyncStorage.setItem("userType", response.result.user.userType.toString());
-            if(response.result.user.userType == 1) navigation.navigate("HomePlayer" as never);
-            if(response.result.user.userType == 2) navigation.navigate("HomeAdm" as never);
+
+            if (response.result.user.userType === 1) {
+                navigation.navigate("HomePlayer" as never);
+            } else if (response.result.user.userType === 2) {
+                navigation.navigate("HomeAdm" as never);
+            }
 
         } catch (error: any) {
             handleBackendError(error, "Erro ao realizar login.");
@@ -192,7 +213,6 @@ export default function Login() {
                     </Button>
                 </VStack>
 
-                {/* Modal para redefinição de senha */}
                 <GenericModal
                     isOpen={showResetModal}
                     onClose={() => setShowResetModal(false)}
@@ -205,7 +225,6 @@ export default function Login() {
                     variant="reset-password"
                 />
 
-                {/* Modal para erro */}
                 <GenericModal
                     isOpen={showErrorModal}
                     onClose={() => setShowErrorModal(false)}
@@ -216,7 +235,7 @@ export default function Login() {
                     type="error"
                     variant="error"
                 />
-                {/* Modal de sucesso */}
+
                 <GenericModal
                     isOpen={showSuccessModal}
                     onClose={() => setShowSuccessModal(false)}
@@ -227,7 +246,6 @@ export default function Login() {
                     type="success"
                     variant="success"
                 />
-
             </ScrollView>
         </KeyboardAvoidingView>
     );

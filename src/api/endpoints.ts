@@ -63,4 +63,10 @@ export const Endpoints = Object.freeze({
     InsertCourtNumberMatchGroup: "InsertCourtNumberMatchGroup",
     InsertCourtNumberElimination: "InsertCourtNumberElimination",
   }),
+
+  Notifications: buildControllerEndpoints("Notifications", {
+    Send: "send",
+    Register: "register"
+  }),
+  
 });
