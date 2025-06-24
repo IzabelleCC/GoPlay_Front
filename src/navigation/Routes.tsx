@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Spinner, Center } from "native-base";
 
+import { useNotificationHandlers } from "../utils/notifications";
 import Initial from "../pages/Shared/Initial";
 import Login from "../pages/Shared/Login";
 import HomePlayer from "../pages/Player/HomePlayer";
@@ -25,7 +26,7 @@ import QuarterFinal from "../pages/Shared/Games/QuarterFinal";
 import SemiFinal from "../pages/Shared/Games/SemiFinal";
 import Final from "../pages/Shared/Games/Final";
 import RegistrationDetails from "../pages/Player/RegistrationDetails";
-import { useNotificationHandlers } from "../utils/notifications";
+import RegistrationOfCategoryDetails from "../pages/Shared/RegistrationOfCategoryDetails";
 
 export type RootStackParamList = {
     Inicial: undefined;
@@ -49,6 +50,7 @@ export type RootStackParamList = {
     SemiFinal: undefined;
     Final: undefined;
     RegistrationDetails: { registrationId: number };
+    RegistrationOfCategoryDetails: { categoryId: number};
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -78,6 +80,7 @@ const linking = {
             SemiFinal: "semifinal",
             Final: "final",
             RegistrationDetails: "registrationdetails/:registrationId",
+            RegistrationOfCategoryDetails: "registrationofcategorydetails/:categoryId",
         },
     },
 };
@@ -108,6 +111,7 @@ function AppStack({ initialRoute }: { initialRoute: keyof RootStackParamList }) 
             <Stack.Screen name="SemiFinal" component={SemiFinal} />
             <Stack.Screen name="Final" component={Final} />
             <Stack.Screen name="RegistrationDetails" component={RegistrationDetails} />
+            <Stack.Screen name="RegistrationOfCategoryDetails" component={RegistrationOfCategoryDetails} />
         </Stack.Navigator>
     );
 }

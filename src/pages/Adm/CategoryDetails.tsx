@@ -265,12 +265,24 @@ export default function CategoryDetails() {
                                     <HStack space={8} alignItems="center">
                                         {/* Duplas/Inscritos */}
                                         <VStack alignItems="center">
-                                            <Text fontSize="lg" fontWeight="bold" color={colors.black}>
-                                                {cat.registerCount}
-                                            </Text>
-                                            <Text fontSize="xs" color={colors.black}>
-                                                {cat.isDoubles ? "Duplas" : "Inscritos"}
-                                            </Text>
+                                            <Button
+                                                variant="ghost"
+                                                p={2}
+                                                onPress={() =>
+                                                    navigation.navigate("RegistrationOfCategoryDetails", {
+                                                        categoryId: cat.id,
+                                                    })
+                                                }
+                                            >
+                                                <VStack alignItems="center">
+                                                    <Text fontSize="lg" fontWeight="bold" color={colors.black}>
+                                                        {cat.registerCount}
+                                                    </Text>
+                                                    <Text fontSize="xs" color={colors.black}>
+                                                        {cat.isDoubles ? "Duplas" : "Inscritos"}
+                                                    </Text>
+                                                </VStack>
+                                            </Button>
                                         </VStack>
 
                                         {/* Jogos - não vem mais na API, colocar 0 */}

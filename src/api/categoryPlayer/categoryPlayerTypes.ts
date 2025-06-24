@@ -167,6 +167,29 @@ export interface RegistrationDetailsDto {
   attendanceConfirmedUserId: string;
 }
 
+export interface CategoryPlayerByCategoryResponse {
+  id: number;
+  tournamentId: number;
+  tournamentName: string;
+  tournamentPictureUrl: string;
+  registrationFee: number;
+  paymentDeadline: string;
+  categoryId: number;
+  categoryName: string;
+  firstUserId: string;
+  secondUserId: string;
+  firstUserName: string;
+  secondUserName: string;
+  firstUserPaymentConfirmed: boolean;
+  secondUserPaymentConfirmed: boolean;
+  firstUserPictureUrl: string;
+  secondUserPictureUrl: string;
+  registerStatus: number;
+  attendanceConfirmed: boolean;
+  attendanceTime: string;
+  attendanceConfirmedUserId: string | null;
+}
+
 
 
 

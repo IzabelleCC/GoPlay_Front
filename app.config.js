@@ -42,6 +42,7 @@ export default {
                 projectId: "a009997f-1ac6-4653-a3c9-6101b5139910"
             }
         },
-        owner: "izabellecunha"
+        owner: "izabellecunha",
+        "newArchEnabled": true
     }
 };
