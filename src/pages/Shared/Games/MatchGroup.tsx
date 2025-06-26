@@ -531,9 +531,9 @@ export default function MatchGroup() {
                                                                 >
                                                                     {placarValido
                                                                         ? score1 > score2
-                                                                            ? `Venc.: ${match[0].firstUserName}`
+                                                                            ? `Venc.: ${match[0].firstUserName} /  ${match[0].secondUserName}`
                                                                             : score2 > score1
-                                                                                ? `Venc.: ${match[1].firstUserName}`
+                                                                                ? `Venc.: ${match[1].firstUserName}  /  ${match[1].secondUserName}`
                                                                                 : "Empate"
                                                                         : "Placar Pendente"}
                                                                 </Text>

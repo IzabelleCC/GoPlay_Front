@@ -4,3 +4,15 @@ export interface LoginPayload {
         password: string;
     };
 }
+
+export interface PasswordResetLinkPayload {
+    data: {
+        email: string
+    };
+}
+
+export interface ResetPasswordPayload {
+    data: {
+        password: string;
+    };
+}

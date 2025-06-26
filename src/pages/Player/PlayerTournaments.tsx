@@ -17,8 +17,12 @@ export default function PlayerTournaments({ navigation }: any) {
       try {
         setLoading(true);
         const data = await TournamentService.getAllTournaments();
-        setTournaments(data);
-        await AsyncStorage.setItem("tournamentPictureUrl", data.tournament.profilePictureUrl || "");
+        const filtered = data.filter((tournament: any) => tournament.status === 1);
+        setTournaments(filtered);
+
+        if (filtered.length > 0) {
+          await AsyncStorage.setItem("tournamentPictureUrl", filtered[0].profilePictureUrl || "");
+        }
       } catch (error) {
         console.error("Erro ao buscar torneios:", error);
       } finally {
@@ -32,8 +36,6 @@ export default function PlayerTournaments({ navigation }: any) {
     <Box flex={1} bg={colors.white}>
       <ScrollView flex={1} bg={colors.white} p={4}>
         <VStack alignItems="center" space={4} pb={12}>
-
-          {/* Logo */}
           <Image
             source={Logo}
             alt="Logo"
@@ -43,12 +45,10 @@ export default function PlayerTournaments({ navigation }: any) {
             mt={2}
           />
 
-          {/* Título */}
           <Text fontSize={fontSizes.lg} fontWeight="bold" mb={2} color={colors.blue[800]}>
             Torneios Disponíveis
           </Text>
 
-          {/* Lista de torneios ou skeleton */}
           {loading ? (
             Array.from({ length: 3 }).map((_, index) => (
               <TournamentCardSkeleton key={index} />
@@ -84,7 +84,6 @@ export default function PlayerTournaments({ navigation }: any) {
               );
             })
           )}
-
         </VStack>
       </ScrollView>
       <Box
@@ -92,9 +91,7 @@ export default function PlayerTournaments({ navigation }: any) {
         marginTop={3}
         px={4}
         alignItems="center">
-        {/* Floating buttons */}
         <HStack space={4} justifyContent="center">
-          {/* Botão Voltar */}
           <Button
             borderRadius="full"
             bg={colors.blue[500]}
@@ -103,8 +100,6 @@ export default function PlayerTournaments({ navigation }: any) {
           >
             <MaterialIcons name="chevron-left" size={28} color="white" />
           </Button>
-
-          {/* Botão Home (casinha) */}
           <Button
             borderRadius="full"
             bg={colors.blue[500]}
@@ -113,8 +108,6 @@ export default function PlayerTournaments({ navigation }: any) {
           >
             <MaterialIcons name="home" size={28} color="white" />
           </Button>
-
-          {/* Botão Criar Torneio */}
           <Button
             borderRadius="full"
             bg={colors.blue[500]}
@@ -123,8 +116,6 @@ export default function PlayerTournaments({ navigation }: any) {
           >
             <MaterialIcons name="emoji-events" size={28} color="white" />
           </Button>
-
-          {/* Botão Meu Perfil */}
           <Button
             borderRadius="full"
             bg={colors.blue[500]}

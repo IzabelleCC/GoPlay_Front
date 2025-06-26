@@ -17,7 +17,6 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AccessService } from "../../api/access/accessService";
-import { UserService } from "../../api/user/userService";
 import PasswordInput from "../../components/form/PasswordInput";
 import Logo from "../../assets/logo.png";
 import GenericModal from "../../components/modals/GenericModal";
@@ -84,7 +83,7 @@ export default function Login() {
 
         try {
             setLoading(true);
-            await UserService.passwordResetLink({ data: { email } });
+            await AccessService.passwordResetLink({ data: { email } });
             setShowResetModal(false);
             setSuccessMessage("Link de redefinição de senha enviado.");
             setShowSuccessModal(true);

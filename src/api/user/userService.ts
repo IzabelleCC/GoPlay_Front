@@ -2,9 +2,7 @@ import axios from "axios";
 import { Endpoints } from "../endpoints";
 import {
     CreateUserPayload,
-    UpdateUserPayload,
-    ResetPasswordPayload,
-    PasswordResetLinkPayload,
+    UpdateUserPayload
 } from "./userTypes";
 
 export const UserService = {
@@ -54,29 +52,6 @@ export const UserService = {
             return response.data;
         } catch (error: any) {
             console.error("Erro ao confirmar e-mail:", error);
-            throw error;
-        }
-    },
-
-    async passwordResetLink(payload: PasswordResetLinkPayload) {
-        try {
-            const response = await axios.post(Endpoints.AccessManager.PasswordResetLink, payload);
-            return response.data;
-        } catch (error: any) {
-            console.error("Erro ao enviar link de redefinição de senha:", error);
-            throw error;
-        }
-    },
-
-    async resetPassword(token: string, payload: ResetPasswordPayload) {
-        try {
-            const response = await axios.post(
-                `${Endpoints.AccessManager.ResetPassword}?token=${encodeURIComponent(token)}`,
-                payload
-            );
-            return response.data;
-        } catch (error: any) {
-            console.error("Erro ao redefinir senha:", error);
             throw error;
         }
     },

@@ -26,21 +26,12 @@ export interface UpdateUserPayload {
     };
 }
 
-export interface ResetPasswordPayload {
-    data: {
-        password: string;
-    };
-}
 
 export interface EmailConfirmationPayload {
     email: string;
 }
 
-export interface PasswordResetLinkPayload {
-    data: {
-        email: string
-    };
-}
+
 
 export interface UserBasicData {
     id: string;
